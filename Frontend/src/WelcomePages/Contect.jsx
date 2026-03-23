@@ -1,406 +1,295 @@
-import React, { useState } from 'react';
-import FooterPage from "./FooterPage";
-import NavBarpage from "./NavBarpage";
+import React, { useState, useEffect, useRef } from 'react';
+import { MapPin, Phone, Mail, Clock, Send, CheckCircle, MessageCircle } from 'lucide-react';
+import FooterPage from './FooterPage';
+import NavBarpage from './NavBarpage';
+
+/* ─── Intersection observer hook ────────────────────────────────────────── */
+const useVisible = (threshold = 0.15) => {
+  const ref = useRef();
+  const [visible, setVisible] = useState(false);
+  useEffect(() => {
+    const obs = new IntersectionObserver(([e]) => { if (e.isIntersecting) setVisible(true); }, { threshold });
+    if (ref.current) obs.observe(ref.current);
+    return () => obs.disconnect();
+  }, []);
+  return [ref, visible];
+};
+
+/* ─── Global styles ──────────────────────────────────────────────────────── */
+const ContactStyles = () => (
+  <style>{`
+    @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Lato:wght@300;400;600;700&display=swap');
+    @keyframes shimmer {
+      0%   { background-position: -200% center; }
+      100% { background-position:  200% center; }
+    }
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(28px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes floatNote {
+      0%,100% { transform: translateY(0) rotate(0deg); }
+      33%      { transform: translateY(-18px) rotate(5deg); }
+      66%      { transform: translateY(10px) rotate(-4deg); }
+    }
+    @keyframes drawLine {
+      from { width: 0; }
+      to   { width: 72px; }
+    }
+    .contact-input {
+      width: 100%;
+      padding: 12px 16px;
+      border: 1.5px solid #E2E8F0;
+      border-radius: 12px;
+      font-size: 0.95rem;
+      font-family: 'Lato', sans-serif;
+      color: #1E293B;
+      background: #fff;
+      outline: none;
+      transition: border-color 0.25s, box-shadow 0.25s;
+      box-sizing: border-box;
+    }
+    .contact-input:focus {
+      border-color: #dc2626;
+      box-shadow: 0 0 0 3px rgba(220,38,38,0.1);
+    }
+    .contact-input::placeholder { color: #94A3B8; }
+    select.contact-input { cursor: pointer; }
+    textarea.contact-input { resize: vertical; min-height: 130px; }
+    label.contact-label {
+      display: block;
+      font-size: 0.82rem;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: #475569;
+      margin-bottom: 6px;
+      font-family: 'Lato', sans-serif;
+    }
+  `}</style>
+);
 
 const ContactPage = () => {
-    const [formData, setFormData] = useState({
-        name: '',
-        email: '',
-        phone: '',
-        subject: '',
-        message: ''
-    });
-    const [isLoading, setIsLoading] = useState(false);
+  const [formData, setFormData] = useState({ name: '', email: '', phone: '', subject: '', message: '' });
+  const [isLoading, setIsLoading] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
 
-    const handleChange = (e) => {
-        setFormData({
-            ...formData,
-            [e.target.name]: e.target.value
-        });
-    };
+  const handleChange = (e) => setFormData({ ...formData, [e.target.name]: e.target.value });
 
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        setIsLoading(true);
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    setIsLoading(true);
+    const msg = `*New Contact Message from Raadhyam Website*\n\n*Name:* ${formData.name}\n*Email:* ${formData.email}\n*Phone:* ${formData.phone}\n*Subject:* ${formData.subject}\n\n*Message:*\n${formData.message}\n\n_Sent via Raadhyam Contact Form_`;
+    window.open(`https://wa.me/916396949336?text=${encodeURIComponent(msg)}`, '_blank');
+    setIsLoading(false);
+    setSubmitted(true);
+    setFormData({ name: '', email: '', phone: '', subject: '', message: '' });
+    setTimeout(() => setSubmitted(false), 4000);
+  };
 
-        // Format message for WhatsApp
-        const whatsappMessage = `
-*New Contact Message from Raadhyam Website*
+  const contactMethods = [
+    { icon: Mail,    label: 'Email Us',   value: 'raadhyammusicals@gmail.com', sub: 'We reply within 24 hours',    href: 'mailto:raadhyammusicals@gmail.com' },
+    { icon: Phone,   label: 'WhatsApp',   value: '+91 84103 37618',             sub: 'Chat with us instantly',      href: 'https://wa.me/918410337618' },
+    { icon: MapPin,  label: 'Visit Us',   value: 'Sector 7, Dayal Upadhyay Puram, Agra, UP 282007', sub: 'Come say hello at our studio', href: 'https://maps.app.goo.gl/b6rT2WkwkLrQJiis8' },
+    { icon: Clock,   label: 'Hours',      value: 'Mon–Sat: 9 AM – 9 PM',       sub: 'Sunday: 9 AM – 6 PM',         href: null },
+  ];
 
-*Name:* ${formData.name}
-*Email:* ${formData.email}
-*Phone:* ${formData.phone}
-*Subject:* ${formData.subject}
+  const floatingNotes = [
+    { note: '♩', top: '12%',    left: '2%',   delay: '0s',   size: '2rem' },
+    { note: '♫', top: '20%',    right: '3%',  delay: '1.3s', size: '1.8rem' },
+    { note: '♬', bottom: '20%', left: '5%',   delay: '2.5s', size: '1.6rem' },
+    { note: '♪', top: '60%',    right: '6%',  delay: '0.7s', size: '1.6rem' },
+  ];
 
-*Message:*
-${formData.message}
+  const warmBg = 'linear-gradient(135deg, #FFF8EE 0%, #FEF3C7 40%, #FFFBF5 100%)';
 
-*Sent via Raadhyam Contact Form*
-    `.trim();
+  return (
+    <div style={{ minHeight: '100vh', background: '#F8FAFC', fontFamily: "'Lato', Arial, sans-serif" }}>
+      <ContactStyles />
+      <NavBarpage />
 
-        // Encode message for WhatsApp URL
-        const encodedMessage = encodeURIComponent(whatsappMessage);
-
-        // Replace with your WhatsApp number (include country code without +)
-        const whatsappNumber = '916396949336'; // Example: 91 for India
-
-        // Create WhatsApp URL
-        const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodedMessage}`;
-
-        // Open WhatsApp in new tab
-        window.open(whatsappUrl, '_blank');
-
-        setIsLoading(false);
-
-        // Optional: Reset form after submission
-        setFormData({
-            name: '',
-            email: '',
-            phone: '',
-            subject: '',
-            message: ''
-        });
-    };
-
-    const contactMethods = [
-        {
-            icon: '📧',
-            title: 'Email Us',
-            description: 'Send us an email anytime',
-            value: 'raadhyammusicals@gmail.com',
-            link: 'mailto:raadhyammusicals@gmail.com'
-        },
-        {
-            icon: '📱',
-            title: 'WhatsApp',
-            description: 'Chat with us instantly',
-            value: '+91 84103 37618',
-            link: 'https://wa.me/918410337618'
-        },
-        {
-            icon: '📍',
-            title: 'Visit Us',
-            description: 'Come say hello at our studio',
-            value: 'Ashiyana PT.Deen Shop no.04 Sector 7 Dayal Upadhyay Puram Agra Uttar Pradesh 282007',
-            link: 'https://maps.app.goo.gl/b6rT2WkwkLrQJiis8'
-        },
-    ];
-
-    return (
-        <div className="min-h-screen flex flex-col bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900 relative overflow-hidden">
-            {/* Animated Background Elements */}
-            <div className="absolute inset-0 overflow-hidden">
-                {/* Floating musical notes - Reduced for mobile */}
-                <div className="hidden sm:block absolute top-1/4 left-1/4 animate-float text-yellow-300 text-xl sm:text-2xl">♪</div>
-                <div className="hidden sm:block absolute top-1/3 right-1/4 animate-float-delayed text-pink-300 text-2xl sm:text-3xl">♫</div>
-                <div className="hidden sm:block absolute bottom-1/4 left-1/3 animate-float-slow text-green-300 text-xl sm:text-2xl">♬</div>
-                <div className="hidden sm:block absolute top-1/2 right-1/3 animate-float-delayed-slow text-blue-300 text-2xl sm:text-3xl">♪</div>
-
-                {/* Smaller floating notes for mobile */}
-                <div className="sm:hidden absolute top-1/6 left-1/6 animate-float text-yellow-300 text-lg">♪</div>
-                <div className="sm:hidden absolute bottom-1/6 right-1/6 animate-float-delayed text-pink-300 text-lg">♫</div>
-
-                {/* Instrument silhouettes - Smaller on mobile */}
-                <div className="absolute -bottom-16 -left-16 sm:-bottom-20 sm:-left-20 opacity-5 sm:opacity-10">
-                    <div className="text-6xl sm:text-8xl">🎸</div>
-                </div>
-                <div className="absolute -top-16 -right-16 sm:-top-20 sm:-right-20 opacity-5 sm:opacity-10">
-                    <div className="text-6xl sm:text-8xl">🎹</div>
-                </div>
-                <div className="absolute bottom-10 right-10 opacity-5">
-                    <div className="text-6xl">🥁</div>
-                </div>
-            </div>
-
-            {/* Navigation */}
-            <div className="relative z-20">
-                <NavBarpage />
-            </div>
-
-            {/* Main Content - Flex grow to push footer down */}
-            <div className="flex-grow relative z-10">
-                <div className="container mx-auto px-3 sm:px-4 py-6 sm:py-8 md:py-12">
-                    {/* Header Section */}
-                    <div className="text-center mb-8 sm:mb-12 md:mb-16 mt-15 sm:mt-8">
-                        <div className="flex justify-center mb-4 sm:mb-6">
-                            <div className="bg-gradient-to-r from-purple-500 to-pink-500 p-2 sm:p-3 md:p-4 rounded-full">
-                                <img src="/Logo.png" alt="Raadhyam Logo" className="h-10 sm:h-12 md:h-16" />
-                            </div>
-                        </div>
-                        <h1 className="text-2xl sm:text-4xl md:text-5xl lg:text-6xl font-bold bg-gradient-to-r from-yellow-300 via-pink-300 to-blue-300 bg-clip-text text-transparent mb-3 sm:mb-4">
-                            Get In Touch
-                        </h1>
-                        <p className="text-gray-300 text-sm sm:text-base md:text-lg max-w-xs sm:max-w-md md:max-w-2xl mx-auto px-2">
-                            Let's create beautiful music together. Reach out to us for any inquiries, collaborations, or just to say hello!
-                        </p>
-                    </div>
-
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8 md:gap-12 max-w-6xl xl:max-w-7xl mx-auto">
-                        {/* Contact Information */}
-                        <div className="space-y-4 sm:space-y-6 md:space-y-8">
-                            <div className="bg-white/10 backdrop-blur-lg rounded-xl sm:rounded-2xl md:rounded-3xl p-4 sm:p-6 md:p-8 border border-white/20">
-                                <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-white mb-4 sm:mb-6 flex items-center gap-2 sm:gap-3">
-                                    <span className="text-purple-300">💬</span>
-                                    Let's Talk Music
-                                </h2>
-                                <p className="text-gray-300 text-xs sm:text-sm md:text-base mb-6 sm:mb-8">
-                                    Whether you're looking for music lessons, instrument rentals, or want to collaborate on a project, we're here to help you on your musical journey.
-                                </p>
-
-                                {/* Contact Methods */}
-                                <div className="space-y-3 sm:space-y-4 md:space-y-6">
-                                    {contactMethods.map((method, index) => (
-                                        <a
-                                            key={index}
-                                            href={method.link}
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                            className="flex items-start gap-3 sm:gap-4 p-3 sm:p-4 rounded-lg sm:rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 hover:border-white/20 transition-all duration-300 group"
-                                        >
-                                            <div className="text-xl sm:text-2xl group-hover:scale-110 transition-transform duration-300 flex-shrink-0">
-                                                {method.icon}
-                                            </div>
-                                            <div className="flex-1 min-w-0">
-                                                <h3 className="text-white font-semibold text-base sm:text-lg group-hover:text-purple-300 transition-colors truncate">
-                                                    {method.title}
-                                                </h3>
-                                                <p className="text-gray-400 text-xs sm:text-sm mb-1">{method.description}</p>
-                                                <p className="text-purple-300 font-medium text-sm sm:text-base truncate">{method.value}</p>
-                                            </div>
-                                        </a>
-                                    ))}
-                                </div>
-                            </div>
-
-                            {/* Quick Stats */}
-                            <div className="grid grid-cols-2 gap-3 sm:gap-4">
-                                <div className="bg-white/5 backdrop-blur-lg rounded-xl sm:rounded-2xl p-3 sm:p-4 text-center border border-white/10">
-                                    <div className="text-xl sm:text-2xl text-purple-300 mb-1 sm:mb-2">🎵</div>
-                                    <div className="text-white font-bold text-lg sm:text-xl">500+</div>
-                                    <div className="text-gray-400 text-xs sm:text-sm">Students</div>
-                                </div>
-                                <div className="bg-white/5 backdrop-blur-lg rounded-xl sm:rounded-2xl p-3 sm:p-4 text-center border border-white/10">
-                                    <div className="text-xl sm:text-2xl text-pink-300 mb-1 sm:mb-2">🎸</div>
-                                    <div className="text-white font-bold text-lg sm:text-xl">50+</div>
-                                    <div className="text-gray-400 text-xs sm:text-sm">Instruments</div>
-                                </div>
-                                <div className="bg-white/5 backdrop-blur-lg rounded-xl sm:rounded-2xl p-3 sm:p-4 text-center border border-white/10">
-                                    <div className="text-xl sm:text-2xl text-blue-300 mb-1 sm:mb-2">🎹</div>
-                                    <div className="text-white font-bold text-lg sm:text-xl">10+</div>
-                                    <div className="text-gray-400 text-xs sm:text-sm">Teachers</div>
-                                </div>
-                                <div className="bg-white/5 backdrop-blur-lg rounded-xl sm:rounded-2xl p-3 sm:p-4 text-center border border-white/10">
-                                    <div className="text-xl sm:text-2xl text-green-300 mb-1 sm:mb-2">⭐</div>
-                                    <div className="text-white font-bold text-lg sm:text-xl">5.0</div>
-                                    <div className="text-gray-400 text-xs sm:text-sm">Rating</div>
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* Contact Form */}
-                        <div className="bg-white/10 backdrop-blur-lg rounded-xl sm:rounded-2xl md:rounded-3xl p-4 sm:p-6 md:p-8 border border-white/20">
-                            <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-white mb-2 flex items-center gap-2 sm:gap-3">
-                                <span className="text-purple-300">📝</span>
-                                Send us a Message
-                            </h2>
-                            <p className="text-gray-300 text-xs sm:text-sm md:text-base mb-4 sm:mb-6">
-                                Fill out the form below and we'll get back to you via WhatsApp within 24 hours.
-                            </p>
-
-                            <form onSubmit={handleSubmit} className="space-y-3 sm:space-y-4 md:space-y-6">
-                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 md:gap-6">
-                                    {/* Name Field */}
-                                    <div className="group">
-                                        <label htmlFor="name" className="block text-xs sm:text-sm font-medium text-gray-200 mb-1 sm:mb-2 group-hover:text-white transition-colors">
-                                            <span className="flex items-center gap-1 sm:gap-2">
-                                                <span className="text-purple-300 text-sm">👤</span>
-                                                Full Name *
-                                            </span>
-                                        </label>
-                                        <input
-                                            type="text"
-                                            id="name"
-                                            name="name"
-                                            value={formData.name}
-                                            onChange={handleChange}
-                                            required
-                                            className="w-full px-3 sm:px-4 py-2 sm:py-3 text-sm sm:text-base bg-white/5 border border-white/20 rounded-lg sm:rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition duration-300 text-white placeholder-gray-400 backdrop-blur-sm hover:bg-white/10"
-                                            placeholder="Enter your full name"
-                                        />
-                                    </div>
-
-                                    {/* Email Field */}
-                                    <div className="group">
-                                        <label htmlFor="email" className="block text-xs sm:text-sm font-medium text-gray-200 mb-1 sm:mb-2 group-hover:text-white transition-colors">
-                                            <span className="flex items-center gap-1 sm:gap-2">
-                                                <span className="text-purple-300 text-sm">✉️</span>
-                                                Email Address *
-                                            </span>
-                                        </label>
-                                        <input
-                                            type="email"
-                                            id="email"
-                                            name="email"
-                                            value={formData.email}
-                                            onChange={handleChange}
-                                            required
-                                            className="w-full px-3 sm:px-4 py-2 sm:py-3 text-sm sm:text-base bg-white/5 border border-white/20 rounded-lg sm:rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition duration-300 text-white placeholder-gray-400 backdrop-blur-sm hover:bg-white/10"
-                                            placeholder="Enter your email"
-                                        />
-                                    </div>
-                                </div>
-
-                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 md:gap-6">
-                                    {/* Phone Field */}
-                                    <div className="group">
-                                        <label htmlFor="phone" className="block text-xs sm:text-sm font-medium text-gray-200 mb-1 sm:mb-2 group-hover:text-white transition-colors">
-                                            <span className="flex items-center gap-1 sm:gap-2">
-                                                <span className="text-purple-300 text-sm">📱</span>
-                                                Phone Number
-                                            </span>
-                                        </label>
-                                        <input
-                                            type="tel"
-                                            id="phone"
-                                            name="phone"
-                                            value={formData.phone}
-                                            onChange={handleChange}
-                                            className="w-full px-3 sm:px-4 py-2 sm:py-3 text-sm sm:text-base bg-white/5 border border-white/20 rounded-lg sm:rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition duration-300 text-white placeholder-gray-400 backdrop-blur-sm hover:bg-white/10"
-                                            placeholder="Your phone number"
-                                        />
-                                    </div>
-
-                                    {/* Subject Field */}
-                                    <div className="group">
-                                        <label htmlFor="subject" className="block text-xs sm:text-sm font-medium text-gray-200 mb-1 sm:mb-2 group-hover:text-white transition-colors">
-                                            <span className="flex items-center gap-1 sm:gap-2">
-                                                <span className="text-purple-300 text-sm">🎯</span>
-                                                Subject *
-                                            </span>
-                                        </label>
-                                        <select
-                                            id="subject"
-                                            name="subject"
-                                            value={formData.subject}
-                                            onChange={handleChange}
-                                            required
-                                            className="w-full px-3 sm:px-4 py-2 sm:py-3 text-sm sm:text-base  border border-white/20 rounded-lg sm:rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition duration-300 text-gray-400 placeholder-gray-400 backdrop-blur-sm hover:bg-white/10"
-                                        >
-                                            <option value="">Select Enquiry Type</option>
-                                            <option value="music-lessons">Music Lessons</option>
-                                            <option value="instrument-rental">Instrument Rental</option>
-                                            <option value="product-purchase">Product Purchase</option>
-                                            <option value="event-booking">Event / Performance Booking</option>
-                                            <option value="collaboration">Collaboration</option>
-                                            <option value="custom-course">Custom Course Request</option>
-                                            <option value="trial-class">Free Trial / Demo Class</option>
-                                            <option value="pricing">Pricing & Packages</option>
-                                            <option value="support">General Support</option>
-                                            <option value="other">Other</option>
-
-                                        </select>
-                                    </div>
-                                </div>
-
-                                {/* Message Field */}
-                                <div className="group">
-                                    <label htmlFor="message" className="block text-xs sm:text-sm font-medium text-gray-200 mb-1 sm:mb-2 group-hover:text-white transition-colors">
-                                        <span className="flex items-center gap-1 sm:gap-2">
-                                            <span className="text-purple-300 text-sm">💭</span>
-                                            Your Message *
-                                        </span>
-                                    </label>
-                                    <textarea
-                                        id="message"
-                                        name="message"
-                                        value={formData.message}
-                                        onChange={handleChange}
-                                        required
-                                        rows="4"
-                                        className="w-full px-3 sm:px-4 py-2 sm:py-3 text-sm sm:text-base bg-white/5 border border-white/20 rounded-lg sm:rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition duration-300 text-white placeholder-gray-400 backdrop-blur-sm hover:bg-white/10 resize-none"
-                                        placeholder="Tell us about your musical needs, questions, or how we can help you..."
-                                    />
-                                </div>
-
-                                {/* Submit Button */}
-                                <button
-                                    type="submit"
-                                    disabled={isLoading}
-                                    className="w-full bg-gradient-to-r from-purple-600 to-pink-600 text-white py-3 sm:py-4 px-4 sm:px-6 rounded-lg sm:rounded-xl hover:from-purple-700 hover:to-pink-700 disabled:from-purple-400 disabled:to-pink-400 disabled:cursor-not-allowed transition duration-300 font-medium transform hover:scale-105 disabled:scale-100 shadow-lg hover:shadow-xl group text-sm sm:text-base md:text-lg"
-                                >
-                                    <span className="flex items-center justify-center gap-2 sm:gap-3">
-                                        {isLoading ? (
-                                            <>
-                                                <div className="w-4 h-4 sm:w-5 sm:h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                                                Sending to WhatsApp...
-                                            </>
-                                        ) : (
-                                            <>
-                                                <span className="group-hover:animate-bounce text-base sm:text-xl">💬</span>
-                                                Send via WhatsApp
-                                                <span className="group-hover:animate-bounce text-base sm:text-xl">🎵</span>
-                                            </>
-                                        )}
-                                    </span>
-                                </button>
-
-                                <p className="text-gray-400 text-xs sm:text-sm text-center px-2">
-                                    By submitting this form, you'll be redirected to WhatsApp to send your message directly to our team.
-                                </p>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            {/* Footer - Will stick to bottom */}
-            <div className="relative z-10">
-                <FooterPage />
-            </div>
-
-            {/* Add custom animations */}
-            <style jsx>{`
-                @keyframes float {
-                    0%, 100% { transform: translateY(0px) rotate(0deg); }
-                    50% { transform: translateY(-10px) rotate(180deg); }
-                }
-                @keyframes float-delayed {
-                    0%, 100% { transform: translateY(0px) rotate(0deg); }
-                    50% { transform: translateY(-8px) rotate(-180deg); }
-                }
-                @keyframes float-slow {
-                    0%, 100% { transform: translateY(0px) scale(1); }
-                    50% { transform: translateY(-5px) scale(1.05); }
-                }
-                @keyframes float-delayed-slow {
-                    0%, 100% { transform: translateY(0px) rotate(0deg); }
-                    50% { transform: translateY(-12px) rotate(90deg); }
-                }
-                .animate-float {
-                    animation: float 6s ease-in-out infinite;
-                }
-                .animate-float-delayed {
-                    animation: float-delayed 8s ease-in-out infinite;
-                }
-                .animate-float-slow {
-                    animation: float-slow 10s ease-in-out infinite;
-                }
-                .animate-float-delayed-slow {
-                    animation: float-delayed-slow 12s ease-in-out infinite;
-                }
-                
-                /* Mobile-first responsive design */
-                @media (max-width: 640px) {
-                    .animate-float,
-                    .animate-float-delayed,
-                    .animate-float-slow,
-                    .animate-float-delayed-slow {
-                        animation-duration: 8s;
-                    }
-                }
-            `}</style>
+      {/* ══ HERO ══════════════════════════════════════════════════════════ */}
+      <section style={{ minHeight: '45vh', paddingTop: 70, background: warmBg, position: 'relative', overflow: 'hidden', display: 'flex', alignItems: 'center' }}>
+        <div style={{ position: 'absolute', top: -100, right: -100, width: 420, height: 420, borderRadius: '50%', background: 'radial-gradient(circle, rgba(220,38,38,0.13) 0%, transparent 70%)', pointerEvents: 'none' }} />
+        <div style={{ position: 'absolute', bottom: -60, left: -60, width: 300, height: 300, borderRadius: '50%', background: 'radial-gradient(circle, rgba(220,38,38,0.09) 0%, transparent 70%)', pointerEvents: 'none' }} />
+        <div style={{ position: 'absolute', inset: 0, opacity: 0.35, backgroundImage: 'radial-gradient(circle, rgba(220,38,38,0.15) 1px, transparent 1px)', backgroundSize: '36px 36px', pointerEvents: 'none' }} />
+        {floatingNotes.map((n, i) => (
+          <span key={i} style={{ position: 'absolute', userSelect: 'none', pointerEvents: 'none', fontSize: n.size, color: '#dc2626', opacity: 0.15, top: n.top, bottom: n.bottom, left: n.left, right: n.right, animation: `floatNote 7s ease-in-out ${n.delay} infinite` }}>{n.note}</span>
+        ))}
+        <div style={{ maxWidth: 1280, margin: '0 auto', padding: '4rem 2rem 3rem', width: '100%', position: 'relative', zIndex: 2, textAlign: 'center', animation: 'fadeUp 0.9s ease 0.1s both' }}>
+          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 7, background: 'rgba(220,38,38,0.1)', border: '1px solid rgba(220,38,38,0.3)', color: '#dc2626', padding: '5px 16px', borderRadius: 24, fontSize: '0.72rem', fontWeight: 700, letterSpacing: '0.16em', textTransform: 'uppercase', marginBottom: '1.5rem', fontFamily: "'Lato', sans-serif" }}>
+            💬 Get In Touch
+          </span>
+          <h1 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 'clamp(2.6rem, 5vw, 4rem)', fontWeight: 700, lineHeight: 1.1, color: '#1E293B', marginBottom: '1.2rem', letterSpacing: '-0.02em' }}>
+            Let's Create{' '}
+            <span style={{ background: 'linear-gradient(90deg,#dc2626,#ef4444,#dc2626)', backgroundSize: '200% auto', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', animation: 'shimmer 3s linear infinite' }}>Music Together</span>
+          </h1>
+          <div style={{ height: 3, width: 0, background: 'linear-gradient(90deg,#dc2626,#ef4444)', borderRadius: 2, margin: '0 auto 1.5rem', animation: 'drawLine 1s ease 0.7s forwards' }} />
+          <p style={{ color: '#475569', fontSize: '1.05rem', lineHeight: 1.85, maxWidth: 500, margin: '0 auto', fontFamily: "'Lato', sans-serif" }}>
+            Reach out for music lessons, instrument enquiries, collaborations, or just to say hello. We'd love to hear from you.
+          </p>
         </div>
-    );
+      </section>
+
+      {/* ══ CONTACT METHODS ═══════════════════════════════════════════════ */}
+      <section style={{ padding: '4rem 0', background: '#fff' }}>
+        <div style={{ maxWidth: 1280, margin: '0 auto', padding: '0 2rem' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '1.5rem' }}>
+            {contactMethods.map(({ icon: Icon, label, value, sub, href }, i) => {
+              const inner = (
+                <div style={{
+                  background: '#fff', border: '1.5px solid #E2E8F0', borderRadius: 20,
+                  padding: '1.75rem', display: 'flex', flexDirection: 'column', gap: '0.75rem',
+                  transition: 'border-color 0.3s, box-shadow 0.3s, transform 0.3s',
+                  cursor: href ? 'pointer' : 'default', height: '100%',
+                }}
+                  onMouseEnter={e => { e.currentTarget.style.borderColor = 'rgba(220,38,38,0.4)'; e.currentTarget.style.boxShadow = '0 12px 32px rgba(220,38,38,0.1)'; e.currentTarget.style.transform = 'translateY(-4px)'; }}
+                  onMouseLeave={e => { e.currentTarget.style.borderColor = '#E2E8F0'; e.currentTarget.style.boxShadow = 'none'; e.currentTarget.style.transform = 'translateY(0)'; }}>
+                  <div style={{ width: 48, height: 48, borderRadius: 14, background: 'rgba(220,38,38,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <Icon style={{ color: '#dc2626', width: 22, height: 22 }} />
+                  </div>
+                  <div>
+                    <p style={{ fontSize: '0.72rem', fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#94A3B8', marginBottom: '0.3rem', fontFamily: "'Lato', sans-serif" }}>{label}</p>
+                    <p style={{ fontWeight: 700, color: '#1E293B', fontSize: '0.95rem', fontFamily: "'Lato', sans-serif", marginBottom: '0.2rem' }}>{value}</p>
+                    <p style={{ color: '#64748B', fontSize: '0.82rem', fontFamily: "'Lato', sans-serif" }}>{sub}</p>
+                  </div>
+                </div>
+              );
+              return href
+                ? <a key={i} href={href} target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'none' }}>{inner}</a>
+                : <div key={i}>{inner}</div>;
+            })}
+          </div>
+        </div>
+      </section>
+
+      {/* ══ FORM + MAP ════════════════════════════════════════════════════ */}
+      <section style={{ padding: '4rem 0', background: warmBg, position: 'relative' }}>
+        <div style={{ position: 'absolute', inset: 0, opacity: 0.3, backgroundImage: 'radial-gradient(circle, rgba(220,38,38,0.12) 1px, transparent 1px)', backgroundSize: '36px 36px', pointerEvents: 'none' }} />
+        <div style={{ maxWidth: 1280, margin: '0 auto', padding: '0 2rem', position: 'relative' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '2.5rem', alignItems: 'start' }}>
+
+            {/* ── Contact Form ── */}
+            <div style={{ background: '#fff', borderRadius: 24, padding: '2.5rem', boxShadow: '0 4px 24px rgba(30,41,59,0.08)', border: '1px solid #E2E8F0' }}>
+              <span style={{ display: 'inline-flex', alignItems: 'center', gap: 7, background: 'rgba(220,38,38,0.1)', border: '1px solid rgba(220,38,38,0.3)', color: '#dc2626', padding: '4px 14px', borderRadius: 24, fontSize: '0.7rem', fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase', marginBottom: '1.25rem', fontFamily: "'Lato', sans-serif" }}>
+                📝 Send a Message
+              </span>
+              <h2 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: '1.9rem', fontWeight: 700, color: '#1E293B', marginBottom: '0.5rem' }}>We'd Love to Hear From You</h2>
+              <p style={{ color: '#64748B', fontSize: '0.9rem', marginBottom: '2rem', fontFamily: "'Lato', sans-serif", lineHeight: 1.7 }}>Fill out the form and we'll get back to you via WhatsApp within 24 hours.</p>
+
+              {submitted && (
+                <div style={{ display: 'flex', alignItems: 'center', gap: 10, background: 'rgba(22,163,74,0.08)', border: '1px solid rgba(22,163,74,0.3)', borderRadius: 12, padding: '0.85rem 1rem', marginBottom: '1.5rem' }}>
+                  <CheckCircle style={{ color: '#16a34a', width: 18, height: 18 }} />
+                  <span style={{ color: '#15803d', fontWeight: 600, fontSize: '0.9rem', fontFamily: "'Lato', sans-serif" }}>Message sent! Opening WhatsApp...</span>
+                </div>
+              )}
+
+              <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1.25rem' }}>
+                  <div>
+                    <label className="contact-label" htmlFor="name">Full Name *</label>
+                    <input className="contact-input" id="name" name="name" type="text" required placeholder="Your full name" value={formData.name} onChange={handleChange} />
+                  </div>
+                  <div>
+                    <label className="contact-label" htmlFor="email">Email Address *</label>
+                    <input className="contact-input" id="email" name="email" type="email" required placeholder="your@email.com" value={formData.email} onChange={handleChange} />
+                  </div>
+                </div>
+
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1.25rem' }}>
+                  <div>
+                    <label className="contact-label" htmlFor="phone">Phone Number</label>
+                    <input className="contact-input" id="phone" name="phone" type="tel" placeholder="+91 XXXXX XXXXX" value={formData.phone} onChange={handleChange} />
+                  </div>
+                  <div>
+                    <label className="contact-label" htmlFor="subject">Enquiry Type *</label>
+                    <select className="contact-input" id="subject" name="subject" required value={formData.subject} onChange={handleChange}>
+                      <option value="">Select type...</option>
+                      <option value="music-lessons">Music Lessons</option>
+                      <option value="instrument-rental">Instrument Rental</option>
+                      <option value="trial-class">Free Trial / Demo Class</option>
+                      <option value="event-booking">Event / Performance Booking</option>
+                      <option value="collaboration">Collaboration</option>
+                      <option value="pricing">Pricing & Packages</option>
+                      <option value="other">Other</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div>
+                  <label className="contact-label" htmlFor="message">Your Message *</label>
+                  <textarea className="contact-input" id="message" name="message" required placeholder="Tell us about your musical needs, questions, or how we can help..." value={formData.message} onChange={handleChange} />
+                </div>
+
+                <button type="submit" disabled={isLoading} style={{
+                  display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10,
+                  background: isLoading ? '#fca5a5' : 'linear-gradient(135deg,#dc2626,#991b1b)',
+                  color: '#fff', border: 'none', borderRadius: 12,
+                  padding: '14px 28px', fontSize: '0.95rem', fontWeight: 700,
+                  cursor: isLoading ? 'not-allowed' : 'pointer', letterSpacing: '0.04em',
+                  boxShadow: isLoading ? 'none' : '0 6px 22px rgba(220,38,38,0.38)',
+                  fontFamily: "'Lato', sans-serif",
+                  transition: 'transform 0.25s, box-shadow 0.25s',
+                }}
+                  onMouseEnter={e => { if (!isLoading) { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 12px 32px rgba(220,38,38,0.5)'; } }}
+                  onMouseLeave={e => { e.currentTarget.style.transform = 'none'; e.currentTarget.style.boxShadow = isLoading ? 'none' : '0 6px 22px rgba(220,38,38,0.38)'; }}>
+                  {isLoading ? (
+                    <><div style={{ width: 18, height: 18, border: '2px solid #fff', borderTopColor: 'transparent', borderRadius: '50%', animation: 'spin 0.7s linear infinite' }} />Sending...</>
+                  ) : (
+                    <><MessageCircle style={{ width: 18, height: 18 }} />Send via WhatsApp</>
+                  )}
+                </button>
+                <p style={{ color: '#94A3B8', fontSize: '0.78rem', textAlign: 'center', fontFamily: "'Lato', sans-serif" }}>
+                  You'll be redirected to WhatsApp to send your message directly to our team.
+                </p>
+              </form>
+            </div>
+
+            {/* ── Map + Quick Stats ── */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+              {/* Map */}
+              <div style={{ borderRadius: 20, overflow: 'hidden', boxShadow: '0 8px 32px rgba(30,41,59,0.1)', border: '2px solid rgba(220,38,38,0.15)', height: 320 }}>
+                <iframe
+                  src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3548.666687052142!2d77.95964401102849!3d27.198210876379967!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x39747702598cee49%3A0x8c378565a19b33c5!2sRaadhyam%20Music%20Academy!5e0!3m2!1sen!2sin!4v1763693224614!5m2!1sen!2sin"
+                  style={{ border: 0, width: '100%', height: '100%' }}
+                  allowFullScreen loading="lazy" referrerPolicy="no-referrer-when-downgrade"
+                  title="Raadhyam Music Institute Location"
+                />
+              </div>
+
+              {/* Quick stats */}
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+                {[
+                  { emoji: '🎵', num: '500+', label: 'Students' },
+                  { emoji: '🎸', num: '25+',  label: 'Instruments' },
+                  { emoji: '🏆', num: '10+',  label: 'Years' },
+                  { emoji: '⭐', num: '5.0',  label: 'Rating' },
+                ].map(({ emoji, num, label }) => (
+                  <div key={label} style={{
+                    background: '#fff', border: '1.5px solid #E2E8F0', borderRadius: 16,
+                    padding: '1.25rem', textAlign: 'center',
+                    transition: 'border-color 0.3s, box-shadow 0.3s, transform 0.3s',
+                  }}
+                    onMouseEnter={e => { e.currentTarget.style.borderColor = 'rgba(220,38,38,0.35)'; e.currentTarget.style.boxShadow = '0 8px 24px rgba(220,38,38,0.1)'; e.currentTarget.style.transform = 'translateY(-3px)'; }}
+                    onMouseLeave={e => { e.currentTarget.style.borderColor = '#E2E8F0'; e.currentTarget.style.boxShadow = 'none'; e.currentTarget.style.transform = 'translateY(0)'; }}>
+                    <div style={{ fontSize: '1.5rem', marginBottom: '0.4rem' }}>{emoji}</div>
+                    <div style={{ fontSize: '1.5rem', fontWeight: 800, color: '#dc2626', fontFamily: "'Cormorant Garamond', serif", lineHeight: 1 }}>{num}</div>
+                    <div style={{ fontSize: '0.75rem', fontWeight: 600, color: '#94A3B8', letterSpacing: '0.1em', textTransform: 'uppercase', fontFamily: "'Lato', sans-serif", marginTop: '0.25rem' }}>{label}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <FooterPage />
+
+      <style>{`
+        @keyframes spin { to { transform: rotate(360deg); } }
+      `}</style>
+    </div>
+  );
 };
 
 export default ContactPage;
