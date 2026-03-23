@@ -138,16 +138,16 @@ const CoursesPage = ({
           <button 
             onClick={fetchCoursesData}
             disabled={loading}
-            className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors flex items-center disabled:opacity-50"
+            className="px-4 py-2 border border-red-300 text-red-700 rounded-lg hover:bg-red-50 transition-colors flex items-center disabled:opacity-50"
             title="Refresh courses"
           >
-            <RefreshCw size={20} className={`mr-2 ${loading ? 'animate-spin' : ''}`} />
+            <RefreshCw size={20} className={`mr-2 ${loading ? 'animate-spin text-red-600' : 'text-red-600'}`} />
             Refresh
           </button>
           <button 
             onClick={openCourseForm}
             disabled={loading}
-            className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors flex items-center disabled:opacity-50"
+            className="bg-gradient-to-r from-red-600 to-rose-700 text-white px-4 py-2 rounded-lg hover:from-rose-600 hover:to-red-800 transition-colors flex items-center disabled:opacity-50"
           >
             <Plus size={20} className="mr-2" />
             New Course
@@ -173,7 +173,7 @@ const CoursesPage = ({
             <input
               type="text"
               placeholder="Search courses by title or category..."
-              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              className="w-full pl-10 pr-4 py-2 border border-red-200 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500"
               value={courseSearch}
               onChange={(e) => setCourseSearch(e.target.value)}
             />
@@ -181,7 +181,7 @@ const CoursesPage = ({
           
           <div className="flex space-x-2">
             <select
-              className="border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              className="border border-red-200 rounded-lg px-3 py-2 focus:ring-2 focus:ring-red-500 focus:border-red-500"
               value={courseStatusFilter}
               onChange={(e) => setCourseStatusFilter(e.target.value)}
             >
@@ -232,7 +232,7 @@ const CoursesPage = ({
                   <tr key={course._id} className="hover:bg-gray-50">
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex items-center">
-                        <div className="flex-shrink-0 h-10 w-10 bg-blue-100 rounded-lg flex items-center justify-center">
+                        <div className="flex-shrink-0 h-10 w-10 bg-red-100 rounded-lg flex items-center justify-center">
                           {course.thumbnailUrl ? (
                             <img 
                               src={course.thumbnailUrl} 
@@ -243,12 +243,12 @@ const CoursesPage = ({
                               }}
                             />
                           ) : (
-                            <BookOpen size={20} className="text-blue-600" />
+                            <BookOpen size={20} className="text-red-600" />
                           )}
                         </div>
                         <div className="ml-4">
                           <div className="text-sm font-medium text-gray-900">{course.title}</div>
-                          <div className="text-sm text-gray-500">{course.category}</div>
+                          <div className="text-sm text-red-500">{course.category}</div>
                         </div>
                       </div>
                     </td>
@@ -276,7 +276,7 @@ const CoursesPage = ({
                       <div className="flex items-center space-x-2">
                         <button 
                           onClick={() => viewCourseDetail(course)}
-                          className="text-blue-600 hover:text-blue-900 p-1 rounded transition-colors"
+                          className="text-red-600 hover:text-red-900 p-1 rounded transition-colors"
                           title="Manage Content"
                           disabled={loading}
                         >
@@ -284,7 +284,7 @@ const CoursesPage = ({
                         </button>
                         <button 
                           onClick={() => editCourse(course)}
-                          className="text-blue-600 hover:text-blue-900 p-1 rounded transition-colors"
+                          className="text-red-600 hover:text-red-900 p-1 rounded transition-colors"
                           title="Edit Course"
                           disabled={loading}
                         >
@@ -325,7 +325,7 @@ const CoursesPage = ({
                   setCourseSearch('');
                   setCourseStatusFilter('all');
                 }}
-                className="mt-4 text-blue-600 hover:text-blue-800 font-medium"
+                className="mt-4 text-red-600 hover:text-red-800 font-medium"
               >
                 Clear filters
               </button>

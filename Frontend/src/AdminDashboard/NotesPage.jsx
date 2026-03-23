@@ -119,7 +119,7 @@ const NotesPage = ({
         </div>
         <div className="flex items-center justify-center h-64">
           <div className="text-center">
-            <Loader className="animate-spin h-8 w-8 text-blue-600 mx-auto mb-4" />
+            <Loader className="animate-spin h-8 w-8 text-red-600 mx-auto mb-4" />
             <p className="text-gray-600">Loading music notes...</p>
           </div>
         </div>
@@ -179,7 +179,7 @@ const NotesPage = ({
           </button>
           <button 
             onClick={openNoteForm}
-            className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors flex items-center"
+            className="bg-gradient-to-r from-red-600 to-rose-700 text-white px-4 py-2 rounded-lg hover:from-rose-600 hover:to-red-800 transition-colors flex items-center"
           >
             <Plus size={20} className="mr-2" />
             New Note
@@ -195,7 +195,7 @@ const NotesPage = ({
             <input
               type="text"
               placeholder="Search by title, category, lyrics..."
-              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              className="w-full pl-10 pr-4 py-2 border border-red-200 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500"
               value={noteSearch}
               onChange={(e) => setNoteSearch(e.target.value)}
             />
@@ -203,7 +203,7 @@ const NotesPage = ({
           
           <div className="flex space-x-2">
             <select
-              className="border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 min-w-[140px]"
+              className="border border-red-200 rounded-lg px-3 py-2 focus:ring-2 focus:ring-red-500 focus:border-red-500 min-w-[140px]"
               value={noteCategoryFilter}
               onChange={(e) => setNoteCategoryFilter(e.target.value)}
             >
@@ -234,7 +234,7 @@ const NotesPage = ({
       {/* Notes Grid */}
       {loading && (
         <div className="flex items-center justify-center py-8">
-          <Loader className="animate-spin h-6 w-6 text-blue-600 mr-2" />
+          <Loader className="animate-spin h-6 w-6 text-red-600 mr-2" />
           <span className="text-gray-600">Updating...</span>
         </div>
       )}
@@ -271,14 +271,14 @@ const NotesPage = ({
                 <div className="flex items-center space-x-1 opacity-0 group-hover:opacity-100 transition-opacity">
                   <button 
                     onClick={() => editMusicNote(note)}
-                    className="text-gray-400 hover:text-blue-600 p-1 rounded transition-colors"
+                    className="text-gray-400 hover:text-red-600 p-1 rounded transition-colors"
                     title="Edit note"
                   >
                     <Edit3 size={16} />
                   </button>
                   <button 
                     onClick={() => deleteMusicNote(note._id)}
-                    className="text-gray-400 hover:text-red-600 p-1 rounded transition-colors"
+                    className="text-gray-400 hover:text-red-700 p-1 rounded transition-colors"
                     title="Delete note"
                     disabled={loading}
                   >
@@ -331,7 +331,7 @@ const NotesPage = ({
               setNoteSearch('');
               setNoteCategoryFilter('all');
             }}
-            className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+            className="bg-gradient-to-r from-red-600 to-rose-700 text-white px-4 py-2 rounded-lg hover:from-rose-600 hover:to-red-800 transition-colors"
           >
             Clear filters
           </button>
@@ -345,7 +345,7 @@ const NotesPage = ({
           <p className="text-gray-500 mb-6">Get started by creating your first music notation or tab.</p>
           <button
             onClick={openNoteForm}
-            className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors flex items-center mx-auto"
+            className="bg-gradient-to-r from-red-600 to-rose-700 text-white px-6 py-3 rounded-lg hover:from-rose-600 hover:to-red-800 transition-colors flex items-center mx-auto"
           >
             <Plus size={20} className="mr-2" />
             Create Your First Note
