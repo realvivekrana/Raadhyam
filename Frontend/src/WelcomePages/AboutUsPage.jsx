@@ -229,7 +229,18 @@ const AboutUsPage = () => {
   ];
 
   const instruments = [
-    'Guitar','Piano','Violin','Tabla','Vocals','Drums','Harmonium','Flute','Sitar','Ukulele','Saxophone','Cajon',
+    { name: 'Guitar',     emoji: '🎸', image: 'https://images.unsplash.com/photo-1510915361894-db8b60106cb1?w=400&auto=format&fit=crop&q=80' },
+    { name: 'Piano',      emoji: '🎹', image: 'https://images.unsplash.com/photo-1520523839897-bd0b52f945a0?w=400&auto=format&fit=crop&q=80' },
+    { name: 'Violin',     emoji: '🎻', image: 'https://images.unsplash.com/photo-1612225330812-01a9c6b355ec?w=400&auto=format&fit=crop&q=80' },
+    { name: 'Tabla',      emoji: '🥁', image: 'https://images.unsplash.com/photo-1519892300165-cb5542fb47c7?w=400&auto=format&fit=crop&q=80' },
+    { name: 'Vocals',     emoji: '🎤', image: 'https://images.unsplash.com/photo-1516280440614-37939bbacd81?w=400&auto=format&fit=crop&q=80' },
+    { name: 'Drums',      emoji: '🥁', image: 'https://images.unsplash.com/photo-1543443258-92b04ad5ec6b?w=400&auto=format&fit=crop&q=80' },
+    { name: 'Harmonium',  emoji: '🪗', image: 'https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?w=400&auto=format&fit=crop&q=80' },
+    { name: 'Flute',      emoji: '🎼', image: 'https://images.unsplash.com/photo-1507838153414-b4b713384a76?w=400&auto=format&fit=crop&q=80' },
+    { name: 'Sitar',      emoji: '🎵', image: 'https://images.unsplash.com/photo-1511379938547-c1f69419868d?w=400&auto=format&fit=crop&q=80' },
+    { name: 'Ukulele',    emoji: '🎸', image: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&auto=format&fit=crop&q=80' },
+    { name: 'Saxophone',  emoji: '🎷', image: 'https://images.unsplash.com/photo-1415201364774-f6f0bb35f28f?w=400&auto=format&fit=crop&q=80' },
+    { name: 'Cajon',      emoji: '🪘', image: 'https://images.unsplash.com/photo-1571327073757-71d13c9e04b8?w=400&auto=format&fit=crop&q=80' },
   ];
 
   const marqueeItems = ['🎵 Tabla','🎸 Guitar','🎹 Piano','🎷 Saxophone','🎻 Violin','🥁 Drums','🎤 Vocals','🪗 Harmonium','🎺 Trumpet','🪘 Dholak','🎼 Flute','🎵 Sitar'];
@@ -370,13 +381,10 @@ const AboutUsPage = () => {
       <section style={{ padding:'6rem 2rem', background:'#fff' }}>
         <div style={{ maxWidth:1280, margin:'0 auto' }}>
           <SectionHeading tag="✦ What We Teach" title="25+ Instruments & Counting" subtitle="From classical Indian to contemporary Western — we cover it all." />
-          <div className="about-instruments-grid" style={{ display:'grid', gridTemplateColumns:'repeat(6,1fr)', gap:'1rem' }}>
-            {instruments.map((inst, i) => {
-              const [ref, visible] = [useRef(), useState(false)];
-              return (
-                <InstrumentChip key={i} name={inst} index={i} />
-              );
-            })}
+          <div className="about-instruments-grid" style={{ display:'grid', gridTemplateColumns:'repeat(4,1fr)', gap:'1.5rem' }}>
+            {instruments.map((inst, i) => (
+              <InstrumentCard key={i} instrument={inst} index={i} />
+            ))}
           </div>
         </div>
       </section>
@@ -415,14 +423,92 @@ const AboutUsPage = () => {
   );
 };
 
-/* ── Instrument chip (inline to avoid hook-in-loop issue) ─────────────── */
-const InstrumentChip = ({ name, index }) => {
+/* ── Instrument card with image ─────────────────────────────────────────── */
+const InstrumentCard = ({ instrument, index }) => {
   const [ref, visible] = useVisible(0.1);
   const [hov, setHov] = useState(false);
+  const [imgErr, setImgErr] = useState(false);
+
   return (
-    <div ref={ref} onMouseEnter={() => setHov(true)} onMouseLeave={() => setHov(false)}
-      style={{ background:hov?`linear-gradient(135deg,${AMBER},${AMBER_DARK})`:'#fff', border:`2px solid ${hov?AMBER:'#E2E8F0'}`, borderRadius:14, padding:'1rem', textAlign:'center', opacity:visible?1:0, transform:visible?(hov?'translateY(-6px) scale(1.05)':'translateY(0)'):'translateY(24px)', transition:`opacity .6s ease ${(index%6)*60}ms,transform .35s ease,background .4s,border .3s,box-shadow .35s`, boxShadow:hov?`0 16px 40px rgba(217,119,6,.25)`:'0 2px 8px rgba(30,41,59,.05)', cursor:'default' }}>
-      <div style={{ fontSize:'.9rem', fontWeight:700, color:hov?'#fff':SLATE, fontFamily:SANS, transition:'color .3s' }}>{name}</div>
+    <div
+      ref={ref}
+      onMouseEnter={() => setHov(true)}
+      onMouseLeave={() => setHov(false)}
+      style={{
+        background: '#fff',
+        border: `2px solid ${hov ? AMBER : '#E2E8F0'}`,
+        borderRadius: 20,
+        overflow: 'hidden',
+        opacity: visible ? 1 : 0,
+        transform: visible
+          ? hov ? 'translateY(-10px) scale(1.04)' : 'translateY(0) scale(1)'
+          : 'translateY(28px) scale(0.96)',
+        transition: `opacity .6s ease ${(index % 4) * 80}ms, transform .35s cubic-bezier(.34,1.56,.64,1), box-shadow .35s, border .3s`,
+        boxShadow: hov
+          ? `0 20px 48px rgba(217,119,6,.28), 0 0 0 4px rgba(217,119,6,.1)`
+          : '0 2px 16px rgba(30,41,59,.07)',
+        cursor: 'default',
+        position: 'relative',
+      }}
+    >
+      {/* Image area */}
+      <div style={{ position: 'relative', height: 160, overflow: 'hidden', background: `linear-gradient(135deg, #FFF8EE, #FEF3C7)` }}>
+        {!imgErr ? (
+          <img
+            src={instrument.image}
+            alt={instrument.name}
+            onError={() => setImgErr(true)}
+            style={{
+              width: '100%', height: '100%', objectFit: 'cover',
+              transform: hov ? 'scale(1.12)' : 'scale(1)',
+              transition: 'transform .5s ease',
+              display: 'block',
+            }}
+          />
+        ) : (
+          /* Fallback: emoji on warm gradient */
+          <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '3.5rem' }}>
+            {instrument.emoji}
+          </div>
+        )}
+
+        {/* Gradient overlay — always present, stronger on hover */}
+        <div style={{
+          position: 'absolute', inset: 0,
+          background: hov
+            ? `linear-gradient(to top, rgba(217,119,6,.55) 0%, rgba(217,119,6,.1) 60%, transparent 100%)`
+            : `linear-gradient(to top, rgba(30,41,59,.35) 0%, transparent 60%)`,
+          transition: 'background .4s',
+        }} />
+
+        {/* Amber top accent bar */}
+        <div style={{
+          position: 'absolute', top: 0, left: 0, right: 0, height: 3,
+          background: hov ? `linear-gradient(90deg,${AMBER},#F59E0B,${AMBER})` : 'transparent',
+          backgroundSize: '200% 100%',
+          animation: hov ? 'gradientShift 2s ease infinite' : 'none',
+          transition: 'background .3s',
+        }} />
+      </div>
+
+      {/* Name area */}
+      <div style={{
+        padding: '1rem 1rem .9rem',
+        textAlign: 'center',
+        background: hov ? `linear-gradient(135deg, #FFF8EE, #fff)` : '#fff',
+        transition: 'background .4s',
+      }}>
+        <span style={{
+          fontWeight: 700,
+          fontSize: '.95rem',
+          color: hov ? AMBER : SLATE,
+          fontFamily: SANS,
+          letterSpacing: '.02em',
+          transition: 'color .3s',
+        }}>
+          {instrument.name}
+        </span>
+      </div>
     </div>
   );
 };
