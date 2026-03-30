@@ -23,7 +23,7 @@ const LessonList = ({
 
   const getLessonIcon = (type) => {
     switch (type) {
-      case 'video': return <PlayCircle size={16} className="text-red-600" />;
+      case 'video': return <PlayCircle size={16} className="text-amber-600" />;
       case 'audio': return <Music size={16} className="text-purple-600" />;
       case 'pdf': return <FileText size={16} className="text-orange-600" />;
       default: return <FileText size={16} className="text-gray-600" />;
@@ -32,7 +32,7 @@ const LessonList = ({
 
   const getLessonTypeColor = (type) => {
     switch (type) {
-      case 'video': return 'bg-red-100 text-red-800';
+      case 'video': return 'bg-amber-100 text-amber-800';
       case 'audio': return 'bg-purple-100 text-purple-800';
       case 'pdf': return 'bg-orange-100 text-orange-800';
       case 'text': return 'bg-blue-100 text-blue-800';
@@ -89,9 +89,9 @@ const LessonList = ({
     return (
       <div className="text-center py-12 animate-fadeIn">
         <div className="relative inline-block mb-4">
-          <div className="absolute inset-0 bg-red-500/20 rounded-full blur-xl animate-pulse"></div>
-          <div className="relative bg-gradient-to-br from-red-100 to-red-200 p-5 rounded-full w-16 h-16 flex items-center justify-center mx-auto shadow-lg">
-            <PlayCircle size={28} className="text-red-600" />
+          <div className="absolute inset-0 bg-amber-400/20 rounded-full blur-xl animate-pulse"></div>
+          <div className="relative bg-gradient-to-br from-amber-100 to-amber-600 p-5 rounded-full w-16 h-16 flex items-center justify-center mx-auto shadow-lg">
+            <PlayCircle size={28} className="text-amber-600" />
           </div>
         </div>
         <h4 className="text-xl font-bold text-gray-900 mb-2">No lessons yet</h4>
@@ -104,7 +104,7 @@ const LessonList = ({
     <div className="space-y-4">
       <div className="flex justify-between items-center mb-4">
         <h4 className="font-bold text-gray-900 flex items-center">
-          <PlayCircle size={18} className="mr-2 text-red-600" />
+          <PlayCircle size={18} className="mr-2 text-amber-600" />
           Lessons ({lessons.length})
         </h4>
       </div>
@@ -113,7 +113,7 @@ const LessonList = ({
         {lessons.map((lesson, lessonIndex) => (
           <div
             key={lessonIndex}
-            className={`bg-white rounded-xl border-2 border-gray-200 p-4 hover:shadow-lg hover:border-red-300 transition-all duration-300 ${
+            className={`bg-white rounded-xl border-2 border-gray-200 p-4 hover:shadow-lg hover:border-amber-300 transition-all duration-300 ${
               draggingLesson === lessonIndex ? 'opacity-50 scale-95' : 'hover:-translate-y-1'
             }`}
             draggable
@@ -128,7 +128,7 @@ const LessonList = ({
                   <button
                     onClick={() => moveLesson(lessonIndex, -1)}
                     disabled={lessonIndex === 0}
-                    className="text-gray-400 hover:text-red-600 p-1 disabled:opacity-30 hover:bg-red-50 rounded transition-all duration-300 hover:scale-110"
+                    className="text-gray-400 hover:text-amber-600 p-1 disabled:opacity-30 hover:bg-amber-50 rounded transition-all duration-300 hover:scale-110"
                     title="Move up"
                   >
                     <Move size={16} className="rotate-90" />
@@ -136,7 +136,7 @@ const LessonList = ({
                   <button
                     onClick={() => moveLesson(lessonIndex, 1)}
                     disabled={lessonIndex === lessons.length - 1}
-                    className="text-gray-400 hover:text-red-600 p-1 disabled:opacity-30 hover:bg-red-50 rounded transition-all duration-300 hover:scale-110"
+                    className="text-gray-400 hover:text-amber-600 p-1 disabled:opacity-30 hover:bg-amber-50 rounded transition-all duration-300 hover:scale-110"
                     title="Move down"
                   >
                     <Move size={16} className="-rotate-90" />
@@ -151,7 +151,7 @@ const LessonList = ({
                 {/* Enhanced Lesson Info */}
                 <div className="flex-1">
                   <div className="flex items-center space-x-3">
-                    <h5 className="font-bold text-gray-900 hover:text-red-600 transition-colors duration-300">{lesson.title}</h5>
+                    <h5 className="font-bold text-gray-900 hover:text-amber-600 transition-colors duration-300">{lesson.title}</h5>
                     {lesson.isFreePreview && (
                       <span className="bg-gradient-to-r from-green-500 to-green-600 text-white text-xs px-3 py-1.5 rounded-full flex items-center font-bold shadow-lg shadow-green-500/50 hover:scale-110 transition-transform duration-300">
                         <Eye size={12} className="mr-1" />
@@ -185,7 +185,7 @@ const LessonList = ({
                 </button>
                 <button
                   onClick={() => onDeleteLesson(moduleIndex, lessonIndex)}
-                  className="text-white bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 p-2.5 rounded-lg transition-all duration-300 hover:scale-110 hover:shadow-lg shadow-red-500/50"
+                  className="text-white bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-500 hover:to-amber-600 p-2.5 rounded-lg transition-all duration-300 hover:scale-110 hover:shadow-lg shadow-amber-400/50"
                   title="Delete Lesson"
                 >
                   <Trash2 size={16} />
@@ -200,7 +200,7 @@ const LessonList = ({
       <div className="pt-4 border-t-2 border-gray-200">
         <button
           onClick={() => onEditLesson(null, moduleIndex, null)}
-          className="text-red-600 hover:text-red-800 flex items-center text-sm font-bold hover:bg-red-50 px-4 py-2 rounded-lg transition-all duration-300 hover:scale-105"
+          className="text-amber-600 hover:text-amber-800 flex items-center text-sm font-bold hover:bg-amber-50 px-4 py-2 rounded-lg transition-all duration-300 hover:scale-105"
         >
           <Plus size={18} className="mr-2" />
           Add Lesson to this Module

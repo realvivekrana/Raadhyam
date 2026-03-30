@@ -168,12 +168,12 @@ const CoursesPage = ({
         isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-8'
       }`}>
         <div>
-          <h2 className="text-3xl font-bold bg-gradient-to-r from-red-600 to-red-800 bg-clip-text text-transparent flex items-center">
-            <BookOpen className="mr-3 text-red-600 animate-pulse" size={32} />
+          <h2 className="text-3xl font-bold bg-gradient-to-r from-amber-500 to-amber-700 bg-clip-text text-transparent flex items-center">
+            <BookOpen className="mr-3 text-amber-600 animate-pulse" size={32} />
             Course Management
           </h2>
           <p className="text-gray-600 mt-1 flex items-center">
-            <Sparkles size={16} className="mr-2 text-red-500" />
+            <Sparkles size={16} className="mr-2 text-amber-500" />
             {filteredCourses.length} course{filteredCourses.length !== 1 ? 's' : ''} total
             {filteredCourses.length !== displayCourses.length && `, ${displayCourses.length} filtered`}
           </p>
@@ -182,7 +182,7 @@ const CoursesPage = ({
           <button 
             onClick={fetchCoursesData}
             disabled={loading}
-            className="px-5 py-2.5 border-2 border-red-300 text-red-700 rounded-xl hover:bg-red-50 hover:border-red-400 transition-all duration-300 flex items-center disabled:opacity-50 font-semibold hover:scale-105 hover:shadow-lg"
+            className="px-5 py-2.5 border-2 border-amber-300 text-amber-700 rounded-xl hover:bg-amber-50 hover:border-amber-300 transition-all duration-300 flex items-center disabled:opacity-50 font-semibold hover:scale-105 hover:shadow-lg"
             title="Refresh courses"
           >
             <RefreshCw size={20} className={`mr-2 ${loading ? 'animate-spin' : ''}`} />
@@ -191,7 +191,7 @@ const CoursesPage = ({
           <button 
             onClick={openCourseForm}
             disabled={loading}
-            className="relative bg-gradient-to-r from-red-600 to-red-700 text-white px-6 py-2.5 rounded-xl hover:from-red-700 hover:to-red-800 transition-all duration-300 flex items-center disabled:opacity-50 font-bold shadow-lg shadow-red-600/50 hover:shadow-xl hover:shadow-red-600/60 hover:scale-105 overflow-hidden group"
+            className="relative bg-gradient-to-r from-amber-500 to-amber-600 text-white px-6 py-2.5 rounded-xl hover:from-amber-600 hover:to-amber-700 transition-all duration-300 flex items-center disabled:opacity-50 font-bold shadow-lg shadow-amber-500/50 hover:shadow-xl hover:shadow-amber-500/60 hover:scale-105 overflow-hidden group"
           >
             <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
             <Plus size={20} className="mr-2 relative z-10" />
@@ -267,10 +267,10 @@ const CoursesPage = ({
 
       {/* Error Alert with animation */}
       {error && (
-        <div className="bg-gradient-to-r from-red-50 to-rose-50 border-2 border-red-200 rounded-xl p-4 animate-shake shadow-lg">
+        <div className="bg-gradient-to-r from-amber-50 to-yellow-50 border-2 border-amber-200 rounded-xl p-4 animate-shake shadow-lg">
           <div className="flex items-center">
-            <AlertCircle size={24} className="text-red-500 mr-3 animate-pulse" />
-            <span className="text-red-700 font-semibold">{error}</span>
+            <AlertCircle size={24} className="text-amber-500 mr-3 animate-pulse" />
+            <span className="text-amber-700 font-semibold">{error}</span>
           </div>
         </div>
       )}
@@ -281,11 +281,11 @@ const CoursesPage = ({
       }`} style={{ transitionDelay: '100ms' }}>
         <div className="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-4">
           <div className="flex-1 relative group">
-            <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 group-hover:text-red-500 transition-colors duration-300" size={20} />
+            <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 group-hover:text-amber-500 transition-colors duration-300" size={20} />
             <input
               type="text"
               placeholder="Search courses..."
-              className="w-full pl-12 pr-4 py-2.5 md:py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-all duration-300 hover:border-red-300 text-sm md:text-base"
+              className="w-full pl-12 pr-4 py-2.5 md:py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-amber-500 focus:border-amber-400 transition-all duration-300 hover:border-amber-300 text-sm md:text-base"
               value={courseSearch}
               onChange={(e) => setCourseSearch(e.target.value)}
             />
@@ -293,7 +293,7 @@ const CoursesPage = ({
           
           <div className="flex space-x-2 sm:space-x-3">
             <select
-              className="flex-1 sm:flex-none border-2 border-gray-200 rounded-xl px-3 md:px-4 py-2.5 md:py-3 focus:ring-2 focus:ring-red-500 focus:border-red-500 font-semibold hover:border-red-300 transition-all duration-300 cursor-pointer text-sm md:text-base"
+              className="flex-1 sm:flex-none border-2 border-gray-200 rounded-xl px-3 md:px-4 py-2.5 md:py-3 focus:ring-2 focus:ring-amber-500 focus:border-amber-400 font-semibold hover:border-amber-300 transition-all duration-300 cursor-pointer text-sm md:text-base"
               value={courseStatusFilter}
               onChange={(e) => setCourseStatusFilter(e.target.value)}
             >
@@ -304,7 +304,7 @@ const CoursesPage = ({
             </select>
             
             <button 
-              className="border-2 border-gray-300 text-gray-700 px-3 md:px-4 py-2.5 md:py-3 rounded-xl hover:bg-gradient-to-r hover:from-red-50 hover:to-rose-50 hover:border-red-300 transition-all duration-300 flex items-center font-semibold hover:scale-105 text-sm md:text-base"
+              className="border-2 border-gray-300 text-gray-700 px-3 md:px-4 py-2.5 md:py-3 rounded-xl hover:bg-gradient-to-r hover:from-amber-50 hover:to-yellow-50 hover:border-amber-300 transition-all duration-300 flex items-center font-semibold hover:scale-105 text-sm md:text-base"
               onClick={fetchCoursesData}
             >
               <Filter size={18} className="md:mr-2" />
@@ -318,10 +318,10 @@ const CoursesPage = ({
       {loading && (
         <div className="flex justify-center items-center py-12 animate-fadeIn">
           <div className="relative">
-            <div className="w-16 h-16 border-4 border-red-200 rounded-full animate-spin"></div>
-            <div className="w-16 h-16 border-t-4 border-red-600 rounded-full animate-spin absolute top-0 left-0"></div>
+            <div className="w-16 h-16 border-4 border-amber-200 rounded-full animate-spin"></div>
+            <div className="w-16 h-16 border-t-4 border-amber-500 rounded-full animate-spin absolute top-0 left-0"></div>
             <div className="absolute inset-0 flex items-center justify-center">
-              <BookOpen className="w-6 h-6 text-red-600 animate-pulse" />
+              <BookOpen className="w-6 h-6 text-amber-600 animate-pulse" />
             </div>
           </div>
           <span className="ml-4 text-gray-600 font-semibold text-lg">Loading courses...</span>
@@ -334,11 +334,11 @@ const CoursesPage = ({
       }`} style={{ transitionDelay: '200ms' }}>
         <div className="overflow-x-auto">
           <table className="w-full min-w-[800px]">
-            <thead className="bg-gradient-to-r from-gray-50 to-red-50/30">
+            <thead className="bg-gradient-to-r from-gray-50 to-amber-50/30">
               <tr>
                 <th className="px-4 md:px-6 py-3 md:py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">
                   <div className="flex items-center">
-                    <BookOpen size={14} className="md:w-4 md:h-4 mr-1 md:mr-2 text-red-600" />
+                    <BookOpen size={14} className="md:w-4 md:h-4 mr-1 md:mr-2 text-amber-600" />
                     <span className="hidden sm:inline">Course Details</span>
                     <span className="sm:hidden">Course</span>
                   </div>
@@ -384,7 +384,7 @@ const CoursesPage = ({
                 return (
                   <tr 
                     key={course._id} 
-                    className={`hover:bg-gradient-to-r hover:from-red-50 hover:to-transparent transition-all duration-300 cursor-pointer ${
+                    className={`hover:bg-gradient-to-r hover:from-amber-50 hover:to-transparent transition-all duration-300 cursor-pointer ${
                       isHovered ? 'shadow-lg scale-[1.01]' : ''
                     }`}
                     onMouseEnter={() => setHoveredRow(course._id)}
@@ -395,8 +395,8 @@ const CoursesPage = ({
                   >
                     <td className="px-4 md:px-6 py-3 md:py-4 whitespace-nowrap">
                       <div className="flex items-center">
-                        <div className={`flex-shrink-0 h-10 w-10 md:h-14 md:w-14 bg-gradient-to-br from-red-500 to-red-600 rounded-xl flex items-center justify-center shadow-lg transition-all duration-300 relative overflow-hidden ${
-                          isHovered ? 'scale-110 rotate-6 shadow-xl shadow-red-500/50' : ''
+                        <div className={`flex-shrink-0 h-10 w-10 md:h-14 md:w-14 bg-gradient-to-br from-amber-400 to-amber-500 rounded-xl flex items-center justify-center shadow-lg transition-all duration-300 relative overflow-hidden ${
+                          isHovered ? 'scale-110 rotate-6 shadow-xl shadow-amber-400/50' : ''
                         }`}>
                           {course.thumbnailUrl ? (
                             <img 
@@ -417,10 +417,10 @@ const CoursesPage = ({
                         </div>
                         <div className="ml-3 md:ml-4">
                           <div className={`text-xs md:text-sm font-bold text-gray-900 transition-colors duration-300 mb-1 line-clamp-1 ${
-                            isHovered ? 'text-red-600' : ''
+                            isHovered ? 'text-amber-600' : ''
                           }`}>{course.title}</div>
                           <div className="flex items-center space-x-1 md:space-x-2">
-                            <span className="text-xs text-red-500 font-semibold flex items-center bg-red-50 px-1.5 md:px-2 py-0.5 md:py-1 rounded-lg">
+                            <span className="text-xs text-amber-500 font-semibold flex items-center bg-amber-50 px-1.5 md:px-2 py-0.5 md:py-1 rounded-lg">
                               <Award size={10} className="md:w-3 md:h-3 mr-0.5 md:mr-1" />
                               <span className="hidden sm:inline">{course.category}</span>
                               <span className="sm:hidden">{course.category.substring(0, 3)}</span>
@@ -472,7 +472,7 @@ const CoursesPage = ({
                     </td>
                     <td className="px-4 md:px-6 py-3 md:py-4 whitespace-nowrap text-xs md:text-sm text-gray-500">
                       <div className="flex items-center font-semibold">
-                        <Calendar size={12} className="md:w-3.5 md:h-3.5 mr-1 md:mr-1.5 text-red-500" />
+                        <Calendar size={12} className="md:w-3.5 md:h-3.5 mr-1 md:mr-1.5 text-amber-500" />
                         <span className="hidden md:inline">{course.createdAt ? new Date(course.createdAt).toLocaleDateString() : 'N/A'}</span>
                         <span className="md:hidden">{course.createdAt ? new Date(course.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : 'N/A'}</span>
                       </div>
@@ -497,7 +497,7 @@ const CoursesPage = ({
                         </button>
                         <button 
                           onClick={() => handleDeleteCourse(course._id)}
-                          className="text-white bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 p-1.5 md:p-2 rounded-lg transition-all duration-300 hover:scale-110 hover:shadow-lg shadow-red-500/50"
+                          className="text-white bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-500 hover:to-amber-600 p-1.5 md:p-2 rounded-lg transition-all duration-300 hover:scale-110 hover:shadow-lg shadow-amber-400/50"
                           title="Delete Course"
                           disabled={loading}
                         >
@@ -516,8 +516,8 @@ const CoursesPage = ({
         {!loading && filteredCourses.length === 0 && (
           <div className="text-center py-16 animate-fadeIn">
             <div className="relative inline-block">
-              <div className="absolute inset-0 bg-red-500/20 rounded-full blur-2xl animate-pulse"></div>
-              <BookOpen size={64} className="relative mx-auto text-red-500 mb-6" />
+              <div className="absolute inset-0 bg-amber-400/20 rounded-full blur-2xl animate-pulse"></div>
+              <BookOpen size={64} className="relative mx-auto text-amber-500 mb-6" />
             </div>
             <h3 className="text-2xl font-bold text-gray-900 mb-2">No courses found</h3>
             <p className="text-gray-500 mt-2 text-lg">
@@ -532,7 +532,7 @@ const CoursesPage = ({
                   setCourseSearch('');
                   setCourseStatusFilter('all');
                 }}
-                className="mt-6 bg-gradient-to-r from-red-600 to-red-700 text-white px-6 py-3 rounded-xl hover:from-red-700 hover:to-red-800 font-bold shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300"
+                className="mt-6 bg-gradient-to-r from-amber-500 to-amber-600 text-white px-6 py-3 rounded-xl hover:from-amber-600 hover:to-amber-700 font-bold shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300"
               >
                 Clear filters
               </button>

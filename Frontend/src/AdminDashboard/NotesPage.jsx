@@ -88,7 +88,7 @@ const NotesPage = ({
       violin: { bg: 'bg-gradient-to-r from-purple-500 to-purple-600', shadow: 'shadow-purple-500/50' },
       drums: { bg: 'bg-gradient-to-r from-orange-500 to-orange-600', shadow: 'shadow-orange-500/50' },
       vocal: { bg: 'bg-gradient-to-r from-pink-500 to-pink-600', shadow: 'shadow-pink-500/50' },
-      bass: { bg: 'bg-gradient-to-r from-red-500 to-red-600', shadow: 'shadow-red-500/50' },
+      bass: { bg: 'bg-gradient-to-r from-amber-400 to-amber-500', shadow: 'shadow-amber-400/50' },
       ukulele: { bg: 'bg-gradient-to-r from-yellow-500 to-yellow-600', shadow: 'shadow-yellow-500/50' }
     };
     
@@ -122,18 +122,18 @@ const NotesPage = ({
           isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-8'
         }`}>
           <div>
-            <h2 className="text-3xl font-bold bg-gradient-to-r from-red-600 to-red-800 bg-clip-text text-transparent flex items-center">
-              <Music className="mr-3 text-red-600 animate-pulse" size={32} />
+            <h2 className="text-3xl font-bold bg-gradient-to-r from-amber-500 to-amber-700 bg-clip-text text-transparent flex items-center">
+              <Music className="mr-3 text-amber-600 animate-pulse" size={32} />
               Music Notes
             </h2>
             <p className="text-gray-600 mt-1 flex items-center">
-              <Sparkles size={16} className="mr-2 text-red-500" />
+              <Sparkles size={16} className="mr-2 text-amber-500" />
               Manage your music notation and tabs
             </p>
           </div>
           <button 
             onClick={openNoteForm}
-            className="relative bg-gradient-to-r from-red-600 to-red-700 text-white px-6 py-2.5 rounded-xl hover:from-red-700 hover:to-red-800 transition-all duration-300 flex items-center font-bold shadow-lg shadow-red-600/50 hover:shadow-xl hover:shadow-red-600/60 hover:scale-105 overflow-hidden group"
+            className="relative bg-gradient-to-r from-amber-500 to-amber-600 text-white px-6 py-2.5 rounded-xl hover:from-amber-600 hover:to-amber-700 transition-all duration-300 flex items-center font-bold shadow-lg shadow-amber-500/50 hover:shadow-xl hover:shadow-amber-500/60 hover:scale-105 overflow-hidden group"
           >
             <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
             <Plus size={20} className="mr-2 relative z-10" />
@@ -142,10 +142,10 @@ const NotesPage = ({
         </div>
         <div className="flex items-center justify-center h-64 animate-fadeIn">
           <div className="relative">
-            <div className="w-16 h-16 border-4 border-red-200 rounded-full animate-spin"></div>
-            <div className="w-16 h-16 border-t-4 border-red-600 rounded-full animate-spin absolute top-0 left-0"></div>
+            <div className="w-16 h-16 border-4 border-amber-200 rounded-full animate-spin"></div>
+            <div className="w-16 h-16 border-t-4 border-amber-500 rounded-full animate-spin absolute top-0 left-0"></div>
             <div className="absolute inset-0 flex items-center justify-center">
-              <Music className="w-6 h-6 text-red-600 animate-pulse" />
+              <Music className="w-6 h-6 text-amber-600 animate-pulse" />
             </div>
           </div>
           <span className="ml-4 text-gray-600 font-semibold text-lg">Loading music notes...</span>
@@ -161,27 +161,27 @@ const NotesPage = ({
           isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-8'
         }`}>
           <div>
-            <h2 className="text-3xl font-bold bg-gradient-to-r from-red-600 to-red-800 bg-clip-text text-transparent flex items-center">
-              <Music className="mr-3 text-red-600 animate-pulse" size={32} />
+            <h2 className="text-3xl font-bold bg-gradient-to-r from-amber-500 to-amber-700 bg-clip-text text-transparent flex items-center">
+              <Music className="mr-3 text-amber-600 animate-pulse" size={32} />
               Music Notes
             </h2>
             <p className="text-gray-600 mt-1">Manage your music notation and tabs</p>
           </div>
           <button 
             onClick={openNoteForm}
-            className="bg-gradient-to-r from-red-600 to-red-700 text-white px-6 py-2.5 rounded-xl hover:from-red-700 hover:to-red-800 transition-all duration-300 flex items-center font-bold shadow-lg hover:scale-105"
+            className="bg-gradient-to-r from-amber-500 to-amber-600 text-white px-6 py-2.5 rounded-xl hover:from-amber-600 hover:to-amber-700 transition-all duration-300 flex items-center font-bold shadow-lg hover:scale-105"
           >
             <Plus size={20} className="mr-2" />
             New Note
           </button>
         </div>
-        <div className="bg-gradient-to-r from-red-50 to-rose-50 border-2 border-red-200 rounded-2xl p-8 text-center shadow-lg animate-shake">
-          <AlertCircle size={64} className="mx-auto text-red-500 mb-4 animate-pulse" />
-          <h3 className="text-2xl font-bold text-red-800 mb-2">Error Loading Notes</h3>
-          <p className="text-red-600 mb-6 text-lg">{error}</p>
+        <div className="bg-gradient-to-r from-amber-50 to-yellow-50 border-2 border-amber-200 rounded-2xl p-8 text-center shadow-lg animate-shake">
+          <AlertCircle size={64} className="mx-auto text-amber-500 mb-4 animate-pulse" />
+          <h3 className="text-2xl font-bold text-amber-800 mb-2">Error Loading Notes</h3>
+          <p className="text-amber-600 mb-6 text-lg">{error}</p>
           <button
             onClick={fetchMusicNotes}
-            className="bg-gradient-to-r from-red-600 to-red-700 text-white px-6 py-3 rounded-xl hover:from-red-700 hover:to-red-800 transition-all duration-300 font-bold shadow-lg hover:scale-105"
+            className="bg-gradient-to-r from-amber-500 to-amber-600 text-white px-6 py-3 rounded-xl hover:from-amber-600 hover:to-amber-700 transition-all duration-300 font-bold shadow-lg hover:scale-105"
           >
             Try Again
           </button>
@@ -197,12 +197,12 @@ const NotesPage = ({
         isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-8'
       }`}>
         <div>
-          <h2 className="text-3xl font-bold bg-gradient-to-r from-red-600 to-red-800 bg-clip-text text-transparent flex items-center">
-            <Music className="mr-3 text-red-600 animate-pulse" size={32} />
+          <h2 className="text-3xl font-bold bg-gradient-to-r from-amber-500 to-amber-700 bg-clip-text text-transparent flex items-center">
+            <Music className="mr-3 text-amber-600 animate-pulse" size={32} />
             Music Notes
           </h2>
           <p className="text-gray-600 mt-1 flex items-center">
-            <Sparkles size={16} className="mr-2 text-red-500" />
+            <Sparkles size={16} className="mr-2 text-amber-500" />
             {musicNotes.length} note{musicNotes.length !== 1 ? 's' : ''} total
             {filteredNotes.length !== musicNotes.length && `, ${filteredNotes.length} filtered`}
           </p>
@@ -211,14 +211,14 @@ const NotesPage = ({
           <button 
             onClick={fetchMusicNotes}
             disabled={loading}
-            className="px-5 py-2.5 border-2 border-red-300 text-red-700 rounded-xl hover:bg-red-50 hover:border-red-400 transition-all duration-300 flex items-center disabled:opacity-50 font-semibold hover:scale-105 hover:shadow-lg"
+            className="px-5 py-2.5 border-2 border-amber-300 text-amber-700 rounded-xl hover:bg-amber-50 hover:border-amber-300 transition-all duration-300 flex items-center disabled:opacity-50 font-semibold hover:scale-105 hover:shadow-lg"
           >
             <RefreshCw size={20} className={`mr-2 ${loading ? 'animate-spin' : ''}`} />
             Refresh
           </button>
           <button 
             onClick={openNoteForm}
-            className="relative bg-gradient-to-r from-red-600 to-red-700 text-white px-6 py-2.5 rounded-xl hover:from-red-700 hover:to-red-800 transition-all duration-300 flex items-center font-bold shadow-lg shadow-red-600/50 hover:shadow-xl hover:shadow-red-600/60 hover:scale-105 overflow-hidden group"
+            className="relative bg-gradient-to-r from-amber-500 to-amber-600 text-white px-6 py-2.5 rounded-xl hover:from-amber-600 hover:to-amber-700 transition-all duration-300 flex items-center font-bold shadow-lg shadow-amber-500/50 hover:shadow-xl hover:shadow-amber-500/60 hover:scale-105 overflow-hidden group"
           >
             <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
             <Plus size={20} className="mr-2 relative z-10" />
@@ -233,11 +233,11 @@ const NotesPage = ({
       }`} style={{ transitionDelay: '100ms' }}>
         <div className="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4">
           <div className="flex-1 relative group">
-            <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 group-hover:text-red-500 transition-colors duration-300" size={20} />
+            <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 group-hover:text-amber-500 transition-colors duration-300" size={20} />
             <input
               type="text"
               placeholder="Search by title, category, lyrics..."
-              className="w-full pl-12 pr-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-all duration-300 hover:border-red-300"
+              className="w-full pl-12 pr-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-amber-500 focus:border-amber-400 transition-all duration-300 hover:border-amber-300"
               value={noteSearch}
               onChange={(e) => setNoteSearch(e.target.value)}
             />
@@ -245,7 +245,7 @@ const NotesPage = ({
           
           <div className="flex space-x-3">
             <select
-              className="border-2 border-gray-200 rounded-xl px-4 py-3 focus:ring-2 focus:ring-red-500 focus:border-red-500 font-semibold hover:border-red-300 transition-all duration-300 cursor-pointer min-w-[160px]"
+              className="border-2 border-gray-200 rounded-xl px-4 py-3 focus:ring-2 focus:ring-amber-500 focus:border-amber-400 font-semibold hover:border-amber-300 transition-all duration-300 cursor-pointer min-w-[160px]"
               value={noteCategoryFilter}
               onChange={(e) => setNoteCategoryFilter(e.target.value)}
             >
@@ -263,7 +263,7 @@ const NotesPage = ({
                   setNoteSearch('');
                   setNoteCategoryFilter('all');
                 }}
-                className="border-2 border-gray-300 text-gray-700 px-4 py-3 rounded-xl hover:bg-gradient-to-r hover:from-red-50 hover:to-rose-50 hover:border-red-300 transition-all duration-300 flex items-center font-semibold hover:scale-105"
+                className="border-2 border-gray-300 text-gray-700 px-4 py-3 rounded-xl hover:bg-gradient-to-r hover:from-amber-50 hover:to-yellow-50 hover:border-amber-300 transition-all duration-300 flex items-center font-semibold hover:scale-105"
               >
                 <Filter size={20} className="mr-2" />
                 Clear
@@ -277,8 +277,8 @@ const NotesPage = ({
       {loading && musicNotes.length > 0 && (
         <div className="flex items-center justify-center py-8 animate-fadeIn">
           <div className="relative">
-            <div className="w-12 h-12 border-4 border-red-200 rounded-full animate-spin"></div>
-            <div className="w-12 h-12 border-t-4 border-red-600 rounded-full animate-spin absolute top-0 left-0"></div>
+            <div className="w-12 h-12 border-4 border-amber-200 rounded-full animate-spin"></div>
+            <div className="w-12 h-12 border-t-4 border-amber-500 rounded-full animate-spin absolute top-0 left-0"></div>
           </div>
           <span className="ml-4 text-gray-600 font-semibold">Updating...</span>
         </div>
@@ -337,7 +337,7 @@ const NotesPage = ({
                 <div className="relative">
                   <div className="flex items-start justify-between mb-3">
                     <h3 className={`text-lg font-bold text-gray-900 line-clamp-2 flex-1 mr-2 transition-colors duration-300 ${
-                      isHovered ? 'text-red-600' : ''
+                      isHovered ? 'text-amber-600' : ''
                     }`}>
                       {note.title}
                     </h3>
@@ -353,7 +353,7 @@ const NotesPage = ({
                       </button>
                       <button 
                         onClick={() => deleteMusicNote(note._id)}
-                        className="text-white bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 p-2 rounded-lg transition-all duration-300 hover:scale-110 hover:shadow-lg shadow-red-500/50"
+                        className="text-white bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-500 hover:to-amber-600 p-2 rounded-lg transition-all duration-300 hover:scale-110 hover:shadow-lg shadow-amber-400/50"
                         title="Delete note"
                         disabled={loading}
                       >
@@ -374,7 +374,7 @@ const NotesPage = ({
                   
                   <div className="flex items-center justify-between text-sm">
                     <div className="flex items-center text-gray-500 font-semibold">
-                      <Calendar size={14} className="mr-1.5 text-red-500" />
+                      <Calendar size={14} className="mr-1.5 text-amber-500" />
                       {new Date(note.createdAt).toLocaleDateString('en-US', {
                         year: 'numeric',
                         month: 'short',
@@ -390,7 +390,7 @@ const NotesPage = ({
               </div>
 
               {/* Corner decoration */}
-              <div className="absolute bottom-0 left-0 w-20 h-20 bg-gradient-to-tr from-red-100/50 to-transparent rounded-tl-full opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+              <div className="absolute bottom-0 left-0 w-20 h-20 bg-gradient-to-tr from-amber-100/50 to-transparent rounded-tl-full opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
             </div>
           );
         })}
@@ -400,8 +400,8 @@ const NotesPage = ({
       {filteredNotes.length === 0 && musicNotes.length > 0 && (
         <div className="text-center py-16 bg-white rounded-2xl shadow-lg border border-gray-200 animate-fadeIn">
           <div className="relative inline-block">
-            <div className="absolute inset-0 bg-red-500/20 rounded-full blur-2xl animate-pulse"></div>
-            <Search size={64} className="relative mx-auto text-red-500 mb-6" />
+            <div className="absolute inset-0 bg-amber-400/20 rounded-full blur-2xl animate-pulse"></div>
+            <Search size={64} className="relative mx-auto text-amber-500 mb-6" />
           </div>
           <h3 className="text-2xl font-bold text-gray-900 mb-2">No matching notes found</h3>
           <p className="text-gray-500 mb-6 text-lg">
@@ -412,7 +412,7 @@ const NotesPage = ({
               setNoteSearch('');
               setNoteCategoryFilter('all');
             }}
-            className="bg-gradient-to-r from-red-600 to-red-700 text-white px-6 py-3 rounded-xl hover:from-red-700 hover:to-red-800 transition-all duration-300 font-bold shadow-lg hover:shadow-xl hover:scale-105"
+            className="bg-gradient-to-r from-amber-500 to-amber-600 text-white px-6 py-3 rounded-xl hover:from-amber-600 hover:to-amber-700 transition-all duration-300 font-bold shadow-lg hover:shadow-xl hover:scale-105"
           >
             Clear filters
           </button>
@@ -422,14 +422,14 @@ const NotesPage = ({
       {musicNotes.length === 0 && !loading && (
         <div className="text-center py-16 bg-white rounded-2xl shadow-lg border border-gray-200 animate-fadeIn">
           <div className="relative inline-block">
-            <div className="absolute inset-0 bg-red-500/20 rounded-full blur-2xl animate-pulse"></div>
-            <Music size={64} className="relative mx-auto text-red-500 mb-6" />
+            <div className="absolute inset-0 bg-amber-400/20 rounded-full blur-2xl animate-pulse"></div>
+            <Music size={64} className="relative mx-auto text-amber-500 mb-6" />
           </div>
           <h3 className="text-2xl font-bold text-gray-900 mb-2">No music notes yet</h3>
           <p className="text-gray-500 mb-8 text-lg">Get started by creating your first music notation or tab.</p>
           <button
             onClick={openNoteForm}
-            className="bg-gradient-to-r from-red-600 to-red-700 text-white px-8 py-4 rounded-xl hover:from-red-700 hover:to-red-800 transition-all duration-300 flex items-center mx-auto font-bold shadow-lg hover:shadow-xl hover:scale-105"
+            className="bg-gradient-to-r from-amber-500 to-amber-600 text-white px-8 py-4 rounded-xl hover:from-amber-600 hover:to-amber-700 transition-all duration-300 flex items-center mx-auto font-bold shadow-lg hover:shadow-xl hover:scale-105"
           >
             <Plus size={24} className="mr-2" />
             Create Your First Note

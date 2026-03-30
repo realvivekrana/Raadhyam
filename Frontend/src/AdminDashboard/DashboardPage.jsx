@@ -73,7 +73,7 @@ const StatCard = ({ title, value, icon, color, bgColor, change, index }) => {
             <div className={`flex items-center px-3 py-1.5 rounded-full text-sm font-bold ${
               change > 0 
                 ? 'bg-gradient-to-r from-green-500 to-emerald-500 text-white' 
-                : 'bg-gradient-to-r from-red-500 to-rose-500 text-white'
+                : 'bg-gradient-to-r from-amber-500 to-rose-500 text-white'
             } shadow-lg`}>
               {change > 0 ? <ArrowUp size={16} className="mr-1 animate-bounce" /> : <ArrowDown size={16} className="mr-1 animate-bounce" />}
               {Math.abs(change)}%
@@ -100,10 +100,10 @@ const DashboardPage = ({ dashboardStats, loading }) => {
     return (
       <div className="flex items-center justify-center h-64">
         <div className="relative">
-          <div className="w-16 h-16 border-4 border-red-200 rounded-full animate-spin"></div>
-          <div className="w-16 h-16 border-t-4 border-red-600 rounded-full animate-spin absolute top-0 left-0"></div>
+          <div className="w-16 h-16 border-4 border-amber-200 rounded-full animate-spin"></div>
+          <div className="w-16 h-16 border-t-4 border-amber-500 rounded-full animate-spin absolute top-0 left-0"></div>
           <div className="absolute inset-0 flex items-center justify-center">
-            <Zap className="w-6 h-6 text-red-600 animate-pulse" />
+            <Zap className="w-6 h-6 text-amber-600 animate-pulse" />
           </div>
         </div>
       </div>
@@ -115,9 +115,9 @@ const DashboardPage = ({ dashboardStats, loading }) => {
       {/* Animated Header */}
       <div className={`relative transition-all duration-700 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-8'}`}>
         {/* Glow effect */}
-        <div className="absolute inset-0 bg-gradient-to-r from-red-600/20 via-orange-600/20 to-red-600/20 rounded-3xl blur-3xl animate-pulse"></div>
+        <div className="absolute inset-0 bg-gradient-to-r from-amber-500/20 via-orange-600/20 to-amber-500/20 rounded-3xl blur-3xl animate-pulse"></div>
         
-        <div className="relative bg-gradient-to-r from-red-600 via-red-700 to-red-800 rounded-2xl p-8 shadow-2xl overflow-hidden">
+        <div className="relative bg-gradient-to-r from-amber-500 via-amber-600 to-amber-600 rounded-2xl p-8 shadow-2xl overflow-hidden">
           {/* Animated background pattern */}
           <div className="absolute inset-0 opacity-10">
             <div className="absolute inset-0" style={{ backgroundImage: 'radial-gradient(circle, white 1px, transparent 1px)', backgroundSize: '30px 30px' }}></div>
@@ -133,14 +133,14 @@ const DashboardPage = ({ dashboardStats, loading }) => {
                 <Activity className="w-8 h-8 text-white animate-pulse" />
                 <h2 className="text-4xl font-bold text-white">Dashboard Overview</h2>
               </div>
-              <p className="text-red-100 flex items-center text-lg">
+              <p className="text-amber-100 flex items-center text-lg">
                 <Clock size={18} className="mr-2 animate-spin" style={{ animationDuration: '3s' }} />
                 Welcome back! Here's your performance today
               </p>
             </div>
             <div className="hidden md:block">
               <div className="bg-white/20 backdrop-blur-md rounded-2xl px-6 py-4 border border-white/30 shadow-xl hover:scale-105 transition-transform duration-300">
-                <p className="text-red-100 text-sm font-semibold mb-1 flex items-center">
+                <p className="text-amber-100 text-sm font-semibold mb-1 flex items-center">
                   <Calendar size={14} className="mr-2" />
                   Today
                 </p>

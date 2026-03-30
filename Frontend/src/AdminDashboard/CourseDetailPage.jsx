@@ -108,17 +108,17 @@ const CourseDetailPage = ({
         <div className="flex items-center space-x-4">
           <button
             onClick={onBack}
-            className="p-2.5 text-gray-600 hover:text-red-600 hover:bg-red-50 rounded-xl transition-all duration-300 hover:scale-110 hover:shadow-lg group"
+            className="p-2.5 text-gray-600 hover:text-amber-600 hover:bg-amber-50 rounded-xl transition-all duration-300 hover:scale-110 hover:shadow-lg group"
           >
             <ArrowLeft size={20} className="group-hover:-translate-x-1 transition-transform duration-300" />
           </button>
           <div>
-            <h1 className="text-3xl font-bold bg-gradient-to-r from-red-600 to-red-800 bg-clip-text text-transparent flex items-center">
-              <BookOpen className="mr-3 text-red-600 animate-pulse" size={32} />
+            <h1 className="text-3xl font-bold bg-gradient-to-r from-amber-500 to-amber-700 bg-clip-text text-transparent flex items-center">
+              <BookOpen className="mr-3 text-amber-600 animate-pulse" size={32} />
               {courseData.title}
             </h1>
             <p className="text-gray-600 mt-1 flex items-center">
-              <Sparkles size={16} className="mr-2 text-red-500" />
+              <Sparkles size={16} className="mr-2 text-amber-500" />
               {courseData.subtitle}
             </p>
           </div>
@@ -128,7 +128,7 @@ const CourseDetailPage = ({
             <Eye size={18} className="mr-2" />
             Preview
           </button>
-          <button className="relative px-5 py-2.5 bg-gradient-to-r from-red-600 to-red-700 text-white rounded-xl hover:from-red-700 hover:to-red-800 transition-all duration-300 flex items-center font-bold shadow-lg shadow-red-600/50 hover:shadow-xl hover:shadow-red-600/60 hover:scale-105 overflow-hidden group">
+          <button className="relative px-5 py-2.5 bg-gradient-to-r from-amber-500 to-amber-600 text-white rounded-xl hover:from-amber-600 hover:to-amber-700 transition-all duration-300 flex items-center font-bold shadow-lg shadow-amber-500/50 hover:shadow-xl hover:shadow-amber-500/60 hover:scale-105 overflow-hidden group">
             <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
             <Edit3 size={18} className="mr-2 relative z-10" />
             <span className="relative z-10">Edit Course</span>
@@ -149,7 +149,7 @@ const CourseDetailPage = ({
             </div>
             
             <div className="flex items-center space-x-4 mb-4 relative">
-              <div className="h-16 w-16 bg-gradient-to-br from-red-100 to-red-200 rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
+              <div className="h-16 w-16 bg-gradient-to-br from-amber-100 to-amber-600 rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
                 {courseData.thumbnailUrl ? (
                   <img 
                     src={courseData.thumbnailUrl} 
@@ -157,18 +157,18 @@ const CourseDetailPage = ({
                     className="h-16 w-16 rounded-xl object-cover"
                   />
                 ) : (
-                  <BookOpen size={24} className="text-red-600" />
+                  <BookOpen size={24} className="text-amber-600" />
                 )}
               </div>
               <div>
                 <h3 className="font-bold text-gray-900">{courseData.title}</h3>
-                <p className="text-sm text-red-600 font-semibold">{courseData.category}</p>
+                <p className="text-sm text-amber-600 font-semibold">{courseData.category}</p>
               </div>
             </div>
 
             {/* Enhanced Stats */}
             <div className="space-y-3 relative">
-              <div className="flex justify-between items-center p-2 rounded-lg hover:bg-red-50 transition-colors duration-300">
+              <div className="flex justify-between items-center p-2 rounded-lg hover:bg-amber-50 transition-colors duration-300">
                 <span className="text-sm text-gray-600 font-semibold">Status</span>
                 <span className={`px-3 py-1.5 rounded-full text-xs font-bold shadow-lg ${
                   courseData.publish?.status === 'published' 
@@ -181,25 +181,25 @@ const CourseDetailPage = ({
                 </span>
               </div>
               
-              <div className="flex justify-between items-center p-2 rounded-lg hover:bg-red-50 transition-colors duration-300">
+              <div className="flex justify-between items-center p-2 rounded-lg hover:bg-amber-50 transition-colors duration-300">
                 <span className="text-sm text-gray-600 font-semibold">Modules</span>
-                <span className="text-sm font-bold text-red-600 bg-red-100 px-3 py-1 rounded-full">{stats.totalModules}</span>
+                <span className="text-sm font-bold text-amber-600 bg-amber-100 px-3 py-1 rounded-full">{stats.totalModules}</span>
               </div>
               
-              <div className="flex justify-between items-center p-2 rounded-lg hover:bg-red-50 transition-colors duration-300">
+              <div className="flex justify-between items-center p-2 rounded-lg hover:bg-amber-50 transition-colors duration-300">
                 <span className="text-sm text-gray-600 font-semibold">Lessons</span>
                 <span className="text-sm font-bold text-blue-600 bg-blue-100 px-3 py-1 rounded-full">{stats.totalLessons}</span>
               </div>
               
-              <div className="flex justify-between items-center p-2 rounded-lg hover:bg-red-50 transition-colors duration-300">
+              <div className="flex justify-between items-center p-2 rounded-lg hover:bg-amber-50 transition-colors duration-300">
                 <span className="text-sm text-gray-600 font-semibold flex items-center">
-                  <Clock size={14} className="mr-1.5 text-red-500" />
+                  <Clock size={14} className="mr-1.5 text-amber-500" />
                   Duration
                 </span>
                 <span className="text-sm font-bold text-purple-600 bg-purple-100 px-3 py-1 rounded-full">{stats.totalDuration}</span>
               </div>
               
-              <div className="flex justify-between items-center p-2 rounded-lg hover:bg-red-50 transition-colors duration-300">
+              <div className="flex justify-between items-center p-2 rounded-lg hover:bg-amber-50 transition-colors duration-300">
                 <span className="text-sm text-gray-600 font-semibold">Students</span>
                 <span className="text-sm font-bold text-green-600 bg-green-100 px-3 py-1 rounded-full flex items-center">
                   <Users size={14} className="mr-1" />
@@ -210,9 +210,9 @@ const CourseDetailPage = ({
 
             {/* Enhanced Pricing */}
             <div className="mt-4 pt-4 border-t border-gray-200 relative">
-              <div className="flex justify-between items-center p-3 rounded-lg bg-gradient-to-r from-red-50 to-rose-50 hover:from-red-100 hover:to-rose-100 transition-all duration-300">
+              <div className="flex justify-between items-center p-3 rounded-lg bg-gradient-to-r from-amber-50 to-yellow-50 hover:from-amber-100 hover:to-rose-100 transition-all duration-300">
                 <span className="text-sm text-gray-700 font-bold">Price</span>
-                <span className="text-xl font-black bg-gradient-to-r from-red-600 to-red-800 bg-clip-text text-transparent">
+                <span className="text-xl font-black bg-gradient-to-r from-amber-500 to-amber-700 bg-clip-text text-transparent">
                   {courseData.isFree ? 'FREE' : `₹${courseData.price}`}
                 </span>
               </div>
@@ -236,11 +236,11 @@ const CourseDetailPage = ({
             </div>
             
             <h4 className="font-bold text-gray-900 mb-4 flex items-center relative">
-              <Users size={18} className="mr-2 text-red-600" />
+              <Users size={18} className="mr-2 text-amber-600" />
               Instructor
             </h4>
             <div className="flex items-center space-x-3 relative">
-              <div className="h-12 w-12 bg-gradient-to-br from-red-100 to-red-200 rounded-full flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300 relative">
+              <div className="h-12 w-12 bg-gradient-to-br from-amber-100 to-amber-600 rounded-full flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300 relative">
                 {courseData.instructor?.profileImage ? (
                   <img 
                     src={courseData.instructor.profileImage} 
@@ -248,13 +248,13 @@ const CourseDetailPage = ({
                     className="h-12 w-12 rounded-full object-cover"
                   />
                 ) : (
-                  <Users size={18} className="text-red-600" />
+                  <Users size={18} className="text-amber-600" />
                 )}
-                <div className="absolute inset-0 rounded-full bg-red-500/20 animate-pulse"></div>
+                <div className="absolute inset-0 rounded-full bg-amber-400/20 animate-pulse"></div>
               </div>
               <div>
                 <p className="text-sm font-bold text-gray-900">{courseData.instructor?.name}</p>
-                <p className="text-xs text-red-600 font-semibold">Course Instructor</p>
+                <p className="text-xs text-amber-600 font-semibold">Course Instructor</p>
               </div>
             </div>
           </div>

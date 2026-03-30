@@ -224,12 +224,12 @@ const StudentsPage = () => {
       }`}>
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center space-y-4 sm:space-y-0">
           <div>
-            <h2 className="text-3xl font-bold bg-gradient-to-r from-red-600 to-red-800 bg-clip-text text-transparent flex items-center">
-              <Users className="mr-3 text-red-600 animate-pulse" size={32} />
+            <h2 className="text-3xl font-bold bg-gradient-to-r from-amber-500 to-amber-700 bg-clip-text text-transparent flex items-center">
+              <Users className="mr-3 text-amber-600 animate-pulse" size={32} />
               Students Management
             </h2>
             <p className="text-gray-600 mt-1 flex items-center">
-              <Sparkles size={16} className="mr-2 text-red-500" />
+              <Sparkles size={16} className="mr-2 text-amber-500" />
               Manage student enrollments and track progress
             </p>
           </div>
@@ -278,11 +278,11 @@ const StudentsPage = () => {
       }`} style={{ transitionDelay: '400ms' }}>
         <div className="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4">
           <div className="flex-1 relative group">
-            <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 group-hover:text-red-500 transition-colors duration-300" size={20} />
+            <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 group-hover:text-amber-500 transition-colors duration-300" size={20} />
             <input
               type="text"
               placeholder="Search students by name or email..."
-              className="w-full pl-12 pr-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-all duration-300 hover:border-red-300"
+              className="w-full pl-12 pr-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-amber-500 focus:border-amber-400 transition-all duration-300 hover:border-amber-300"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
@@ -290,7 +290,7 @@ const StudentsPage = () => {
           
           <div className="flex space-x-3">
             <select
-              className="border-2 border-gray-200 rounded-xl px-4 py-3 focus:ring-2 focus:ring-red-500 focus:border-red-500 font-semibold hover:border-red-300 transition-all duration-300 cursor-pointer"
+              className="border-2 border-gray-200 rounded-xl px-4 py-3 focus:ring-2 focus:ring-amber-500 focus:border-amber-400 font-semibold hover:border-amber-300 transition-all duration-300 cursor-pointer"
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
             >
@@ -299,7 +299,7 @@ const StudentsPage = () => {
               <option value="inactive">Inactive</option>
             </select>
             
-            <button className="border-2 border-gray-300 text-gray-700 px-4 py-3 rounded-xl hover:bg-gradient-to-r hover:from-red-50 hover:to-rose-50 hover:border-red-300 transition-all duration-300 flex items-center font-semibold hover:scale-105">
+            <button className="border-2 border-gray-300 text-gray-700 px-4 py-3 rounded-xl hover:bg-gradient-to-r hover:from-amber-50 hover:to-yellow-50 hover:border-amber-300 transition-all duration-300 flex items-center font-semibold hover:scale-105">
               <Filter size={20} className="mr-2" />
               Filter
             </button>
@@ -326,7 +326,7 @@ const StudentsPage = () => {
               onMouseLeave={() => setHoveredCard(null)}
             >
               {/* Background gradient */}
-              <div className="absolute inset-0 bg-gradient-to-br from-red-50/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+              <div className="absolute inset-0 bg-gradient-to-br from-amber-50/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
               
               {/* Shine effect */}
               <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
@@ -338,8 +338,8 @@ const StudentsPage = () => {
                 <div className="flex items-start justify-between mb-4">
                   <div className="flex items-center space-x-4">
                     <div className={`relative ${isHovered ? 'scale-110 rotate-6' : ''} transition-all duration-300`}>
-                      <div className="absolute inset-0 bg-gradient-to-br from-red-500 to-red-600 rounded-full blur-md opacity-50 group-hover:opacity-75 transition-opacity"></div>
-                      <div className="relative w-16 h-16 bg-gradient-to-br from-red-500 to-red-600 rounded-full flex items-center justify-center shadow-lg">
+                      <div className="absolute inset-0 bg-gradient-to-br from-amber-400 to-amber-500 rounded-full blur-md opacity-50 group-hover:opacity-75 transition-opacity"></div>
+                      <div className="relative w-16 h-16 bg-gradient-to-br from-amber-400 to-amber-500 rounded-full flex items-center justify-center shadow-lg">
                         <span className="text-white font-bold text-xl">{student.avatar}</span>
                       </div>
                       {/* Status indicator */}
@@ -349,7 +349,7 @@ const StudentsPage = () => {
                     </div>
                     <div>
                       <h3 className={`text-lg font-bold text-gray-900 transition-colors duration-300 ${
-                        isHovered ? 'text-red-600' : ''
+                        isHovered ? 'text-amber-600' : ''
                       }`}>{student.name}</h3>
                       <div className="mt-1">
                         {getStatusBadge(student.status)}
@@ -360,16 +360,16 @@ const StudentsPage = () => {
 
                 {/* Contact Info */}
                 <div className="space-y-2 mb-4">
-                  <div className="flex items-center text-sm text-gray-600 hover:text-red-600 transition-colors">
-                    <Mail size={14} className="mr-2 text-red-500" />
+                  <div className="flex items-center text-sm text-gray-600 hover:text-amber-600 transition-colors">
+                    <Mail size={14} className="mr-2 text-amber-500" />
                     {student.email}
                   </div>
-                  <div className="flex items-center text-sm text-gray-600 hover:text-red-600 transition-colors">
-                    <Phone size={14} className="mr-2 text-red-500" />
+                  <div className="flex items-center text-sm text-gray-600 hover:text-amber-600 transition-colors">
+                    <Phone size={14} className="mr-2 text-amber-500" />
                     {student.phone}
                   </div>
                   <div className="flex items-center text-sm text-gray-600">
-                    <Clock size={14} className="mr-2 text-red-500" />
+                    <Clock size={14} className="mr-2 text-amber-500" />
                     Last active: {student.lastActive}
                   </div>
                 </div>
@@ -396,14 +396,14 @@ const StudentsPage = () => {
                 <div className="mb-4">
                   <div className="flex items-center justify-between mb-2">
                     <span className="text-sm font-semibold text-gray-700 flex items-center">
-                      <Target size={14} className="mr-1 text-red-500" />
+                      <Target size={14} className="mr-1 text-amber-500" />
                       Overall Progress
                     </span>
-                    <span className="text-sm font-bold text-red-600">{student.progress}%</span>
+                    <span className="text-sm font-bold text-amber-600">{student.progress}%</span>
                   </div>
                   <div className="w-full bg-gray-200 rounded-full h-3 overflow-hidden shadow-inner">
                     <div 
-                      className="h-3 bg-gradient-to-r from-red-500 via-red-600 to-red-500 rounded-full transition-all duration-1000 animate-shimmer relative"
+                      className="h-3 bg-gradient-to-r from-amber-500 via-amber-600 to-amber-600 rounded-full transition-all duration-1000 animate-shimmer relative"
                       style={{ 
                         width: `${student.progress}%`,
                         backgroundSize: '200% 100%'
@@ -427,7 +427,7 @@ const StudentsPage = () => {
                     <Calendar size={12} className="mr-1" />
                     Joined {new Date(student.joinedDate).toLocaleDateString()}
                   </div>
-                  <button className="text-white bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 px-4 py-2 rounded-lg transition-all duration-300 hover:scale-105 hover:shadow-lg shadow-red-500/50 flex items-center text-sm font-semibold">
+                  <button className="text-white bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-500 hover:to-amber-600 px-4 py-2 rounded-lg transition-all duration-300 hover:scale-105 hover:shadow-lg shadow-amber-400/50 flex items-center text-sm font-semibold">
                     <Eye size={14} className="mr-1" />
                     View Details
                   </button>
@@ -442,8 +442,8 @@ const StudentsPage = () => {
       {filteredStudents.length === 0 && (
         <div className="bg-white rounded-2xl shadow-lg border border-gray-200 p-16 text-center animate-fadeIn">
           <div className="relative inline-block">
-            <div className="absolute inset-0 bg-red-500/20 rounded-full blur-2xl animate-pulse"></div>
-            <Users size={64} className="relative mx-auto text-red-500 mb-6" />
+            <div className="absolute inset-0 bg-amber-400/20 rounded-full blur-2xl animate-pulse"></div>
+            <Users size={64} className="relative mx-auto text-amber-500 mb-6" />
           </div>
           <h3 className="text-2xl font-bold text-gray-900 mb-2">No students found</h3>
           <p className="text-gray-500 text-lg">
@@ -458,7 +458,7 @@ const StudentsPage = () => {
                 setSearchTerm('');
                 setStatusFilter('all');
               }}
-              className="mt-6 bg-gradient-to-r from-red-600 to-red-700 text-white px-6 py-3 rounded-xl hover:from-red-700 hover:to-red-800 font-bold shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300"
+              className="mt-6 bg-gradient-to-r from-amber-500 to-amber-600 text-white px-6 py-3 rounded-xl hover:from-amber-600 hover:to-amber-700 font-bold shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300"
             >
               Clear filters
             </button>

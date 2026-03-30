@@ -208,7 +208,7 @@ const LessonFormModal = ({ lesson, onSave, onClose, uploadFile }) => {
               
               {/* Upload Error */}
               {uploadError && (
-                <div className="flex items-center text-sm text-red-600 bg-red-50 p-2 rounded">
+                <div className="flex items-center text-sm text-amber-600 bg-amber-50 p-2 rounded">
                   <AlertCircle size={16} className="mr-2" />
                   {uploadError}
                 </div>
@@ -262,7 +262,7 @@ const LessonFormModal = ({ lesson, onSave, onClose, uploadFile }) => {
               
               {/* Upload Error */}
               {uploadError && (
-                <div className="flex items-center text-sm text-red-600 bg-red-50 p-2 rounded">
+                <div className="flex items-center text-sm text-amber-600 bg-amber-50 p-2 rounded">
                   <AlertCircle size={16} className="mr-2" />
                   {uploadError}
                 </div>
@@ -324,14 +324,14 @@ const LessonFormModal = ({ lesson, onSave, onClose, uploadFile }) => {
   return (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50 animate-fadeIn">
       <div className="bg-white rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-2xl animate-slideUp">
-        <div className="sticky top-0 bg-gradient-to-r from-red-50 to-rose-50 border-b border-gray-200 px-6 py-4 flex justify-between items-center z-10">
-          <h3 className="text-xl font-bold bg-gradient-to-r from-red-600 to-red-800 bg-clip-text text-transparent flex items-center">
-            <PlayCircle className="mr-2 text-red-600" size={24} />
+        <div className="sticky top-0 bg-gradient-to-r from-amber-50 to-yellow-50 border-b border-gray-200 px-6 py-4 flex justify-between items-center z-10">
+          <h3 className="text-xl font-bold bg-gradient-to-r from-amber-500 to-amber-700 bg-clip-text text-transparent flex items-center">
+            <PlayCircle className="mr-2 text-amber-600" size={24} />
             {lesson ? 'Edit Lesson' : 'Add New Lesson'}
           </h3>
           <button 
             onClick={onClose} 
-            className="text-gray-400 hover:text-red-600 hover:bg-red-50 p-2 rounded-lg transition-all duration-300 hover:scale-110"
+            className="text-gray-400 hover:text-amber-600 hover:bg-amber-50 p-2 rounded-lg transition-all duration-300 hover:scale-110"
             disabled={uploading}
           >
             <X size={24} />
@@ -340,9 +340,9 @@ const LessonFormModal = ({ lesson, onSave, onClose, uploadFile }) => {
         
         <form onSubmit={handleSubmit} className="p-6 space-y-6">
           {/* Enhanced Lesson Type Selection */}
-          <div className="bg-gradient-to-r from-red-50 to-rose-50 p-6 rounded-2xl shadow-inner">
+          <div className="bg-gradient-to-r from-amber-50 to-yellow-50 p-6 rounded-2xl shadow-inner">
             <label className="block text-sm font-bold text-gray-700 mb-4 flex items-center">
-              <Sparkles size={18} className="mr-2 text-red-500" />
+              <Sparkles size={18} className="mr-2 text-amber-500" />
               Lesson Type
             </label>
             <div className="grid grid-cols-3 gap-3">
@@ -363,8 +363,8 @@ const LessonFormModal = ({ lesson, onSave, onClose, uploadFile }) => {
                     disabled={isDisabled}
                     className={`p-4 rounded-xl border-2 text-center transition-all duration-300 ${
                       isSelected
-                        ? 'border-red-500 bg-gradient-to-r from-red-600 to-red-700 text-white shadow-lg shadow-red-600/50 scale-105'
-                        : 'border-gray-300 bg-white text-gray-700 hover:border-red-300 hover:bg-red-50'
+                        ? 'border-amber-400 bg-gradient-to-r from-amber-500 to-amber-600 text-white shadow-lg shadow-amber-500/50 scale-105'
+                        : 'border-gray-300 bg-white text-gray-700 hover:border-amber-300 hover:bg-amber-50'
                     } ${isDisabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer hover:scale-105'}`}
                   >
                     <Icon size={24} className="mx-auto mb-2" />
@@ -379,13 +379,13 @@ const LessonFormModal = ({ lesson, onSave, onClose, uploadFile }) => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
               <label className="block text-sm font-bold text-gray-700 mb-2 flex items-center">
-                <FileText size={16} className="mr-2 text-red-500" />
+                <FileText size={16} className="mr-2 text-amber-500" />
                 Lesson Title *
               </label>
               <input
                 type="text"
                 required
-                className="w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-all duration-300 hover:border-red-300"
+                className="w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:ring-2 focus:ring-amber-500 focus:border-amber-400 transition-all duration-300 hover:border-amber-300"
                 value={formData.title}
                 onChange={(e) => setFormData({ ...formData, title: e.target.value })}
                 placeholder="e.g., Introduction to Scales"
@@ -394,13 +394,13 @@ const LessonFormModal = ({ lesson, onSave, onClose, uploadFile }) => {
             </div>
             <div>
               <label className="block text-sm font-bold text-gray-700 mb-2 flex items-center">
-                <Clock size={16} className="mr-2 text-red-500" />
+                <Clock size={16} className="mr-2 text-amber-500" />
                 Duration (MM:SS)
               </label>
               <input
                 type="text"
                 placeholder="15:30"
-                className="w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-all duration-300 hover:border-red-300"
+                className="w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:ring-2 focus:ring-amber-500 focus:border-amber-400 transition-all duration-300 hover:border-amber-300"
                 value={formData.duration}
                 onChange={(e) => setFormData({ ...formData, duration: e.target.value })}
                 disabled={uploading}
@@ -410,12 +410,12 @@ const LessonFormModal = ({ lesson, onSave, onClose, uploadFile }) => {
 
           <div>
             <label className="block text-sm font-bold text-gray-700 mb-2 flex items-center">
-              <Type size={16} className="mr-2 text-red-500" />
+              <Type size={16} className="mr-2 text-amber-500" />
               Description
             </label>
             <textarea
               rows={3}
-              className="w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-all duration-300 hover:border-red-300"
+              className="w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:ring-2 focus:ring-amber-500 focus:border-amber-400 transition-all duration-300 hover:border-amber-300"
               value={formData.description}
               onChange={(e) => setFormData({ ...formData, description: e.target.value })}
               placeholder="Describe what this lesson covers..."
@@ -462,7 +462,7 @@ const LessonFormModal = ({ lesson, onSave, onClose, uploadFile }) => {
             <button
               type="submit"
               disabled={!canSubmit()}
-              className="relative px-6 py-2.5 bg-gradient-to-r from-red-600 to-red-700 text-white rounded-xl hover:from-red-700 hover:to-red-800 transition-all duration-300 font-bold shadow-lg shadow-red-600/50 hover:shadow-xl hover:shadow-red-600/60 hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed flex items-center overflow-hidden group"
+              className="relative px-6 py-2.5 bg-gradient-to-r from-amber-500 to-amber-600 text-white rounded-xl hover:from-amber-600 hover:to-amber-700 transition-all duration-300 font-bold shadow-lg shadow-amber-500/50 hover:shadow-xl hover:shadow-amber-500/60 hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed flex items-center overflow-hidden group"
             >
               {uploading ? (
                 <>
@@ -483,7 +483,7 @@ const LessonFormModal = ({ lesson, onSave, onClose, uploadFile }) => {
 
           {/* Enhanced Validation Help Text */}
           {!canSubmit() && !uploading && (
-            <div className="text-sm text-red-600 bg-red-50 p-4 rounded-xl border-2 border-red-200 flex items-start">
+            <div className="text-sm text-amber-600 bg-amber-50 p-4 rounded-xl border-2 border-amber-200 flex items-start">
               <AlertCircle size={18} className="mr-2 flex-shrink-0 mt-0.5" />
               <div>
                 {!formData.title.trim() ? (

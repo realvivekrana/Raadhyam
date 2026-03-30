@@ -44,12 +44,12 @@ const DashboardLayout = ({ children, activeTab, setActiveTab }) => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-red-50/30 to-orange-50/20 relative overflow-hidden">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-amber-50/30 to-amber-50/20 relative overflow-hidden">
       {/* Animated background elements */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-0 right-0 w-96 h-96 bg-gradient-to-br from-red-400/20 to-orange-400/20 rounded-full blur-3xl animate-pulse" style={{ animationDuration: '4s' }}></div>
-        <div className="absolute bottom-0 left-0 w-96 h-96 bg-gradient-to-tr from-red-400/20 to-pink-400/20 rounded-full blur-3xl animate-pulse" style={{ animationDuration: '6s', animationDelay: '1s' }}></div>
-        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-gradient-to-br from-orange-400/10 to-red-400/10 rounded-full blur-3xl animate-pulse" style={{ animationDuration: '5s', animationDelay: '2s' }}></div>
+        <div className="absolute top-0 right-0 w-96 h-96 bg-gradient-to-br from-amber-400/20 to-orange-400/20 rounded-full blur-3xl animate-pulse" style={{ animationDuration: '4s' }}></div>
+        <div className="absolute bottom-0 left-0 w-96 h-96 bg-gradient-to-tr from-amber-400/20 to-yellow-400/20 rounded-full blur-3xl animate-pulse" style={{ animationDuration: '6s', animationDelay: '1s' }}></div>
+        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-gradient-to-br from-amber-400/10 to-amber-600/10 rounded-full blur-3xl animate-pulse" style={{ animationDuration: '5s', animationDelay: '2s' }}></div>
       </div>
 
       {/* Mobile Sidebar */}
@@ -71,15 +71,15 @@ const DashboardLayout = ({ children, activeTab, setActiveTab }) => {
               {/* Logo with animation */}
               <div className="flex-shrink-0 flex items-center px-4 mb-6 animate-fadeInDown">
                 <div className="relative">
-                  <div className="absolute inset-0 bg-gradient-to-br from-red-600 to-red-800 rounded-xl blur-md opacity-50 animate-pulse"></div>
-                  <div className="relative w-10 h-10 bg-gradient-to-br from-red-600 to-red-800 rounded-xl flex items-center justify-center shadow-lg">
+                  <div className="absolute inset-0 bg-gradient-to-br from-amber-500 to-amber-700 rounded-xl blur-md opacity-50 animate-pulse"></div>
+                  <div className="relative w-10 h-10 bg-gradient-to-br from-amber-500 to-amber-700 rounded-xl flex items-center justify-center shadow-lg">
                     <Music className="h-6 w-6 text-white animate-bounce" style={{ animationDuration: '2s' }} />
                   </div>
                 </div>
                 <div className="ml-3">
-                  <span className="text-xl font-bold bg-gradient-to-r from-red-600 via-red-700 to-red-800 bg-clip-text text-transparent animate-shimmer" style={{ backgroundSize: '200% auto' }}>Raadhyam</span>
+                  <span className="text-xl font-bold bg-gradient-to-r from-amber-500 via-amber-600 to-amber-600 bg-clip-text text-transparent animate-shimmer" style={{ backgroundSize: '200% auto' }}>Raadhyam</span>
                   <p className="text-xs text-gray-500 font-medium flex items-center">
-                    <Sparkles size={10} className="mr-1 text-red-500" />
+                    <Sparkles size={10} className="mr-1 text-amber-500" />
                     Admin Portal
                   </p>
                 </div>
@@ -89,7 +89,7 @@ const DashboardLayout = ({ children, activeTab, setActiveTab }) => {
               <div className="px-4 mb-4 animate-fadeInDown" style={{ animationDelay: '0.1s' }}>
                 <button
                   onClick={handleGoHome}
-                  className="w-full flex items-center px-4 py-2.5 text-sm font-medium text-gray-700 hover:text-red-600 bg-gradient-to-r from-gray-50 to-red-50/30 hover:from-red-50 hover:to-red-100 rounded-xl transition-all duration-300 group shadow-sm hover:shadow-md"
+                  className="w-full flex items-center px-4 py-2.5 text-sm font-medium text-gray-700 hover:text-amber-600 bg-gradient-to-r from-gray-50 to-amber-50/30 hover:from-amber-50 hover:to-amber-100 rounded-xl transition-all duration-300 group shadow-sm hover:shadow-md"
                 >
                   <Home size={18} className="mr-3 group-hover:scale-110 group-hover:rotate-12 transition-transform duration-300" />
                   Back to Home
@@ -107,14 +107,14 @@ const DashboardLayout = ({ children, activeTab, setActiveTab }) => {
                     }}
                     className={`${
                       activeTab === item.id
-                        ? 'bg-gradient-to-r from-red-600 to-red-700 text-white shadow-lg shadow-red-600/40 scale-105'
-                        : 'text-gray-700 hover:bg-gradient-to-r hover:from-gray-100 hover:to-red-50'
+                        ? 'bg-gradient-to-r from-amber-500 to-amber-600 text-white shadow-lg shadow-amber-500/40 scale-105'
+                        : 'text-gray-700 hover:bg-gradient-to-r hover:from-gray-100 hover:to-amber-50'
                     } group flex items-center px-4 py-3 text-base font-medium rounded-xl w-full text-left transition-all duration-300 animate-fadeInDown`}
                     style={{ animationDelay: `${0.2 + index * 0.1}s` }}
                   >
                     <item.icon
                       className={`${
-                        activeTab === item.id ? 'text-white' : 'text-gray-400 group-hover:text-red-600'
+                        activeTab === item.id ? 'text-white' : 'text-gray-400 group-hover:text-amber-600'
                       } mr-3 flex-shrink-0 h-5 w-5 transition-all duration-300 group-hover:scale-110 ${activeTab === item.id ? 'animate-pulse' : ''}`}
                     />
                     {item.name}
@@ -124,12 +124,12 @@ const DashboardLayout = ({ children, activeTab, setActiveTab }) => {
             </div>
             
             {/* User Profile */}
-            <div className="flex-shrink-0 border-t border-gray-200 p-4 bg-gradient-to-r from-gray-50 to-red-50/30 animate-fadeInUp">
+            <div className="flex-shrink-0 border-t border-gray-200 p-4 bg-gradient-to-r from-gray-50 to-amber-50/30 animate-fadeInUp">
               <div className="flex items-center w-full justify-between">
                 <div className="flex items-center">
                   <div className="flex-shrink-0 relative">
-                    <div className="absolute inset-0 bg-gradient-to-br from-red-600 to-red-800 rounded-full blur-sm opacity-50 animate-pulse"></div>
-                    <div className="relative h-10 w-10 rounded-full bg-gradient-to-br from-red-600 to-red-800 flex items-center justify-center shadow-md">
+                    <div className="absolute inset-0 bg-gradient-to-br from-amber-500 to-amber-700 rounded-full blur-sm opacity-50 animate-pulse"></div>
+                    <div className="relative h-10 w-10 rounded-full bg-gradient-to-br from-amber-500 to-amber-700 flex items-center justify-center shadow-md">
                       <User className="h-5 w-5 text-white" />
                     </div>
                   </div>
@@ -140,7 +140,7 @@ const DashboardLayout = ({ children, activeTab, setActiveTab }) => {
                 </div>
                 <button 
                   onClick={handleLogout}
-                  className="text-gray-400 hover:text-red-600 ml-2 p-2 hover:bg-red-50 rounded-lg transition-all duration-300 hover:rotate-12 hover:scale-110"
+                  className="text-gray-400 hover:text-amber-600 ml-2 p-2 hover:bg-amber-50 rounded-lg transition-all duration-300 hover:rotate-12 hover:scale-110"
                   title="Logout"
                 >
                   <LogOut size={18} />
@@ -158,15 +158,15 @@ const DashboardLayout = ({ children, activeTab, setActiveTab }) => {
             {/* Logo with animation */}
             <div className="flex items-center flex-shrink-0 px-6 mb-8 animate-fadeInDown">
               <div className="relative">
-                <div className="absolute inset-0 bg-gradient-to-br from-red-600 to-red-800 rounded-xl blur-md opacity-50 animate-pulse"></div>
-                <div className="relative w-12 h-12 bg-gradient-to-br from-red-600 to-red-800 rounded-xl flex items-center justify-center shadow-lg">
+                <div className="absolute inset-0 bg-gradient-to-br from-amber-500 to-amber-700 rounded-xl blur-md opacity-50 animate-pulse"></div>
+                <div className="relative w-12 h-12 bg-gradient-to-br from-amber-500 to-amber-700 rounded-xl flex items-center justify-center shadow-lg">
                   <Music className="h-7 w-7 text-white animate-bounce" style={{ animationDuration: '2s' }} />
                 </div>
               </div>
               <div className="ml-3">
-                <span className="text-2xl font-bold bg-gradient-to-r from-red-600 via-red-700 to-red-800 bg-clip-text text-transparent animate-shimmer" style={{ backgroundSize: '200% auto' }}>Raadhyam</span>
+                <span className="text-2xl font-bold bg-gradient-to-r from-amber-500 via-amber-600 to-amber-600 bg-clip-text text-transparent animate-shimmer" style={{ backgroundSize: '200% auto' }}>Raadhyam</span>
                 <p className="text-xs text-gray-500 font-medium flex items-center">
-                  <Sparkles size={10} className="mr-1 text-red-500 animate-pulse" />
+                  <Sparkles size={10} className="mr-1 text-amber-500 animate-pulse" />
                   Admin Portal
                 </p>
               </div>
@@ -176,7 +176,7 @@ const DashboardLayout = ({ children, activeTab, setActiveTab }) => {
             <div className="px-4 mb-6 animate-fadeInDown" style={{ animationDelay: '0.1s' }}>
               <button
                 onClick={handleGoHome}
-                className="w-full flex items-center px-4 py-2.5 text-sm font-medium text-gray-700 hover:text-red-600 bg-gradient-to-r from-gray-50 to-red-50/30 hover:from-red-50 hover:to-red-100 rounded-xl transition-all duration-300 group shadow-sm hover:shadow-md"
+                className="w-full flex items-center px-4 py-2.5 text-sm font-medium text-gray-700 hover:text-amber-600 bg-gradient-to-r from-gray-50 to-amber-50/30 hover:from-amber-50 hover:to-amber-100 rounded-xl transition-all duration-300 group shadow-sm hover:shadow-md"
               >
                 <Home size={18} className="mr-3 group-hover:scale-110 group-hover:rotate-12 transition-transform duration-300" />
                 Back to Home
@@ -191,14 +191,14 @@ const DashboardLayout = ({ children, activeTab, setActiveTab }) => {
                   onClick={() => setActiveTab(item.id)}
                   className={`${
                     activeTab === item.id
-                      ? 'bg-gradient-to-r from-red-600 to-red-700 text-white shadow-lg shadow-red-600/40 scale-105'
-                      : 'text-gray-700 hover:bg-gradient-to-r hover:from-gray-100 hover:to-red-50'
+                      ? 'bg-gradient-to-r from-amber-500 to-amber-600 text-white shadow-lg shadow-amber-500/40 scale-105'
+                      : 'text-gray-700 hover:bg-gradient-to-r hover:from-gray-100 hover:to-amber-50'
                   } group flex items-center px-4 py-3 text-sm font-medium rounded-xl w-full text-left transition-all duration-300 animate-fadeInDown`}
                   style={{ animationDelay: `${0.2 + index * 0.1}s` }}
                 >
                   <item.icon
                     className={`${
-                      activeTab === item.id ? 'text-white' : 'text-gray-400 group-hover:text-red-600'
+                      activeTab === item.id ? 'text-white' : 'text-gray-400 group-hover:text-amber-600'
                     } mr-3 flex-shrink-0 h-5 w-5 transition-all duration-300 group-hover:scale-110 ${activeTab === item.id ? 'animate-pulse' : ''}`}
                   />
                   {item.name}
@@ -208,11 +208,11 @@ const DashboardLayout = ({ children, activeTab, setActiveTab }) => {
           </div>
           
           {/* User Profile */}
-          <div className="flex-shrink-0 border-t border-gray-200 p-4 bg-gradient-to-r from-gray-50 to-red-50/30 animate-fadeInUp">
+          <div className="flex-shrink-0 border-t border-gray-200 p-4 bg-gradient-to-r from-gray-50 to-amber-50/30 animate-fadeInUp">
             <div className="flex items-center w-full">
               <div className="flex-shrink-0 relative">
-                <div className="absolute inset-0 bg-gradient-to-br from-red-600 to-red-800 rounded-full blur-sm opacity-50 animate-pulse"></div>
-                <div className="relative h-10 w-10 rounded-full bg-gradient-to-br from-red-600 to-red-800 flex items-center justify-center shadow-md">
+                <div className="absolute inset-0 bg-gradient-to-br from-amber-500 to-amber-700 rounded-full blur-sm opacity-50 animate-pulse"></div>
+                <div className="relative h-10 w-10 rounded-full bg-gradient-to-br from-amber-500 to-amber-700 flex items-center justify-center shadow-md">
                   <User className="h-5 w-5 text-white" />
                 </div>
               </div>
@@ -222,7 +222,7 @@ const DashboardLayout = ({ children, activeTab, setActiveTab }) => {
               </div>
               <button 
                 onClick={handleLogout}
-                className="ml-2 text-gray-400 hover:text-red-600 p-2 hover:bg-red-50 rounded-lg transition-all duration-300 hover:rotate-12 hover:scale-110"
+                className="ml-2 text-gray-400 hover:text-amber-600 p-2 hover:bg-amber-50 rounded-lg transition-all duration-300 hover:rotate-12 hover:scale-110"
                 title="Logout"
               >
                 <LogOut size={18} />
@@ -242,19 +242,19 @@ const DashboardLayout = ({ children, activeTab, setActiveTab }) => {
         } border-b border-gray-200/50`}>
           <div className="flex items-center justify-between px-4 py-3">
             <button
-              className="inline-flex items-center justify-center h-10 w-10 rounded-xl text-gray-500 hover:text-gray-900 hover:bg-gradient-to-r hover:from-gray-100 hover:to-red-50 focus:outline-none focus:ring-2 focus:ring-red-500 transition-all duration-300 hover:scale-110"
+              className="inline-flex items-center justify-center h-10 w-10 rounded-xl text-gray-500 hover:text-gray-900 hover:bg-gradient-to-r hover:from-gray-100 hover:to-amber-50 focus:outline-none focus:ring-2 focus:ring-amber-500 transition-all duration-300 hover:scale-110"
               onClick={() => setSidebarOpen(true)}
             >
               <Menu className="h-6 w-6" />
             </button>
             <div className="flex items-center animate-fadeIn">
               <div className="relative">
-                <div className="absolute inset-0 bg-gradient-to-br from-red-600 to-red-800 rounded-lg blur-sm opacity-50 animate-pulse"></div>
-                <div className="relative w-8 h-8 bg-gradient-to-br from-red-600 to-red-800 rounded-lg flex items-center justify-center">
+                <div className="absolute inset-0 bg-gradient-to-br from-amber-500 to-amber-700 rounded-lg blur-sm opacity-50 animate-pulse"></div>
+                <div className="relative w-8 h-8 bg-gradient-to-br from-amber-500 to-amber-700 rounded-lg flex items-center justify-center">
                   <Music className="h-5 w-5 text-white" />
                 </div>
               </div>
-              <span className="ml-2 text-lg font-bold bg-gradient-to-r from-red-600 to-red-800 bg-clip-text text-transparent">Raadhyam</span>
+              <span className="ml-2 text-lg font-bold bg-gradient-to-r from-amber-500 to-amber-700 bg-clip-text text-transparent">Raadhyam</span>
             </div>
             <div className="w-10"></div>
           </div>

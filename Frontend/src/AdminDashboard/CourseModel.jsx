@@ -243,7 +243,7 @@ const CourseFormModal = ({
   ];
 
   /* ── input helpers ── */
-  const inputCls = 'w-full px-3 py-2.5 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-all duration-200 hover:border-red-300 text-sm';
+  const inputCls = 'w-full px-3 py-2.5 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-amber-500 focus:border-amber-400 transition-all duration-200 hover:border-amber-300 text-sm';
   const labelCls = 'block text-sm font-semibold text-gray-700 mb-1.5';
 
   /* ── tab content ── */
@@ -320,14 +320,14 @@ const CourseFormModal = ({
                     onChange={e => updateArrayItem('tags', i, e.target.value)} />
                   {courseForm.tags.length > 1 && (
                     <button type="button" onClick={() => removeArrayItem('tags', i)}
-                      className="text-red-500 hover:text-red-700 p-2">
+                      className="text-amber-500 hover:text-amber-700 p-2">
                       <Trash2 size={16} />
                     </button>
                   )}
                 </div>
               ))}
               <button type="button" onClick={() => addArrayItem('tags')}
-                className="text-red-600 hover:text-red-800 flex items-center text-sm font-semibold mt-1">
+                className="text-amber-600 hover:text-amber-800 flex items-center text-sm font-semibold mt-1">
                 <Plus size={16} className="mr-1" /> Add Tag
               </button>
             </div>
@@ -341,14 +341,14 @@ const CourseFormModal = ({
                     onChange={e => updateArrayItem('whatYouWillLearn', i, e.target.value)} />
                   {courseForm.whatYouWillLearn.length > 1 && (
                     <button type="button" onClick={() => removeArrayItem('whatYouWillLearn', i)}
-                      className="text-red-500 hover:text-red-700 p-2">
+                      className="text-amber-500 hover:text-amber-700 p-2">
                       <Trash2 size={16} />
                     </button>
                   )}
                 </div>
               ))}
               <button type="button" onClick={() => addArrayItem('whatYouWillLearn')}
-                className="text-red-600 hover:text-red-800 flex items-center text-sm font-semibold mt-1">
+                className="text-amber-600 hover:text-amber-800 flex items-center text-sm font-semibold mt-1">
                 <Plus size={16} className="mr-1" /> Add Outcome
               </button>
             </div>
@@ -362,14 +362,14 @@ const CourseFormModal = ({
                     onChange={e => updateArrayItem('prerequisites', i, e.target.value)} />
                   {courseForm.prerequisites.length > 1 && (
                     <button type="button" onClick={() => removeArrayItem('prerequisites', i)}
-                      className="text-red-500 hover:text-red-700 p-2">
+                      className="text-amber-500 hover:text-amber-700 p-2">
                       <Trash2 size={16} />
                     </button>
                   )}
                 </div>
               ))}
               <button type="button" onClick={() => addArrayItem('prerequisites')}
-                className="text-red-600 hover:text-red-800 flex items-center text-sm font-semibold mt-1">
+                className="text-amber-600 hover:text-amber-800 flex items-center text-sm font-semibold mt-1">
                 <Plus size={16} className="mr-1" /> Add Prerequisite
               </button>
             </div>
@@ -453,14 +453,14 @@ const CourseFormModal = ({
           <div className="space-y-6">
             <div>
               <label className={labelCls}>Thumbnail Image</label>
-              <div className="border-2 border-dashed border-gray-300 rounded-xl p-6 text-center hover:border-red-400 transition-colors">
+              <div className="border-2 border-dashed border-gray-300 rounded-xl p-6 text-center hover:border-amber-300 transition-colors">
                 <Upload size={32} className="mx-auto text-gray-400 mb-2" />
                 <p className="text-sm text-gray-600 mb-3">Upload course thumbnail</p>
                 <input type="file" accept="image/*" className="hidden" id="thumbnail-upload"
                   onChange={e => handleFileChange('thumbnailUrl', e.target.files[0])}
                   disabled={uploading} />
                 <label htmlFor="thumbnail-upload"
-                  className="cursor-pointer bg-red-600 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-red-700 transition-colors">
+                  className="cursor-pointer bg-amber-500 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-amber-600 transition-colors">
                   {uploading ? 'Uploading...' : 'Choose File'}
                 </label>
               </div>
@@ -516,14 +516,14 @@ const CourseFormModal = ({
                     onChange={e => updateArrayItem('requirements', i, e.target.value)} />
                   {courseForm.requirements.length > 1 && (
                     <button type="button" onClick={() => removeArrayItem('requirements', i)}
-                      className="text-red-500 hover:text-red-700 p-2">
+                      className="text-amber-500 hover:text-amber-700 p-2">
                       <Trash2 size={16} />
                     </button>
                   )}
                 </div>
               ))}
               <button type="button" onClick={() => addArrayItem('requirements')}
-                className="text-red-600 hover:text-red-800 flex items-center text-sm font-semibold mt-1">
+                className="text-amber-600 hover:text-amber-800 flex items-center text-sm font-semibold mt-1">
                 <Plus size={16} className="mr-1" /> Add Requirement
               </button>
             </div>
@@ -549,21 +549,21 @@ const CourseFormModal = ({
         onClick={e => e.stopPropagation()}
       >
         {/* ── Header ── */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200 bg-gradient-to-r from-red-50 to-rose-50 rounded-t-2xl flex-shrink-0">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200 bg-gradient-to-r from-amber-50 to-yellow-50 rounded-t-2xl flex-shrink-0">
           <div>
-            <h2 className="text-xl font-bold bg-gradient-to-r from-red-600 to-red-800 bg-clip-text text-transparent flex items-center gap-2">
-              <BookOpen size={22} className="text-red-600" />
+            <h2 className="text-xl font-bold bg-gradient-to-r from-amber-500 to-amber-700 bg-clip-text text-transparent flex items-center gap-2">
+              <BookOpen size={22} className="text-amber-600" />
               {editingCourse ? 'Edit Course' : 'Create New Course'}
             </h2>
             <p className="text-xs text-gray-500 mt-0.5 flex items-center gap-1">
-              <Sparkles size={12} className="text-red-400" />
+              <Sparkles size={12} className="text-amber-400" />
               Fill in the details below
             </p>
           </div>
           <button
             onClick={handleClose}
             disabled={loading}
-            className="p-2 rounded-xl text-gray-400 hover:text-red-600 hover:bg-red-50 transition-all duration-200 hover:scale-110 disabled:opacity-50"
+            className="p-2 rounded-xl text-gray-400 hover:text-amber-600 hover:bg-amber-50 transition-all duration-200 hover:scale-110 disabled:opacity-50"
           >
             <X size={22} />
           </button>
@@ -580,8 +580,8 @@ const CourseFormModal = ({
                 onClick={() => setActiveTab(tab.id)}
                 className={`flex items-center gap-1.5 px-4 py-3 text-xs sm:text-sm font-semibold border-b-2 whitespace-nowrap transition-all duration-200 ${
                   activeTab === tab.id
-                    ? 'border-red-500 text-red-600 bg-red-50/50'
-                    : 'border-transparent text-gray-500 hover:text-red-500 hover:border-red-200'
+                    ? 'border-amber-400 text-amber-600 bg-amber-50/50'
+                    : 'border-transparent text-gray-500 hover:text-amber-500 hover:border-amber-200'
                 }`}
               >
                 <Icon size={15} />
@@ -593,10 +593,10 @@ const CourseFormModal = ({
 
         {/* ── Error Banner ── */}
         {error && (
-          <div className="mx-6 mt-4 flex items-center gap-2 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl text-sm flex-shrink-0">
+          <div className="mx-6 mt-4 flex items-center gap-2 bg-amber-50 border border-amber-200 text-amber-700 px-4 py-3 rounded-xl text-sm flex-shrink-0">
             <AlertCircle size={16} className="flex-shrink-0" />
             <span>{error}</span>
-            <button onClick={() => setError(null)} className="ml-auto text-red-400 hover:text-red-600">
+            <button onClick={() => setError(null)} className="ml-auto text-amber-400 hover:text-amber-600">
               <X size={14} />
             </button>
           </div>
@@ -628,7 +628,7 @@ const CourseFormModal = ({
               type="button"
               onClick={handleSubmit}
               disabled={loading || uploading}
-              className="relative px-6 py-2 bg-gradient-to-r from-red-600 to-red-700 text-white rounded-xl font-bold text-sm shadow-lg shadow-red-600/40 hover:from-red-700 hover:to-red-800 hover:scale-105 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 overflow-hidden group"
+              className="relative px-6 py-2 bg-gradient-to-r from-amber-500 to-amber-600 text-white rounded-xl font-bold text-sm shadow-lg shadow-amber-500/40 hover:from-amber-600 hover:to-amber-700 hover:scale-105 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 overflow-hidden group"
             >
               <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700" />
               {loading || uploading ? (
