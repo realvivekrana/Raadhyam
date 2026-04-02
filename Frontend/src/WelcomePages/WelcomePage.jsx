@@ -381,14 +381,16 @@ const RaadhyamWelcomeHome = () => {
                 </Link>
               </div>
 
-              <div className="grid sm:grid-cols-3 gap-4 mt-14 rp-anim" style={{ animationDelay: '200ms' }}>
-                {heroChecks.map((item) => (
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3.5 sm:gap-4 mt-10 sm:mt-14 rp-anim" style={{ animationDelay: '200ms' }}>
+                {heroChecks.map((item, index) => (
                   <div
                     key={item}
-                    className="rounded-2xl bg-white/10 backdrop-blur-md border border-white/20 shadow-sm px-4 py-3.5 text-[13px] font-bold text-white flex items-center justify-center gap-2"
+                    className={`rounded-2xl bg-white/10 backdrop-blur-md border border-white/20 shadow-sm px-5 sm:px-4 py-3.5 sm:py-3.5 text-sm sm:text-[13px] font-bold text-white flex items-center justify-start sm:justify-center gap-2.5 min-h-[52px] ${
+                      index === 2 ? "col-span-2 sm:col-span-1 justify-self-center sm:justify-self-auto w-full max-w-[270px] sm:max-w-none" : ""
+                    }`}
                   >
-                    <CheckCircle className="w-4.5 h-4.5 text-[#ef7e1a] shrink-0" />
-                    <span>{item}</span>
+                    <CheckCircle className="w-4.5 h-4.5 sm:w-4.5 sm:h-4.5 text-[#ef7e1a] shrink-0" />
+                    <span className="leading-tight tracking-[0.01em]">{item}</span>
                   </div>
                 ))}
               </div>
