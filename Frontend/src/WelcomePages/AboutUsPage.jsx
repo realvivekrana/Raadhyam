@@ -66,16 +66,16 @@ const GlobalStyles = () => (
     .au-pulse-dot { animation: pulseDot 2s ease infinite; }
 
     .au-card {
-      background: rgba(255,255,255,.88);
+      background: rgba(255,255,255,.86);
       border: 1px solid rgba(217,119,6,.2);
       border-radius: 20px;
       backdrop-filter: blur(10px);
-      transition: transform .3s ease, box-shadow .3s ease, border-color .3s ease;
+      transition: transform .35s ease, box-shadow .35s ease, border-color .35s ease;
     }
     .au-card:hover {
-      transform: translateY(-6px);
-      border-color: rgba(217,119,6,.42);
-      box-shadow: 0 20px 44px rgba(15,23,42,.14);
+      transform: translateY(-8px);
+      border-color: rgba(217,119,6,.45);
+      box-shadow: 0 24px 56px rgba(30,41,59,.13);
     }
 
     .au-dark-card {
@@ -149,15 +149,18 @@ const StatCard = ({ stat, delay }) => {
 
 const ValueCard = ({ value, delay }) => {
   const { ref, inView } = useInView(0.15);
+  const [hovered, setHovered] = useState(false);
   const Icon = value.icon;
   return (
     <div
       ref={ref}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
       className="au-card p-7"
       style={{
         opacity: inView ? 1 : 0,
-        transform: inView ? 'translateY(0)' : 'translateY(24px)',
-        transition: `opacity .7s ease ${delay}ms, transform .7s ease ${delay}ms`,
+        transform: inView ? (hovered ? 'translateY(-8px)' : 'translateY(0)') : 'translateY(24px)',
+        transition: `opacity .7s ease ${delay}ms, transform .35s ease, box-shadow .35s ease, border-color .35s ease`,
       }}
     >
       <div className="w-12 h-12 rounded-xl bg-amber-100 flex items-center justify-center mb-4">
@@ -171,18 +174,26 @@ const ValueCard = ({ value, delay }) => {
 
 const TeamCard = ({ member, delay }) => {
   const { ref, inView } = useInView(0.12);
+  const [hovered, setHovered] = useState(false);
   return (
     <div
       ref={ref}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
       className="au-card p-7"
       style={{
         opacity: inView ? 1 : 0,
-        transform: inView ? 'translateY(0)' : 'translateY(24px)',
-        transition: `opacity .7s ease ${delay}ms, transform .7s ease ${delay}ms`,
+        transform: inView ? (hovered ? 'translateY(-8px)' : 'translateY(0)') : 'translateY(24px)',
+        transition: `opacity .7s ease ${delay}ms, transform .35s ease, box-shadow .35s ease, border-color .35s ease`,
       }}
     >
       <div className="w-36 h-36 rounded-full overflow-hidden mx-auto mb-4 border-4 border-amber-500/30">
-        <img src={member.image} alt={member.name} className="w-full h-full object-cover" />
+        <img 
+          src={member.image} 
+          alt={member.name} 
+          className="w-full h-full object-cover"
+          style={{ transform: hovered ? 'scale(1.08)' : 'scale(1)', transition: 'transform .5s ease' }}
+        />
       </div>
       <h3 className="text-2xl font-bold text-slate-900 text-center">{member.name}</h3>
       <p className="text-amber-700 font-bold text-xs uppercase tracking-wider text-center mt-1 mb-4">{member.role}</p>
@@ -210,18 +221,26 @@ const TeamCard = ({ member, delay }) => {
 
 const InstrumentCard = ({ inst, index }) => {
   const { ref, inView } = useInView(0.1);
+  const [hovered, setHovered] = useState(false);
   return (
     <div
       ref={ref}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
       className="au-card overflow-hidden"
       style={{
         opacity: inView ? 1 : 0,
-        transform: inView ? 'translateY(0)' : 'translateY(20px)',
-        transition: `opacity .6s ease ${(index % 6) * 60}ms, transform .6s ease ${(index % 6) * 60}ms`,
+        transform: inView ? (hovered ? 'translateY(-8px)' : 'translateY(0)') : 'translateY(20px)',
+        transition: `opacity .6s ease ${(index % 6) * 60}ms, transform .35s ease, box-shadow .35s ease, border-color .35s ease`,
       }}
     >
       <div className="h-28 overflow-hidden">
-        <img src={inst.image} alt={inst.name} className="w-full h-full object-cover" />
+        <img 
+          src={inst.image} 
+          alt={inst.name} 
+          className="w-full h-full object-cover"
+          style={{ transform: hovered ? 'scale(1.08)' : 'scale(1)', transition: 'transform .5s ease' }}
+        />
       </div>
       <div className="p-3 text-center">
         <span className="text-sm font-semibold text-slate-800">{inst.name}</span>
@@ -232,18 +251,26 @@ const InstrumentCard = ({ inst, index }) => {
 
 const FacilityCard = ({ facility, delay }) => {
   const { ref, inView } = useInView(0.1);
+  const [hovered, setHovered] = useState(false);
   return (
     <div
       ref={ref}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
       className="au-card overflow-hidden"
       style={{
         opacity: inView ? 1 : 0,
-        transform: inView ? 'translateY(0)' : 'translateY(22px)',
-        transition: `opacity .7s ease ${delay}ms, transform .7s ease ${delay}ms`,
+        transform: inView ? (hovered ? 'translateY(-8px)' : 'translateY(0)') : 'translateY(22px)',
+        transition: `opacity .7s ease ${delay}ms, transform .35s ease, box-shadow .35s ease, border-color .35s ease`,
       }}
     >
       <div className="h-48 overflow-hidden relative">
-        <img src={facility.image} alt={facility.title} className="w-full h-full object-cover" />
+        <img 
+          src={facility.image} 
+          alt={facility.title} 
+          className="w-full h-full object-cover"
+          style={{ transform: hovered ? 'scale(1.08)' : 'scale(1)', transition: 'transform .5s ease' }}
+        />
         <div className="absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-slate-900/50 to-transparent" />
       </div>
       <div className="p-6">
@@ -256,14 +283,17 @@ const FacilityCard = ({ facility, delay }) => {
 
 const MissionCard = ({ Icon, title, texts, delay }) => {
   const { ref, inView } = useInView(0.1);
+  const [hovered, setHovered] = useState(false);
   return (
     <div
       ref={ref}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
       className="au-card p-8"
       style={{
         opacity: inView ? 1 : 0,
-        transform: inView ? 'translateY(0)' : 'translateY(22px)',
-        transition: `opacity .7s ease ${delay}ms, transform .7s ease ${delay}ms`,
+        transform: inView ? (hovered ? 'translateY(-8px)' : 'translateY(0)') : 'translateY(22px)',
+        transition: `opacity .7s ease ${delay}ms, transform .35s ease, box-shadow .35s ease, border-color .35s ease`,
       }}
     >
       <div className="w-12 h-12 rounded-xl bg-amber-100 flex items-center justify-center mb-4">
