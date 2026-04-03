@@ -1,9 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
-import NavBarpage from '../WelcomePages/NavBarpage';
-import FooterPage from '../WelcomePages/FooterPage';
-import heroBg from '../assets/hero-bg.jpg';
 
 const SERIF = "'Cormorant Garamond',Georgia,serif";
 const SANS  = "'Lato',system-ui,sans-serif";
@@ -156,182 +153,326 @@ const LoginPage = () => {
   );
 
   const inputStyle = (field) => ({
-    width: '100%', padding: '12px 16px',
-    border: `1.5px solid ${errors[field] ? '#EF4444' : focused === field ? '#D97706' : '#E2E8F0'}`,
-    borderRadius: 12, fontSize: '0.92rem', fontFamily: SANS,
-    color: '#1E293B', background: '#fff', outline: 'none',
-    transition: 'border-color 0.25s, box-shadow 0.25s',
-    boxShadow: focused === field ? '0 0 0 3px rgba(217,119,6,0.12)' : 'none',
+    width: '100%',
+    padding: '11px 0',
+    border: 'none',
+    borderBottom: `2px solid ${errors[field] ? '#EF4444' : focused === field ? '#d08c00' : '#c7ccd4'}`,
+    borderRadius: 0,
+    fontSize: '0.9rem',
+    fontFamily: SANS,
+    color: '#1E293B',
+    background: 'transparent',
+    outline: 'none',
+    transition: 'border-color 0.25s',
   });
 
-  const labelStyle = { display: 'block', fontSize: '0.8rem', fontWeight: 700, color: '#475569', marginBottom: 6, letterSpacing: '0.06em', textTransform: 'uppercase', fontFamily: SANS };
+  const labelStyle = {
+    display: 'block',
+    fontSize: '0.68rem',
+    fontWeight: 700,
+    color: '#8A8F99',
+    marginBottom: 2,
+    letterSpacing: '0.12em',
+    textTransform: 'uppercase',
+    fontFamily: SANS,
+  };
 
   return (
-    <div style={{ minHeight: '100vh', background: '#0f172a', fontFamily: SANS, position: 'relative', overflow: 'hidden' }}>
+    <div style={{ height: '100vh', background: 'linear-gradient(130deg, #ef7e1a 0%, #f4a14f 100%)', fontFamily: SANS, position: 'relative', overflow: 'hidden' }}>
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Lato:wght@400;600;700&display=swap');
-        @keyframes floatNote { 0%,100%{transform:translateY(0) rotate(0deg)} 50%{transform:translateY(-16px) rotate(8deg)} }
-        @keyframes fadeUp { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:translateY(0)} }
+        @keyframes fadeUp { from{opacity:0;transform:translateY(22px)} to{opacity:1;transform:translateY(0)} }
         @keyframes spin { to{transform:rotate(360deg)} }
-        @keyframes shimmer { 0%{background-position:-200% center} 100%{background-position:200% center} }
+
+        .auth-wrap {
+          height: 100vh;
+          padding: 22px 18px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+
+        .auth-card {
+          width: min(1060px, 100%);
+          height: min(90vh, 640px);
+          border-radius: 16px;
+          background: #f6f7fb;
+          box-shadow: 0 28px 65px rgba(0, 0, 0, 0.22);
+          display: grid;
+          grid-template-columns: 1.08fr 0.92fr;
+          overflow: hidden;
+          position: relative;
+          animation: fadeUp 0.45s ease;
+        }
+
+        .auth-dot {
+          position: absolute;
+          width: 36px;
+          height: 36px;
+          border-radius: 999px;
+          background: rgba(241, 244, 252, 0.95);
+          box-shadow: 0 8px 14px rgba(0,0,0,0.08);
+        }
+
+        .auth-dot.top { top: -14px; left: -14px; }
+        .auth-dot.bottom { right: -14px; bottom: -14px; }
+
+        .auth-right {
+          position: relative;
+          background: #f2f4f8;
+        }
+
+        .auth-right img {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+          object-position: 65% center;
+        }
+
+        .auth-input::placeholder {
+          color: #b2b8c2;
+        }
+
+        @media (max-width: 980px) {
+          .auth-card {
+            grid-template-columns: 1fr;
+            max-width: 580px;
+            height: min(92vh, 740px);
+          }
+
+          .auth-right {
+            min-height: 260px;
+            order: -1;
+          }
+
+          .auth-right img {
+            object-position: center 22%;
+          }
+        }
+
+        @media (max-width: 640px) {
+          .auth-wrap {
+            padding-top: 12px;
+          }
+
+          .auth-left-inner {
+            padding: 20px 18px;
+          }
+        }
       `}</style>
 
-      <NavBarpage />
+      <Link
+        to="/"
+        style={{
+          position: 'absolute',
+          top: 16,
+          left: 16,
+          zIndex: 20,
+          textDecoration: 'none',
+          padding: '8px 14px',
+          borderRadius: 999,
+          border: '1px solid rgba(0,0,0,0.18)',
+          color: '#2f3643',
+          background: 'rgba(255,255,255,0.8)',
+          backdropFilter: 'blur(4px)',
+          fontSize: '0.82rem',
+          fontWeight: 700,
+        }}
+      >
+        Back to Home
+      </Link>
 
-      <img src={heroBg} alt="Raadhyam background" style={{ position:'absolute', inset:0, width:'100%', height:'100%', objectFit:'cover' }} />
-      <div style={{ position:'absolute', inset:0, background:'linear-gradient(to bottom, rgba(2,6,23,0.84), rgba(15,23,42,0.84), rgba(2,6,23,0.9))' }} />
+      <div className="auth-wrap">
+        <div className="auth-card">
+          <span className="auth-dot top" />
+          <span className="auth-dot bottom" />
 
-      {/* Decorative blobs */}
-      <div style={{ position:'absolute', top:'-80px', right:'-80px', width:360, height:360, borderRadius:'50%', background:'radial-gradient(circle,rgba(217,119,6,0.12) 0%,transparent 70%)', pointerEvents:'none' }} />
-      <div style={{ position:'absolute', bottom:'-60px', left:'-60px', width:280, height:280, borderRadius:'50%', background:'radial-gradient(circle,rgba(217,119,6,0.09) 0%,transparent 70%)', pointerEvents:'none' }} />
-      {/* Dot pattern */}
-      <div style={{ position:'absolute', inset:0, opacity:0.35, pointerEvents:'none', backgroundImage:'radial-gradient(circle,rgba(217,119,6,0.18) 1px,transparent 1px)', backgroundSize:'32px 32px' }} />
-      {/* Floating notes */}
-      {[{n:'♩',t:'12%',l:'5%',d:'0s'},{n:'♫',t:'20%',r:'6%',d:'1.4s'},{n:'♬',b:'22%',l:'8%',d:'2.6s'},{n:'𝄞',t:'55%',r:'4%',d:'0.8s'}].map((x,i)=>(
-        <span key={i} style={{ position:'absolute', fontSize:'1.8rem', color:'#D97706', opacity:0.13, top:x.t, bottom:x.b, left:x.l, right:x.r, animation:`floatNote 7s ease-in-out ${x.d} infinite`, pointerEvents:'none', userSelect:'none' }}>{x.n}</span>
-      ))}
-
-      {/* Card */}
-      <div style={{ minHeight:'100vh', display:'flex', alignItems:'center', justifyContent:'center', padding:'120px 1rem 3rem', position:'relative', zIndex:2 }}>
-        <div style={{ background:'#fff', borderRadius:24, boxShadow:'0 24px 80px rgba(217,119,6,0.14), 0 4px 24px rgba(30,41,59,0.08)', padding:'2.5rem', width:'100%', maxWidth:460, animation:'fadeUp 0.5s ease both', border:'1px solid rgba(217,119,6,0.15)' }}>
-
-          {/* Header */}
-          <div style={{ textAlign:'center', marginBottom:'1.5rem' }}>
-            <div style={{ width:72, height:72, borderRadius:'50%', background:'linear-gradient(135deg,#D97706,#B45309)', display:'flex', alignItems:'center', justifyContent:'center', margin:'0 auto 1rem', boxShadow:'0 8px 24px rgba(217,119,6,0.35)', fontSize:'2rem' }}>🎵</div>
-            <h1 style={{ fontFamily:SERIF, fontSize:'2rem', fontWeight:700, color:'#1E293B', marginBottom:6 }}>Welcome Back</h1>
-            <p style={{ color:'#64748B', fontSize:'0.9rem' }}>Sign in to continue your musical journey</p>
-          </div>
-
-          {/* Success */}
-          {successMessage && (
-            <div style={{ background:'rgba(5,150,105,0.08)', border:'1px solid rgba(5,150,105,0.25)', borderRadius:12, padding:'12px 16px', marginBottom:'1.25rem', display:'flex', alignItems:'center', gap:10, color:'#065F46', fontSize:'0.88rem', fontWeight:600 }}>
-              ✅ {successMessage}
-            </div>
-          )}
-          {/* Error */}
-          {errors.general && (
-            <div style={{ background:'rgba(239,68,68,0.07)', border:'1px solid rgba(239,68,68,0.25)', borderRadius:12, padding:'12px 16px', marginBottom:'1.25rem', display:'flex', alignItems:'center', gap:10, color:'#991B1B', fontSize:'0.88rem', fontWeight:600 }}>
-              ⚠️ {errors.general}
-            </div>
-          )}
-
-          <form onSubmit={handleSubmit} style={{ display:'flex', flexDirection:'column', gap:'0.9rem' }}>
-            {/* Email */}
-            <div>
-              <label style={labelStyle}>✉ Email Address</label>
-              <input type="email" name="email" value={formData.email} onChange={handleChange}
-                placeholder="your@email.com" style={inputStyle('email')}
-                onFocus={()=>setFocused('email')} onBlur={()=>setFocused('')} />
-              {errors.email && <p style={{ color:'#EF4444', fontSize:'0.75rem', marginTop:4 }}>⚠ {errors.email}</p>}
+          <div className="auth-left-inner" style={{ padding: '24px 34px 18px', overflow: 'hidden' }}>
+            <div style={{ marginBottom: '0.7rem' }}>
+              <h1 style={{ fontFamily: SERIF, fontSize: '2.05rem', color: '#151821', marginBottom: 6, lineHeight: 1.1 }}>
+                Welcome to the world
+              </h1>
+              <p style={{ color: '#7f858f', fontSize: '0.86rem' }}>
+                of your raadhyam music
+              </p>
             </div>
 
-            {/* Password */}
-            <div>
-              <label style={labelStyle}>🔒 Password</label>
-              <div style={{ position:'relative' }}>
-                <input type={showPass ? 'text' : 'password'} name="password" value={formData.password} onChange={handleChange}
-                  placeholder="Enter your password" style={{ ...inputStyle('password'), paddingRight:44 }}
-                  onFocus={()=>setFocused('password')} onBlur={()=>setFocused('')} />
-                <button type="button" onClick={()=>setShowPass(p=>!p)} style={{ position:'absolute', right:14, top:'50%', transform:'translateY(-50%)', background:'none', border:'none', cursor:'pointer', fontSize:'1rem', color:'#94A3B8' }}>
-                  {showPass ? '🙈' : '👁'}
+            <div style={{ marginBottom: 8, color: '#5c616c', fontSize: '0.76rem', fontWeight: 700, letterSpacing: '0.11em', textTransform: 'uppercase' }}>
+              Login
+            </div>
+
+            <div style={{ marginBottom: '0.5rem' }}>
+              {successMessage && (
+                <div style={{ background: 'rgba(5,150,105,0.08)', border: '1px solid rgba(5,150,105,0.2)', borderRadius: 10, padding: '9px 12px', color: '#065F46', fontSize: '0.84rem', marginBottom: 10 }}>
+                  {successMessage}
+                </div>
+              )}
+              {errors.general && (
+                <div style={{ background: 'rgba(239,68,68,0.08)', border: '1px solid rgba(239,68,68,0.2)', borderRadius: 10, padding: '9px 12px', color: '#991B1B', fontSize: '0.84rem' }}>
+                  {errors.general}
+                </div>
+              )}
+            </div>
+
+            <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '0.45rem' }}>
+              <div>
+                <label style={labelStyle}>Name/Email</label>
+                <input
+                  className="auth-input"
+                  type="email"
+                  name="email"
+                  value={formData.email}
+                  onChange={handleChange}
+                  placeholder="your@email.com"
+                  style={inputStyle('email')}
+                  onFocus={() => setFocused('email')}
+                  onBlur={() => setFocused('')}
+                />
+                {errors.email && <p style={{ color: '#EF4444', fontSize: '0.72rem', marginTop: 4 }}>{errors.email}</p>}
+              </div>
+
+              <div>
+                <label style={labelStyle}>Password</label>
+                <div style={{ position: 'relative' }}>
+                  <input
+                    className="auth-input"
+                    type={showPass ? 'text' : 'password'}
+                    name="password"
+                    value={formData.password}
+                    onChange={handleChange}
+                    placeholder="Enter your password"
+                    style={{ ...inputStyle('password'), paddingRight: 32 }}
+                    onFocus={() => setFocused('password')}
+                    onBlur={() => setFocused('')}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPass((p) => !p)}
+                    style={{ position: 'absolute', right: 2, top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer', fontSize: '0.9rem', color: '#a1a7b2' }}
+                  >
+                    {showPass ? 'Hide' : 'Show'}
+                  </button>
+                </div>
+                {errors.password && <p style={{ color: '#EF4444', fontSize: '0.72rem', marginTop: 4 }}>{errors.password}</p>}
+              </div>
+
+              <div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
+                  <label style={labelStyle}>Captcha</label>
+                  <button type="button" onClick={generateCaptcha} style={{ fontSize: '0.72rem', fontWeight: 700, color: '#b57a00', background: 'rgba(208,140,0,0.08)', border: '1px solid rgba(208,140,0,0.25)', borderRadius: 8, padding: '3px 8px', cursor: 'pointer', fontFamily: SANS }}>
+                    Refresh
+                  </button>
+                </div>
+                <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+                  <canvas ref={canvasRef} width={124} height={42} style={{ borderRadius: 8, border: '1px solid #dde1e8', flexShrink: 0, background: '#fff' }} />
+                  <input
+                    className="auth-input"
+                    type="text"
+                    value={userCaptcha}
+                    onChange={(e) => setUserCaptcha(e.target.value)}
+                    placeholder="Type here"
+                    style={{ ...inputStyle('captcha'), flex: 1 }}
+                    onFocus={() => setFocused('captcha')}
+                    onBlur={() => setFocused('')}
+                  />
+                </div>
+                {errors.captcha && <p style={{ color: '#EF4444', fontSize: '0.72rem', marginTop: 4 }}>{errors.captcha}</p>}
+              </div>
+
+              <div style={{ textAlign: 'right', marginTop: 2 }}>
+                <a href="/forgot-password" style={{ fontSize: '0.79rem', color: '#b57a00', fontWeight: 700, textDecoration: 'none' }}>
+                  Forgot password?
+                </a>
+              </div>
+
+              <button
+                type="submit"
+                disabled={isLoading}
+                style={{
+                  marginTop: 4,
+                  border: 'none',
+                  borderRadius: 999,
+                  background: isLoading ? '#e4e7ee' : '#efb400',
+                  color: isLoading ? '#8a909c' : '#2b2110',
+                  fontWeight: 800,
+                  fontSize: '0.86rem',
+                  padding: '10px 18px',
+                  cursor: isLoading ? 'not-allowed' : 'pointer',
+                }}
+              >
+                {isLoading ? 'Signing in...' : 'Continue'}
+              </button>
+
+              <div style={{ display: 'flex', gap: 9 }}>
+                <button
+                  type="button"
+                  onClick={() => {
+                    window.location.href = '/dashboard/admin';
+                  }}
+                  style={{ flex: 1, padding: '9px 10px', borderRadius: 8, border: '1px solid #d8dde6', background: '#fff', color: '#48505f', fontSize: '0.78rem', fontWeight: 700, cursor: 'pointer' }}
+                >
+                  Demo Admin
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    window.location.href = '/dashboard/home';
+                  }}
+                  style={{ flex: 1, padding: '9px 10px', borderRadius: 8, border: '1px solid #d8dde6', background: '#fff', color: '#48505f', fontSize: '0.78rem', fontWeight: 700, cursor: 'pointer' }}
+                >
+                  Demo User
                 </button>
               </div>
-              {errors.password && <p style={{ color:'#EF4444', fontSize:'0.75rem', marginTop:4 }}>⚠ {errors.password}</p>}
+            </form>
+
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10, margin: '0.6rem 0 0.6rem' }}>
+              <div style={{ flex: 1, height: 1, background: '#d7dce4' }} />
+              <span style={{ color: '#9aa1ad', fontSize: '0.73rem', fontWeight: 700, letterSpacing: '0.08em' }}>OR</span>
+              <div style={{ flex: 1, height: 1, background: '#d7dce4' }} />
             </div>
 
-            {/* CAPTCHA */}
-            <div>
-              <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:6 }}>
-                <label style={labelStyle}>🎼 CAPTCHA</label>
-                <button type="button" onClick={generateCaptcha} style={{ fontSize:'0.75rem', fontWeight:700, color:'#D97706', background:'rgba(217,119,6,0.1)', border:'1px solid rgba(217,119,6,0.25)', borderRadius:8, padding:'3px 10px', cursor:'pointer', fontFamily:SANS }}>↻ Refresh</button>
-              </div>
-              <div style={{ display:'flex', gap:10, alignItems:'center' }}>
-                <canvas ref={canvasRef} width={130} height={44} style={{ borderRadius:10, border:'1.5px solid #E2E8F0', flexShrink:0 }} />
-                <input type="text" value={userCaptcha} onChange={e=>setUserCaptcha(e.target.value)}
-                  placeholder="Type here" style={{ ...inputStyle('captcha'), flex:1 }}
-                  onFocus={()=>setFocused('captcha')} onBlur={()=>setFocused('')} />
-              </div>
-              {errors.captcha && <p style={{ color:'#EF4444', fontSize:'0.75rem', marginTop:4 }}>⚠ {errors.captcha}</p>}
-            </div>
-
-            {/* Forgot */}
-            <div style={{ textAlign:'right', marginTop:-4 }}>
-              <a href="/forgot-password" style={{ fontSize:'0.8rem', color:'#D97706', fontWeight:700, textDecoration:'none' }}>Forgot password?</a>
-            </div>
-
-            {/* Demo buttons */}
-            <div>
-              <p style={{ fontSize:'0.72rem', fontWeight:700, color:'#94A3B8', letterSpacing:'0.1em', textTransform:'uppercase', textAlign:'center', marginBottom:8, fontFamily:SANS }}>⚡ Quick Demo Access</p>
-              <div style={{ display:'flex', gap:10 }}>
-                <button type="button" onClick={() => { window.location.href = '/dashboard/admin'; }}
-                  style={{ flex:1, padding:'10px', borderRadius:10, border:'1.5px solid #D97706', background:'rgba(217,119,6,0.07)', color:'#B45309', fontSize:'0.82rem', fontWeight:700, cursor:'pointer', fontFamily:SANS, transition:'background 0.2s' }}
-                  onMouseEnter={e=>e.currentTarget.style.background='rgba(217,119,6,0.15)'}
-                  onMouseLeave={e=>e.currentTarget.style.background='rgba(217,119,6,0.07)'}>
-                  🛡 Demo Admin
-                </button>
-                <button type="button" onClick={() => { window.location.href = '/dashboard/home'; }}
-                  style={{ flex:1, padding:'10px', borderRadius:10, border:'1.5px solid #1E293B', background:'rgba(30,41,59,0.05)', color:'#1E293B', fontSize:'0.82rem', fontWeight:700, cursor:'pointer', fontFamily:SANS, transition:'background 0.2s' }}
-                  onMouseEnter={e=>e.currentTarget.style.background='rgba(30,41,59,0.12)'}
-                  onMouseLeave={e=>e.currentTarget.style.background='rgba(30,41,59,0.05)'}>
-                  🎵 Demo User
-                </button>
-              </div>
-            </div>
-
-            {/* Submit */}
-            <button type="submit" disabled={isLoading} style={{
-              background: isLoading ? '#E2E8F0' : 'linear-gradient(135deg,#D97706,#B45309)',
-              color: isLoading ? '#94A3B8' : '#fff', border:'none', borderRadius:12,
-              padding:'14px', fontSize:'1rem', fontWeight:700, cursor: isLoading ? 'not-allowed' : 'pointer',
-              fontFamily:SANS, letterSpacing:'0.04em',
-              boxShadow: isLoading ? 'none' : '0 6px 20px rgba(217,119,6,0.35)',
-              transition:'transform 0.2s, box-shadow 0.2s',
-              display:'flex', alignItems:'center', justifyContent:'center', gap:8,
-            }}
-              onMouseEnter={e=>{ if(!isLoading){ e.currentTarget.style.transform='translateY(-2px)'; e.currentTarget.style.boxShadow='0 10px 28px rgba(217,119,6,0.5)'; }}}
-              onMouseLeave={e=>{ e.currentTarget.style.transform='none'; e.currentTarget.style.boxShadow='0 6px 20px rgba(217,119,6,0.35)'; }}
+            <button
+              onClick={handleGoogle}
+              disabled={isLoading}
+              style={{
+                width: '100%',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: 10,
+                background: '#fff',
+                border: '1px solid #d8dde6',
+                borderRadius: 10,
+                padding: '10px',
+                fontSize: '0.84rem',
+                fontWeight: 700,
+                cursor: 'pointer',
+                color: '#2f3643',
+                fontFamily: SANS,
+              }}
             >
-              {isLoading ? (<><div style={{ width:18, height:18, border:'2px solid #94A3B8', borderTopColor:'transparent', borderRadius:'50%', animation:'spin 0.8s linear infinite' }} /> Signing In...</>) : (<>🎵 Sign In to Raadhyam</>)}
+              <svg width="18" height="18" viewBox="0 0 24 24">
+                <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+                <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+              </svg>
+              Continue with Google
             </button>
-          </form>
 
-          {/* Divider */}
-          <div style={{ display:'flex', alignItems:'center', gap:12, margin:'1.5rem 0' }}>
-            <div style={{ flex:1, height:1, background:'#E2E8F0' }} />
-            <span style={{ color:'#94A3B8', fontSize:'0.78rem', fontWeight:600, letterSpacing:'0.06em' }}>OR</span>
-            <div style={{ flex:1, height:1, background:'#E2E8F0' }} />
+            <p style={{ marginTop: '0.7rem', color: '#6c7280', fontSize: '0.84rem' }}>
+              Do not have an account?{' '}
+              <Link to="/register" style={{ color: '#b57a00', fontWeight: 700, textDecoration: 'none' }}>
+                Create account
+              </Link>
+            </p>
           </div>
 
-          {/* Google */}
-          <button onClick={handleGoogle} disabled={isLoading} style={{
-            width:'100%', display:'flex', alignItems:'center', justifyContent:'center', gap:12,
-            background:'#fff', border:'1.5px solid #E2E8F0', borderRadius:12,
-            padding:'12px', fontSize:'0.92rem', fontWeight:700, cursor:'pointer',
-            color:'#1E293B', fontFamily:SANS,
-            transition:'border-color 0.25s, box-shadow 0.25s',
-            boxShadow:'0 2px 8px rgba(30,41,59,0.06)',
-          }}
-            onMouseEnter={e=>{ e.currentTarget.style.borderColor='#D97706'; e.currentTarget.style.boxShadow='0 4px 16px rgba(217,119,6,0.15)'; }}
-            onMouseLeave={e=>{ e.currentTarget.style.borderColor='#E2E8F0'; e.currentTarget.style.boxShadow='0 2px 8px rgba(30,41,59,0.06)'; }}
-          >
-            <svg width="20" height="20" viewBox="0 0 24 24">
-              <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
-              <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
-              <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
-              <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
-            </svg>
-            Continue with Google
-          </button>
-
-          {/* Register link */}
-          <p style={{ textAlign:'center', marginTop:'1.5rem', color:'#64748B', fontSize:'0.88rem' }}>
-            Don't have an account?{' '}
-            <Link to="/register" style={{ color:'#D97706', fontWeight:700, textDecoration:'none' }}>Create Account</Link>
-          </p>
+          <div className="auth-right">
+            <img src="/indianinstruements.png" alt="Indian instruments" />
+          </div>
         </div>
       </div>
-
-      <FooterPage />
     </div>
   );
 };
