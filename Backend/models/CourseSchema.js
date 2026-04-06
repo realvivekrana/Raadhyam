@@ -3,7 +3,7 @@ import slugify from "slugify";
 
 const { Schema } = mongoose;
 
-/* ------------------------- Lesson Schema ------------------------- */
+//  Lesson Schema 
 const LessonSchema = new Schema({
   title: { type: String, required: true, trim: true },
   slug: { type: String, trim: true, index: true },
