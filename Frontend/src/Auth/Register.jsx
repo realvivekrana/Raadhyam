@@ -115,89 +115,73 @@ const RegisterPage = () => {
     <div style={{ height: '100vh', background: 'linear-gradient(130deg, #ef7e1a 0%, #f4a14f 100%)', fontFamily: SANS, position: 'relative', overflow: 'hidden' }}>
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Lato:wght@400;600;700&display=swap');
-        @keyframes fadeUp { from{opacity:0;transform:translateY(22px)} to{opacity:1;transform:translateY(0)} }
-        @keyframes spin { to{transform:rotate(360deg)} }
+        @keyframes fadeUp    { from{opacity:0;transform:translateY(28px)} to{opacity:1;transform:translateY(0)} }
+        @keyframes fadeLeft  { from{opacity:0;transform:translateX(-28px)} to{opacity:1;transform:translateX(0)} }
+        @keyframes spin      { to{transform:rotate(360deg)} }
+        @keyframes floatNote { 0%,100%{transform:translateY(0) rotate(0deg)} 33%{transform:translateY(-22px) rotate(9deg)} 66%{transform:translateY(10px) rotate(-6deg)} }
+        @keyframes orbPulse  { 0%,100%{transform:scale(1) translateY(0)} 50%{transform:scale(1.08) translateY(-18px)} }
+        @keyframes drawLine  { from{width:0} to{width:48px} }
+        @keyframes cardIn    { from{opacity:0;transform:translateY(40px) scale(0.97)} to{opacity:1;transform:translateY(0) scale(1)} }
+        @keyframes imgReveal { from{opacity:0;transform:scale(1.08)} to{opacity:1;transform:scale(1)} }
+        @keyframes pulseBtn  { 0%,100%{box-shadow:0 4px 18px rgba(239,180,0,0.4)} 50%{box-shadow:0 4px 32px rgba(239,180,0,0.75)} }
 
-        .auth-wrap {
-          height: 100vh;
-          padding: 22px 18px;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-        }
+        .auth-wrap { height:100vh; padding:22px 18px; display:flex; align-items:center; justify-content:center; }
 
         .auth-card {
           width: min(1060px, 100%);
           height: min(90vh, 650px);
-          border-radius: 16px;
+          border-radius: 20px;
           background: #f6f7fb;
-          box-shadow: 0 28px 65px rgba(0, 0, 0, 0.22);
+          box-shadow: 0 32px 80px rgba(0,0,0,0.28), 0 0 0 1px rgba(255,255,255,0.15);
           display: grid;
           grid-template-columns: 1.08fr 0.92fr;
           overflow: hidden;
           position: relative;
-          animation: fadeUp 0.45s ease;
+          animation: cardIn 0.6s cubic-bezier(.22,1,.36,1) both;
         }
 
-        .auth-dot {
-          position: absolute;
-          width: 36px;
-          height: 36px;
-          border-radius: 999px;
-          background: rgba(241, 244, 252, 0.95);
-          box-shadow: 0 8px 14px rgba(0,0,0,0.08);
+        .auth-dot { position:absolute; width:36px; height:36px; border-radius:999px; background:rgba(241,244,252,0.95); box-shadow:0 8px 14px rgba(0,0,0,0.08); }
+        .auth-dot.top { top:-14px; left:-14px; }
+        .auth-dot.bottom { right:-14px; bottom:-14px; }
+
+        .auth-right { position:relative; background:#f2f4f8; overflow:hidden; }
+        .auth-right img { width:100%; height:100%; object-fit:cover; object-position:65% center; animation:imgReveal 0.9s ease 0.3s both; }
+        .auth-right-overlay { position:absolute; inset:0; background:linear-gradient(135deg,rgba(239,126,26,0.18) 0%,transparent 60%); pointer-events:none; }
+
+        .auth-input::placeholder { color:#b2b8c2; }
+
+        .auth-field { animation: fadeUp 0.5s ease both; }
+        .auth-field:nth-child(1){ animation-delay:.2s }
+        .auth-field:nth-child(2){ animation-delay:.28s }
+        .auth-field:nth-child(3){ animation-delay:.36s }
+        .auth-field:nth-child(4){ animation-delay:.44s }
+        .auth-field:nth-child(5){ animation-delay:.52s }
+
+        .auth-heading { animation: fadeLeft 0.6s cubic-bezier(.22,1,.36,1) 0.1s both; }
+        .auth-submit { animation: pulseBtn 2.5s ease-in-out 1.2s infinite; }
+        .auth-submit:hover { transform:translateY(-2px) !important; animation:none !important; box-shadow:0 8px 28px rgba(239,180,0,0.65) !important; }
+
+        .note-float { position:absolute; pointer-events:none; user-select:none; color:rgba(255,255,255,0.22); font-size:1.8rem; animation:floatNote 7s ease-in-out infinite; }
+
+        @media(max-width:980px){
+          .auth-card{ grid-template-columns:1fr; max-width:520px; height:min(92vh,760px); }
+          .auth-right{ min-height:220px; order:-1; }
+          .auth-right img{ object-position:center 22%; }
         }
-
-        .auth-dot.top { top: -14px; left: -14px; }
-        .auth-dot.bottom { right: -14px; bottom: -14px; }
-
-        .auth-right {
-          position: relative;
-          background: #f2f4f8;
-        }
-
-        .auth-right img {
-          width: 100%;
-          height: 100%;
-          object-fit: cover;
-          object-position: 65% center;
-        }
-
-        .auth-input::placeholder {
-          color: #b2b8c2;
-        }
-
-        @media (max-width: 980px) {
-          .auth-card {
-            grid-template-columns: 1fr;
-            max-width: 580px;
-            height: min(92vh, 760px);
-          }
-
-          .auth-right {
-            min-height: 260px;
-            order: -1;
-          }
-
-          .auth-right img {
-            object-position: center 22%;
-          }
-        }
-
-        @media (max-width: 640px) {
-          .auth-wrap {
-            padding-top: 12px;
-          }
-
-          .auth-left-inner {
-            padding: 20px 18px;
-          }
-
-          .register-password-grid {
-            grid-template-columns: 1fr;
-          }
+        @media(max-width:640px){
+          .auth-wrap{ padding-top:12px; }
+          .auth-left-inner{ padding:20px 18px !important; }
+          .register-password-grid{ grid-template-columns:1fr !important; }
         }
       `}</style>
+
+      {/* Animated background orbs */}
+      <div style={{ position:'absolute', top:'-10%', left:'-8%', width:380, height:380, borderRadius:'50%', background:'rgba(255,255,255,0.08)', animation:'orbPulse 8s ease-in-out infinite', pointerEvents:'none' }} />
+      <div style={{ position:'absolute', bottom:'-12%', right:'-6%', width:300, height:300, borderRadius:'50%', background:'rgba(255,255,255,0.06)', animation:'orbPulse 10s ease-in-out 2s infinite', pointerEvents:'none' }} />
+      {/* Floating music notes */}
+      {[{n:'♩',t:'10%',l:'6%',d:'0s'},{n:'♫',t:'18%',r:'8%',d:'1.5s'},{n:'♬',b:'18%',l:'10%',d:'2.8s'},{n:'𝄞',t:'50%',r:'5%',d:'0.9s'},{n:'♪',b:'30%',r:'14%',d:'3.5s'}].map((x,i)=>(
+        <span key={i} className="note-float" style={{ top:x.t, bottom:x.b, left:x.l, right:x.r, animationDelay:x.d }}>{x.n}</span>
+      ))}
 
       <Link
         to="/"
@@ -226,13 +210,14 @@ const RegisterPage = () => {
           <span className="auth-dot bottom" />
 
           <div className="auth-left-inner" style={{ padding: '24px 34px 18px', overflow: 'hidden' }}>
-            <div style={{ marginBottom: '0.7rem' }}>
+            <div className="auth-heading" style={{ marginBottom: '0.7rem' }}>
               <h1 style={{ fontFamily: SERIF, fontSize: '2.05rem', color: '#151821', marginBottom: 6, lineHeight: 1.1 }}>
                 Welcome to the world
               </h1>
               <p style={{ color: '#7f858f', fontSize: '0.86rem' }}>
                 of your raadhyam music
               </p>
+              <div style={{ height:3, width:0, background:'linear-gradient(90deg,#D97706,#ef7e1a)', borderRadius:2, marginTop:10, animation:'drawLine 0.8s ease 0.5s forwards' }} />
             </div>
 
             <div style={{ marginBottom: 8, color: '#5c616c', fontSize: '0.76rem', fontWeight: 700, letterSpacing: '0.11em', textTransform: 'uppercase' }}>
@@ -253,7 +238,7 @@ const RegisterPage = () => {
             </div>
 
             <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '0.45rem' }}>
-              <div>
+              <div className="auth-field">
                 <label style={labelStyle}>Full Name</label>
                 <input
                   className="auth-input"
@@ -269,7 +254,7 @@ const RegisterPage = () => {
                 {errors.name && <p style={{ color: '#EF4444', fontSize: '0.72rem', marginTop: 4 }}>{errors.name}</p>}
               </div>
 
-              <div>
+              <div className="auth-field">
                 <label style={labelStyle}>Email Address</label>
                 <input
                   className="auth-input"
@@ -285,7 +270,7 @@ const RegisterPage = () => {
                 {errors.email && <p style={{ color: '#EF4444', fontSize: '0.72rem', marginTop: 4 }}>{errors.email}</p>}
               </div>
 
-              <div className="register-password-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.85rem' }}>
+              <div className="auth-field register-password-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.85rem' }}>
                 <div>
                   <label style={labelStyle}>Password</label>
                   <div style={{ position: 'relative' }}>
@@ -337,7 +322,7 @@ const RegisterPage = () => {
                 </div>
               </div>
 
-              <div>
+              <div className="auth-field">
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
                   <label style={labelStyle}>Captcha</label>
                   <button type="button" onClick={generateCaptcha} style={{ fontSize: '0.72rem', fontWeight: 700, color: '#b57a00', background: 'rgba(208,140,0,0.08)', border: '1px solid rgba(208,140,0,0.25)', borderRadius: 8, padding: '3px 8px', cursor: 'pointer', fontFamily: SANS }}>
@@ -363,16 +348,14 @@ const RegisterPage = () => {
               <button
                 type="submit"
                 disabled={isLoading}
+                className={isLoading ? '' : 'auth-submit'}
                 style={{
-                  marginTop: 4,
-                  border: 'none',
-                  borderRadius: 999,
+                  marginTop: 4, border: 'none', borderRadius: 999,
                   background: isLoading ? '#e4e7ee' : '#efb400',
                   color: isLoading ? '#8a909c' : '#2b2110',
-                  fontWeight: 800,
-                  fontSize: '0.86rem',
-                  padding: '10px 18px',
+                  fontWeight: 800, fontSize: '0.86rem', padding: '10px 18px',
                   cursor: isLoading ? 'not-allowed' : 'pointer',
+                  transition: 'transform 0.2s, box-shadow 0.2s',
                 }}
               >
                 {isLoading ? 'Creating account...' : 'Continue'}
@@ -425,6 +408,10 @@ const RegisterPage = () => {
 
           <div className="auth-right">
             <img src="/indianinstruements.png" alt="Indian instruments" />
+            <div className="auth-right-overlay" />
+            {[{n:'🎵',t:'15%',l:'12%',d:'0.4s'},{n:'🎶',b:'20%',r:'10%',d:'1.8s'},{n:'🎸',t:'55%',l:'8%',d:'3s'}].map((x,i)=>(
+              <span key={i} style={{ position:'absolute', top:x.t, bottom:x.b, left:x.l, right:x.r, fontSize:'1.6rem', opacity:0.35, animation:`floatNote 6s ease-in-out ${x.d} infinite`, pointerEvents:'none' }}>{x.n}</span>
+            ))}
           </div>
         </div>
       </div>
