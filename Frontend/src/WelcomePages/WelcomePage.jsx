@@ -159,6 +159,36 @@ const GlobalStyles = () => (
       box-shadow: 0 20px 40px rgba(239, 126, 26, 0.12);
     }
 
+    .rp-stat-card {
+      background: linear-gradient(160deg, rgba(15, 23, 42, 0.88), rgba(30, 41, 59, 0.85));
+      border: 1px solid rgba(245, 158, 11, 0.35);
+      box-shadow: 0 16px 36px rgba(2, 6, 23, 0.32);
+      position: relative;
+      overflow: hidden;
+      transition: transform .4s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow .4s ease, border-color .4s ease, background .4s ease;
+    }
+
+    .rp-stat-card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at 50% 0%, rgba(245, 158, 11, 0.15), transparent 70%);
+      opacity: 0;
+      transition: opacity .4s ease;
+      pointer-events: none;
+    }
+
+    .rp-stat-card:hover {
+      transform: translateY(-10px) scale(1.02);
+      border-color: rgba(245, 158, 11, 0.75);
+      box-shadow: 0 28px 56px rgba(245, 158, 11, 0.25), 0 12px 28px rgba(2, 6, 23, 0.45);
+      background: linear-gradient(160deg, rgba(15, 23, 42, 0.92), rgba(30, 41, 59, 0.9));
+    }
+
+    .rp-stat-card:hover::before {
+      opacity: 1;
+    }
+
     @keyframes sheenSweep {
       0% { transform: translateX(-130%) skewX(-18deg); }
       100% { transform: translateX(220%) skewX(-18deg); }
@@ -213,6 +243,17 @@ const GlobalStyles = () => (
       animation: iconBreath 3.8s ease-in-out infinite;
     }
 
+    .rp-mentor-image {
+      transform: scale(1);
+      transition: transform .6s cubic-bezier(0.34, 1.56, 0.64, 1), filter .6s cubic-bezier(0.34, 1.56, 0.64, 1);
+      filter: brightness(1);
+    }
+
+    .group:hover .rp-mentor-image {
+      transform: scale(1.15);
+      filter: brightness(1.1) contrast(1.05);
+    }
+
     @keyframes revealUp {
       from { opacity: 0; transform: translateY(26px); }
       to { opacity: 1; transform: translateY(0); }
@@ -246,10 +287,14 @@ function RevealSection({ children, className = "", plain = false }) {
 
 function StatBlock({ number, suffix, label, delay = 0, icon: Icon }) {
   const { ref, inView } = useInView(0.25);
+  const [hovered, setHovered] = useState(false);
+
   return (
     <div
       ref={ref}
-      className="rp-glass rp-outline group rounded-3xl p-8 text-center relative overflow-hidden bg-white/60 hover:bg-white/90 transition-all duration-500 hover:-translate-y-2 hover:shadow-[0_20px_40px_rgba(239,126,26,0.12)]"
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      className="rp-stat-card group rounded-3xl p-8 text-center"
       style={{
         opacity: inView ? 1 : 0,
         transform: inView ? "translateY(0)" : "translateY(30px)",
@@ -259,16 +304,32 @@ function StatBlock({ number, suffix, label, delay = 0, icon: Icon }) {
       <div className="absolute -right-6 -top-6 w-24 h-24 bg-gradient-to-br from-[#ef7e1a]/20 to-[#f4a14f]/5 rounded-full blur-2xl group-hover:scale-150 transition-transform duration-700"></div>
 
       {Icon && (
-        <div className="w-14 h-14 mx-auto rounded-2xl bg-orange-50 border border-orange-100/50 flex items-center justify-center mb-5 shadow-sm group-hover:scale-110 group-hover:rotate-3 transition-all duration-500">
-          <Icon className="w-7 h-7 text-[#ef7e1a]" />
+        <div
+          className="w-14 h-14 mx-auto rounded-xl flex items-center justify-center mb-3 transition-all duration-500"
+          style={{
+            background: hovered ? "linear-gradient(135deg, #FCD34D, #F59E0B)" : "rgba(251,191,36,.2)",
+            transform: hovered ? "scale(1.15) rotate(360deg)" : "scale(1) rotate(0deg)",
+            boxShadow: hovered ? "0 8px 24px rgba(251,191,36,.4)" : "none",
+          }}
+        >
+          <Icon
+            className="w-7 h-7 transition-colors duration-300"
+            style={{ color: hovered ? "#78350F" : "#FCD34D" }}
+          />
         </div>
       )}
 
       <div className="relative z-10">
-        <div className="text-4xl md:text-5xl font-extrabold text-[#111827] tracking-tight">
+        <div
+          className="text-4xl md:text-5xl font-extrabold tracking-tight transition-all duration-300"
+          style={{
+            color: hovered ? "#FCD34D" : "#FDE68A",
+            transform: hovered ? "scale(1.1)" : "scale(1)",
+          }}
+        >
           <Counter end={number} suffix={suffix} start={inView} />
         </div>
-        <p className="text-[0.75rem] font-bold uppercase tracking-[0.15em] text-[#ef7e1a] mt-3 group-hover:text-[#c25700] transition-colors">{label}</p>
+        <p className="text-[0.75rem] font-bold uppercase tracking-[0.15em] text-slate-200/85 mt-3 transition-colors">{label}</p>
       </div>
     </div>
   );
@@ -543,7 +604,7 @@ const RaadhyamWelcomeHome = () => {
             <div className="mx-auto w-full max-w-[360px] relative">
               <div className="absolute -inset-4 bg-gradient-to-tr from-[#ef7e1a] to-[#f4a14f] rounded-[3.5rem] blur-xl opacity-30 animate-pulse"></div>
               <div className="rounded-[3rem] overflow-hidden border-[6px] border-white shadow-[0_20px_50px_rgba(0,0,0,0.15)] relative z-10 group cursor-pointer">
-                <img src="/founder.jpg" alt="Mr. Dheeraj Solanki" className="w-full h-[440px] object-cover group-hover:scale-105 transition-transform duration-700" />
+                <img src="/founder.jpg" alt="Mr. Dheeraj Solanki" className="rp-mentor-image w-full h-[440px] object-cover" />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
               </div>
             </div>
