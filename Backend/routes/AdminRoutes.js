@@ -36,7 +36,7 @@ const router = express.Router();
 router.get('/dashboard/stats', verifyToken, isAdmin, getDashboardStats);
 
 router.post('/courses', verifyToken, isAdmin, createCourse);
-router.get('/courses', verifyToken, getAllCoursesAdmin);
+router.get('/courses', getAllCoursesAdmin);
 router.get('/courses/:id', verifyToken, isAdmin, getCourseByIdAdmin);
 router.put('/courses/:id', verifyToken, isAdmin, updateCourse);
 router.delete('/courses/:id', verifyToken, isAdmin, deleteCourseAdmin);

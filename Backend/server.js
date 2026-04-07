@@ -10,8 +10,9 @@ dotenv.config({ path: './.env' });
 const startServer = async () => {
   // Import modules after dotenv loads
   const { default: connectDB } = await import('./config/DB.js');
+  const { default: AdminRoutes } = await import('./routes/AdminRoutes.js');
+  const { getAllMusicNotes } = await import('./controllers/AdminController.js');
   const musicRoutes = (await import('./routes/MusicRoute.js')).default;
-  const AdminRoutes = (await import('./routes/AdminRoutes.js')).default;
   const courseRoutes = (await import('./routes/CourseRoutes.js')).default;
   const userRoutes = (await import('./routes/UserRoutes.js')).default;
   const userDashboardRoutes = (await import('./routes/UserDashboardRoutes.js')).default;
@@ -92,6 +93,9 @@ const startServer = async () => {
   app.use('/api/user', userDashboardRoutes);
   app.use('/api/upload', uploadRoutes);
   app.use('/api/admin', AdminRoutes);
+
+  // Public music notes endpoint for frontend
+  app.get('/api/music-notes', getAllMusicNotes);
 
   // 404 handler for unknown routes
   app.use((req, res) => {
