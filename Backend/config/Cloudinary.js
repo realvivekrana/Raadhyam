@@ -1,5 +1,5 @@
 import { v2 as cloudinary } from "cloudinary";
-//changes
+
 // Validate required Cloudinary environment variables
 const requiredEnvVars = [
   "CLOUDINARY_CLOUD_NAME",

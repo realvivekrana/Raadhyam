@@ -28,11 +28,6 @@ import {
 
 
 const router = express.Router();
-
-// All admin routes require both verifyToken and isAdmin middleware
-// verifyToken: verifies user is authenticated
-// isAdmin: verifies user has admin role
-
 router.get('/dashboard/stats', verifyToken, isAdmin, getDashboardStats);
 
 router.post('/courses', verifyToken, isAdmin, createCourse);

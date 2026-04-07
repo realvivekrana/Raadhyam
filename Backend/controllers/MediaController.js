@@ -4,8 +4,6 @@ import Playlist from '../models/PlaylistSchema.js';
 import Music from '../models/MusicSchema.js';
 import { successResponse, errorResponse, notFoundResponse } from '../utils/ApiResponse.js';
 
-// ==================== ALBUM CONTROLLERS ====================
-
 export const createAlbum = async (req, res, next) => {
   try {
     const {
@@ -121,8 +119,6 @@ export const deleteAlbum = async (req, res, next) => {
     next(error);
   }
 };
-
-// ==================== ARTIST CONTROLLERS ====================
 
 export const createArtist = async (req, res, next) => {
   try {
@@ -242,8 +238,6 @@ export const deleteArtist = async (req, res, next) => {
     next(error);
   }
 };
-
-// ==================== PLAYLIST CONTROLLERS ====================
 
 export const createPlaylist = async (req, res, next) => {
   try {

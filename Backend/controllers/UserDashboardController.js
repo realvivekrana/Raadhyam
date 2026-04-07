@@ -2,23 +2,10 @@ import mongoose from 'mongoose';
 import { Course, Enrollment } from '../models/CourseSchema.js';
 import MusicNote from '../models/NotesSchema.js';
 
-/**
- * User Dashboard Controller
- * Handles authenticated user operations for courses and notes
- */
-
-/**
- * GET /api/user/courses
- * Returns all courses enrolled by the authenticated user
- * 
- * Auth: Required (JWT middleware)
- * Returns: Array of enrolled courses with enrollment details
- */
 export const getUserCourses = async (req, res) => {
   try {
     const userId = req.user._id;
 
-    // Find all enrollments for this user
     const enrollments = await Enrollment.find({ user: userId, isActive: true })
       .populate('course')
       .sort({ enrolledAt: -1 });
@@ -31,7 +18,6 @@ export const getUserCourses = async (req, res) => {
       });
     }
 
-    // Extract course data with enrollment details
     const courses = enrollments.map(enrollment => ({
       courseId: enrollment.course._id,
       title: enrollment.course.title,
@@ -70,20 +56,11 @@ export const getUserCourses = async (req, res) => {
   }
 };
 
-/**
- * POST /api/user/enroll
- * Enrolls the authenticated user in a course
- * 
- * Auth: Required (JWT middleware)
- * Body: courseId (required)
- * Returns: Enrollment details or error message
- */
 export const enrollInCourse = async (req, res) => {
   try {
     const userId = req.user._id;
     const { courseId } = req.body;
 
-    // Validate courseId is provided
     if (!courseId) {
       return res.status(400).json({
         success: false,
@@ -91,7 +68,6 @@ export const enrollInCourse = async (req, res) => {
       });
     }
 
-    // Validate courseId is a valid MongoDB ObjectId
     if (!mongoose.Types.ObjectId.isValid(courseId)) {
       return res.status(400).json({
         success: false,
@@ -99,7 +75,6 @@ export const enrollInCourse = async (req, res) => {
       });
     }
 
-    // Check if course exists
     const course = await Course.findById(courseId);
     if (!course) {
       return res.status(404).json({
@@ -108,7 +83,6 @@ export const enrollInCourse = async (req, res) => {
       });
     }
 
-    // Check if course is published
     if (course.publish?.status !== 'published') {
       return res.status(400).json({
         success: false,
@@ -116,7 +90,6 @@ export const enrollInCourse = async (req, res) => {
       });
     }
 
-    // Check if user is already enrolled
     const existingEnrollment = await Enrollment.findOne({
       user: userId,
       course: courseId
@@ -130,7 +103,6 @@ export const enrollInCourse = async (req, res) => {
           alreadyEnrolled: true
         });
       } else {
-        // Reactivate the enrollment
         existingEnrollment.isActive = true;
         existingEnrollment.enrolledAt = new Date();
         await existingEnrollment.save();
@@ -149,7 +121,6 @@ export const enrollInCourse = async (req, res) => {
       }
     }
 
-    // Create new enrollment
     const enrollment = new Enrollment({
       course: courseId,
       user: userId,
@@ -159,7 +130,6 @@ export const enrollInCourse = async (req, res) => {
 
     await enrollment.save();
 
-    // Update course enrolled students count
     await Course.findByIdAndUpdate(courseId, {
       $inc: { 'stats.enrolledStudents': 1 }
     });
@@ -186,22 +156,11 @@ export const enrollInCourse = async (req, res) => {
   }
 };
 
-/**
- * POST /api/user/notes
- * Creates a new note for the authenticated user
- * 
- * Auth: Required (JWT middleware)
- * Body: courseId (required), content (required), title (optional)
- * Validation: courseId must be valid MongoDB ID, course must exist
- * 
- * Ownership: Note is automatically linked to the authenticated user
- */
 export const createNote = async (req, res) => {
   try {
     const userId = req.user._id;
     const { courseId, content, title } = req.body;
 
-    // Validate courseId is provided
     if (!courseId) {
       return res.status(400).json({
         success: false,
@@ -209,7 +168,6 @@ export const createNote = async (req, res) => {
       });
     }
 
-    // Validate content is provided
     if (!content) {
       return res.status(400).json({
         success: false,
@@ -217,7 +175,6 @@ export const createNote = async (req, res) => {
       });
     }
 
-    // Validate courseId is a valid MongoDB ObjectId
     if (!mongoose.Types.ObjectId.isValid(courseId)) {
       return res.status(400).json({
         success: false,
@@ -225,7 +182,6 @@ export const createNote = async (req, res) => {
       });
     }
 
-    // Check if course exists
     const course = await Course.findById(courseId);
     if (!course) {
       return res.status(404).json({
@@ -234,10 +190,8 @@ export const createNote = async (req, res) => {
       });
     }
 
-    // Generate title if not provided
     const noteTitle = title || `Note for ${course.title} - ${new Date().toLocaleDateString()}`;
 
-    // Create the note
     const note = new MusicNote({
       title: noteTitle,
       createdBy: userId,
@@ -272,24 +226,11 @@ export const createNote = async (req, res) => {
   }
 };
 
-/**
- * GET /api/user/notes/:id
- * Returns a specific note only if it belongs to the authenticated user
- * 
- * Auth: Required (JWT middleware)
- * Ownership: User can only access their own notes
- * 
- * Error Cases:
- * - 400: Invalid note ID format
- * - 403: Note belongs to another user
- * - 404: Note not found
- */
 export const getNoteById = async (req, res) => {
   try {
     const userId = req.user._id;
     const { id } = req.params;
 
-    // Validate note ID is a valid MongoDB ObjectId
     if (!mongoose.Types.ObjectId.isValid(id)) {
       return res.status(400).json({
         success: false,
@@ -297,10 +238,8 @@ export const getNoteById = async (req, res) => {
       });
     }
 
-    // Find the note
     const note = await MusicNote.findById(id).populate('course');
 
-    // Check if note exists
     if (!note) {
       return res.status(404).json({
         success: false,
@@ -308,7 +247,6 @@ export const getNoteById = async (req, res) => {
       });
     }
 
-    // Ownership check: Ensure the note belongs to the authenticated user
     if (note.createdBy.toString() !== userId.toString()) {
       return res.status(403).json({
         success: false,

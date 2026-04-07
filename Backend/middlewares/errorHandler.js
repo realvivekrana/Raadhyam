@@ -1,20 +1,5 @@
-/**
- * Centralized Error Handling Middleware
- * 
- * Features:
- * - Custom error classes for standard HTTP errors
- * - Async error wrapper to catch promise rejections
- * - Standardized error response format
- * - MongoDB error handling (duplicate keys, validation, etc.)
- * - Safe error logging (no sensitive data exposure)
- */
-
 import mongoose from 'mongoose';
 
-/**
- * Custom Application Error class
- * Extends built-in Error with HTTP status codes and error codes
- */
 export class AppError extends Error {
   constructor(message, statusCode = 500, code = 'INTERNAL_ERROR') {
     super(message);
@@ -25,7 +10,6 @@ export class AppError extends Error {
     Error.captureStackTrace(this, this.constructor);
   }
   
-  // Factory methods for common errors
   static badRequest(message = 'Bad request', code = 'BAD_REQUEST') {
     return new AppError(message, 400, code);
   }
@@ -51,64 +35,37 @@ export class AppError extends Error {
   }
 }
 
-/**
- * Async wrapper to catch errors in async route handlers
- * Eliminates need for try-catch in every controller
- * 
- * Usage: router.get('/', asyncHandler(async (req, res) => { ... }))
- */
 export const asyncHandler = (fn) => {
   return (req, res, next) => {
     Promise.resolve(fn(req, res, next)).catch(next);
   };
 };
 
-/**
- * Handle MongoDB duplicate key errors
- * Returns 409 Conflict with field-specific message
- */
 const handleDuplicateKeyError = (err) => {
   const field = Object.keys(err.keyPattern || {})[0] || 'field';
   const message = `${field.charAt(0).toUpperCase() + field.slice(1)} already exists`;
   return new AppError(message, 409, 'DUPLICATE_KEY');
 };
 
-/**
- * Handle MongoDB validation errors
- * Returns 400 Bad Request with detailed error messages
- */
 const handleValidationError = (err) => {
   const errors = Object.values(err.errors || {}).map(e => e.message);
   const message = errors.length > 0 ? errors.join(', ') : 'Validation failed';
   return new AppError(message, 400, 'VALIDATION_ERROR');
 };
 
-/**
- * Handle MongoDB CastError (invalid ObjectId)
- * Returns 400 Bad Request for invalid ID format
- */
 const handleCastError = (err) => {
   const message = `Invalid ${err.path}: ${err.value}`;
   return new AppError(message, 400, 'INVALID_ID');
 };
 
-/**
- * Handle JWT errors
- */
 const handleJWTError = () => {
   return new AppError('Invalid or expired token', 401, 'INVALID_TOKEN');
 };
 
-/**
- * Handle JWT expiration
- */
 const handleJWTExpiredError = () => {
   return new AppError('Token has expired', 401, 'TOKEN_EXPIRED');
 };
 
-/**
- * Development error response - includes stack trace
- */
 const sendErrorDev = (err, res) => {
   res.status(err.statusCode || 500).json({
     success: false,
@@ -121,11 +78,7 @@ const sendErrorDev = (err, res) => {
   });
 };
 
-/**
- * Production error response - minimal info, no stack trace
- */
 const sendErrorProd = (err, res) => {
-  // Operational, trusted errors: send message to client
   if (err.isOperational) {
     res.status(err.statusCode || 500).json({
       success: false,
@@ -134,7 +87,6 @@ const sendErrorProd = (err, res) => {
       errors: err.errors
     });
   } else {
-    // Programming or unknown errors: don't leak error details
     console.error('UNKNOWN ERROR:', err);
     res.status(500).json({
       success: false,
@@ -144,10 +96,6 @@ const sendErrorProd = (err, res) => {
   }
 };
 
-/**
- * Global error handling middleware
- * Must be registered AFTER all routes
- */
 export const globalErrorHandler = (err, req, res, next) => {
   // Default values
   err.statusCode = err.statusCode || 500;
@@ -160,7 +108,6 @@ export const globalErrorHandler = (err, req, res, next) => {
   error.code = err.code;
   error.errors = err.errors;
   
-  // Handle specific error types
   if (error.name === 'CastError') {
     error = handleCastError(error);
   }
@@ -181,7 +128,6 @@ export const globalErrorHandler = (err, req, res, next) => {
     error = handleJWTExpiredError();
   }
   
-  // Send response based on environment
   if (process.env.NODE_ENV === 'development') {
     sendErrorDev(error, res);
   } else {
@@ -189,10 +135,6 @@ export const globalErrorHandler = (err, req, res, next) => {
   }
 };
 
-/**
- * Not Found (404) handler
- * Catches requests to undefined routes
- */
 export const notFoundHandler = (req, res, next) => {
   const error = new AppError(
     `Route ${req.method} ${req.originalUrl} not found`,
@@ -202,20 +144,12 @@ export const notFoundHandler = (req, res, next) => {
   next(error);
 };
 
-/**
- * Validate MongoDB ObjectId
- * Returns AppError for invalid IDs
- */
 export const validateObjectId = (id, fieldName = 'ID') => {
   if (!mongoose.Types.ObjectId.isValid(id)) {
     throw AppError.badRequest(`Invalid ${fieldName} format`, 'INVALID_ID');
   }
 };
 
-/**
- * Safe error logger
- * Logs errors without exposing sensitive information
- */
 export const logError = (err, req = {}, context = '') => {
   const logData = {
     timestamp: new Date().toISOString(),

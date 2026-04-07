@@ -1,11 +1,6 @@
 import Music from "../models/MusicSchema.js";
 import mongoose from "mongoose";
 
-/**
- * Get all public music entries
- * Public endpoint - accessible without authentication
- * Returns sorted music list with pagination support
- */
 export const getAllMusic = async (req, res) => {
   try {
     const { page = 1, limit = 20 } = req.query;
@@ -37,15 +32,10 @@ export const getAllMusic = async (req, res) => {
   }
 };
 
-/**
- * Get single music entry by ID
- * Public endpoint
- */
 export const getMusicById = async (req, res) => {
   try {
     const { id } = req.params;
 
-    // Validate MongoDB ObjectID format
     if (!mongoose.Types.ObjectId.isValid(id)) {
       return res.status(400).json({
         success: false,
@@ -62,9 +52,7 @@ export const getMusicById = async (req, res) => {
       });
     }
 
-    // Check if music is public or user has access
     if (!music.isPublic) {
-      // If we add authenticated check later, verify user access here
       return res.status(404).json({
         success: false,
         message: "Music not found"
@@ -85,16 +73,10 @@ export const getMusicById = async (req, res) => {
   }
 };
 
-/**
- * Create new music entry
- * Admin only endpoint
- * Accepts metadata + pre-uploaded Cloudinary file URL
- */
 export const createMusic = async (req, res) => {
   try {
     const { title, artist, duration, fileUrl, publicId, thumbnailUrl, album, genre } = req.body;
 
-    // Required fields validation
     if (!title || !artist || !fileUrl) {
       return res.status(400).json({
         success: false,
@@ -107,7 +89,6 @@ export const createMusic = async (req, res) => {
       });
     }
 
-    // Title validation
     if (title.trim().length < 2 || title.trim().length > 200) {
       return res.status(400).json({
         success: false,
@@ -115,7 +96,6 @@ export const createMusic = async (req, res) => {
       });
     }
 
-    // Artist validation
     if (artist.trim().length < 2 || artist.trim().length > 100) {
       return res.status(400).json({
         success: false,
@@ -123,7 +103,6 @@ export const createMusic = async (req, res) => {
       });
     }
 
-    // File URL validation
     if (!fileUrl.startsWith('http')) {
       return res.status(400).json({
         success: false,
@@ -131,7 +110,6 @@ export const createMusic = async (req, res) => {
       });
     }
 
-    // Duration validation if provided
     if (duration !== undefined) {
       if (typeof duration !== 'number' || duration < 0 || duration > 86400) {
         return res.status(400).json({
@@ -171,15 +149,10 @@ export const createMusic = async (req, res) => {
   }
 };
 
-/**
- * Delete music entry
- * Admin only endpoint
- */
 export const deleteMusic = async (req, res) => {
   try {
     const { id } = req.params;
 
-    // Validate MongoDB ObjectID format
     if (!mongoose.Types.ObjectId.isValid(id)) {
       return res.status(400).json({
         success: false,

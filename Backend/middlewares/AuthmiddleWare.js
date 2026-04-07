@@ -1,10 +1,8 @@
 import jwt from "jsonwebtoken";
 import User from "../models/users.js";
 
-// This middleware protects routes - requires valid authentication
 const protect = async (req, res, next) => {
   try {
-    // ✅ SAFE token reading
     let token =
       req.headers.authorization ||
       (req.cookies && req.cookies.auth_token);
@@ -17,7 +15,6 @@ const protect = async (req, res, next) => {
       });
     }
 
-    // ✅ Remove Bearer prefix if present
     if (token.startsWith("Bearer ")) {
       token = token.split(" ")[1];
     }
@@ -33,7 +30,6 @@ const protect = async (req, res, next) => {
       });
     }
 
-    // ✅ Single-session security check
     if (user.currentToken !== token) {
       return res.status(401).json({
         success: false,
@@ -54,7 +50,6 @@ const protect = async (req, res, next) => {
   }
 };
 
-// This middleware restricts access to admin users only
 const authorizeAdmin = (req, res, next) => {
   if (req.user && req.user.role === 'admin') {
     next();

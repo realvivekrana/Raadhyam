@@ -2,12 +2,8 @@ import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
 
-// Load environment variables FIRST
 dotenv.config({ path: './.env' });
-
-// Now import and initialize modules that depend on env vars
 const startServer = async () => {
-  // Import modules after dotenv loads
   const { default: connectDB } = await import('./config/DB.js');
   const { default: AdminRoutes } = await import('./routes/AdminRoutes.js');
   const { getAllMusicNotes } = await import('./controllers/AdminController.js');
@@ -19,8 +15,6 @@ const startServer = async () => {
   const uploadRoutes = (await import('./routes/UploadRoutes.js')).default;
   const mediaRoutes = (await import('./routes/MediaRoutes.js')).default;
   
-  // Load passport configuration conditionally
-  // Use a try-catch block since we're importing conditionally
   let passport = null;
   try {
     if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET && process.env.GOOGLE_CALLBACK_URL) {
@@ -36,7 +30,6 @@ const startServer = async () => {
     console.warn('Passport initialization skipped or failed:', err.message);
   }
   
-  // Load auth routes (they'll work without passport - just won't have Google OAuth)
   const authRoutes = (await import('./routes/AuthRouters.js')).default;
   
   const session = (await import('express-session')).default;
@@ -45,7 +38,6 @@ const startServer = async () => {
   const app = express();
   const PORT = process.env.PORT || 5000;
 
-  // Body parsing middleware
   app.use(cors({
     origin: process.env.CLIENT_URL || 'http://localhost:5173',
     credentials: true
@@ -57,7 +49,6 @@ const startServer = async () => {
   }));
   app.use(cookieParser());
 
-  // Session configuration
   app.use(
     session({
       secret: process.env.SESSION_SECRET || 'default-secret-change-in-production',
@@ -77,7 +68,6 @@ const startServer = async () => {
     app.use(passport.session());
   }
 
-  // Health check route
   app.get('/api/health', (req, res) => {
     res.status(200).json({
       success: true,
@@ -86,7 +76,6 @@ const startServer = async () => {
     });
   });
 
-  // Route mounting
   app.use('/api/auth', authRoutes);
   app.use('/api/courses', courseRoutes);
   app.use('/api/users', userRoutes);
@@ -96,16 +85,12 @@ const startServer = async () => {
   app.use('/api/admin', AdminRoutes);
   app.use('/api/media', mediaRoutes);
 
-  // Public music notes endpoint for frontend
   app.get('/api/music-notes', getAllMusicNotes);
 
-  // 404 handler for unknown routes (must be before error handler)
   app.use(notFoundHandler);
 
-  // Global error handler (must be last)
   app.use(globalErrorHandler);
 
-  // Database connection and server start
   await connectDB();
   
   app.listen(PORT, () => {

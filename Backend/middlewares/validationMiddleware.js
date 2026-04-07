@@ -1,8 +1,5 @@
 import { body, param, validationResult } from 'express-validator';
 
-/**
- * Validation rules for course creation
- */
 const validateCreateCourse = [
   body('title')
     .trim()
@@ -78,9 +75,6 @@ const validateCreateCourse = [
     .withMessage('Instructor must be an object')
 ];
 
-/**
- * Validation rules for course update
- */
 const validateUpdateCourse = [
   body('title')
     .optional()
@@ -157,10 +151,6 @@ const validateUpdateCourse = [
     .withMessage('Instructor must be an object')
 ];
 
-/**
- * Validation result handler - checks for validation errors
- * Returns standardized error format with field-level details
- */
 export const validate = (req, res, next) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
@@ -180,15 +170,7 @@ export const validate = (req, res, next) => {
 
 export const validateCourse = [...validateCreateCourse, validate];
 
-// =====================================================
-// MUSIC VALIDATION RULES
-// =====================================================
 
-/**
- * Validation rules for music creation
- * Required: title, artist, fileUrl
- * Optional: duration, album, genre, thumbnailUrl, publicId
- */
 const validateCreateMusic = [
   body('title')
     .trim()
@@ -247,9 +229,6 @@ const validateCreateMusic = [
     .withMessage('Public ID must be a string')
 ];
 
-/**
- * Validation rules for music ID parameter
- */
 const validateMusicId = [
   param('id')
     .trim()
@@ -262,15 +241,7 @@ const validateMusicId = [
 export const validateMusic = [...validateCreateMusic, validate];
 export const validateMusicById = [...validateMusicId, validate];
 
-// =====================================================
-// USER DASHBOARD VALIDATION RULES
-// =====================================================
 
-/**
- * Validation rules for creating a user note
- * Required: courseId (MongoDB ObjectId), content (string)
- * Optional: title (string)
- */
 const validateCreateNote = [
   body('courseId')
     .trim()
@@ -293,9 +264,6 @@ const validateCreateNote = [
     .withMessage('Title must be between 1 and 200 characters'),
 ];
 
-/**
- * Validation rules for note ID parameter
- */
 const validateNoteId = [
   param('id')
     .trim()

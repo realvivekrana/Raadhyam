@@ -129,14 +129,12 @@ export const uploadThumbnail = async (req, res) => {
       return res.status(400).json({ message: "No file uploaded" });
     }
 
-    // Upload to Cloudinary
     const result = await cloudinary.uploader.upload(req.file.filepath, {
       folder: "uploads/images",
       resource_type: "image",
       public_id: `${Date.now()}-${req.file.originalFilename || req.file.name}`.replace(/\s+/g, "-"),
     });
 
-    // Clean up temp file
     try {
       fs.unlinkSync(req.file.filepath);
     } catch (cleanupError) {
@@ -179,20 +177,17 @@ export const uploadFile = async (req, res) => {
       return res.status(400).json({ message: "No file uploaded" });
     }
 
-    // Determine resource type based on mimetype
     let resource_type = "auto";
     if (req.file.mimetype.startsWith("image/")) resource_type = "image";
     else if (req.file.mimetype.startsWith("video/")) resource_type = "video";
     else if (req.file.mimetype.startsWith("audio/")) resource_type = "video";
 
-    // Upload to Cloudinary
     const result = await cloudinary.uploader.upload(req.file.filepath, {
       folder: "uploads/files",
       resource_type: resource_type,
       public_id: `${Date.now()}-${req.file.originalFilename || req.file.name}`.replace(/\s+/g, "-"),
     });
 
-    // Clean up temp file
     try {
       fs.unlinkSync(req.file.filepath);
     } catch (cleanupError) {
@@ -548,11 +543,9 @@ export const updateCourse = async (req, res) => {
         return processedModule;
       });
     } else {
-      // Handle case where modules is not provided
-      updateData.modules = existingCourse.modules || [];
+        updateData.modules = existingCourse.modules || [];
     }
 
-    // Safely calculate total lessons and duration
     const modules = updateData.modules || [];
     const totalLessons = modules.reduce((total, module) => 
       total + (module.lessons?.length || 0), 0

@@ -1,17 +1,3 @@
-/**
- * Auth Controller
- * 
- * Handles user authentication:
- * - Register new users with email, username, password
- * - Login users with credentials
- * - Forgot password flow with reset token
- * 
- * Security considerations:
- * - Non-enumerating error messages prevent user enumeration attacks
- * - Passwords are hashed with bcrypt
- * - JWT tokens include role for authorization
- */
-
 import bcrypt from "bcryptjs";
 import crypto from "crypto";
 import User from "../models/users.js";
@@ -35,19 +21,6 @@ const isValidUsername = (username) => {
   return usernameRegex.test(username);
 };
 
-/**
- * Register a new user
- * 
- * Request body:
- * - email: valid email address (required)
- * - username: alphanumeric, 3-30 chars (required)
- * - password: min 8 chars, letter + number (required)
- * 
- * Response:
- * - Success: { success: true, message: "User registered successfully" }
- * - Validation error: { success: false, message: "..." }
- * - Duplicate: { success: false, message: "Email or username already exists" }
- */
 export const registerUser = async (req, res) => {
   try {
     const { email, name, password } = req.body;
@@ -137,20 +110,6 @@ export const registerUser = async (req, res) => {
   }
 };
 
-/**
- * Login user
- * 
- * Request body:
- * - email: valid email address (required)
- * - password: user's password (required)
- * 
- * Response:
- * - Success: { success: true, token: "...", user: {...} }
- * - Failure: { success: false, message: "Invalid credentials" }
- * 
- * Note: Using same error message for both missing user and wrong password
- * to prevent user enumeration attacks
- */
 export const loginUser = async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -254,20 +213,6 @@ export const loginUser = async (req, res) => {
   }
 };
 
-/**
- * Forgot password
- * 
- * Request body:
- * - email: valid email address (required)
- * 
- * Response:
- * - Always returns success to prevent email enumeration
- * - If email exists: token is generated and ready for sending
- * - If email doesn't exist: safe success response
- * 
- * Note: In production, this would send an email with reset link.
- * For now, we generate the token and return it in response (placeholder).
- */
 export const forgotPassword = async (req, res) => {
   try {
     const { email } = req.body;
@@ -337,18 +282,6 @@ export const forgotPassword = async (req, res) => {
   }
 };
 
-/**
- * Reset password
- * 
- * Request body:
- * - token: reset token from email (required)
- * - email: user's email (required)
- * - newPassword: new password to set (required)
- * 
- * Response:
- * - Success: { success: true, message: "Password reset successfully" }
- * - Failure: { success: false, message: "..." }
- */
 export const resetPassword = async (req, res) => {
   try {
     const { token, email, newPassword } = req.body;
@@ -409,11 +342,6 @@ export const resetPassword = async (req, res) => {
   }
 };
 
-/**
- * Check authentication status
- * 
- * Protected route that returns current user info
- */
 export const checkAuth = (req, res) => {
   return res.status(200).json({
     success: true,
