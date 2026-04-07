@@ -10,7 +10,9 @@ const verifyToken = async (req, res, next) => {
 
     if (!token) {
       return res.status(401).json({ message: "Not authenticated" });
-    }
+    }//...
+//...
+
 
     // ✅ Remove Bearer
     if (token.startsWith("Bearer ")) {

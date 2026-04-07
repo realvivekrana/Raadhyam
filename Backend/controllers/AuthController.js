@@ -41,8 +41,9 @@ export const loginUser = async (req, res) => {
     const match = await bcrypt.compare(password, user.password);
     if (!match)
       return res.status(400).json({ success: false, message: "Wrong password" });
+//...
 
-    // ⭐ INCLUDE ROLE INSIDE TOKEN
+    //  INCLUDE ROLE INSIDE TOKEN
     const token = jwt.sign(
       {
         userId: user._id,

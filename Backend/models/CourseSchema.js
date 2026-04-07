@@ -2,6 +2,7 @@ import mongoose from "mongoose";
 import slugify from "slugify";
 
 const { Schema } = mongoose;
+//...
 
 //  Lesson Schema 
 const LessonSchema = new Schema({

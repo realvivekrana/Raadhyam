@@ -194,6 +194,7 @@ export const validateCourse = async (req, res) => {
     if (!title?.trim()) {
       errors.push("Course title is required");
     }
+//...
 
     if (!category?.trim()) {
       errors.push("Course category is required");

@@ -1,6 +1,6 @@
 import multer from "multer";
 import { CloudinaryStorage } from "multer-storage-cloudinary";
-import cloudinary from "../config/cloudinary.js";
+
 
 const storage = new CloudinaryStorage({
   cloudinary,
@@ -8,6 +8,7 @@ const storage = new CloudinaryStorage({
 
     let folder = "uploads/others";
     let resource_type = "auto";
+//...
 
     // IMAGE
     if (file.mimetype.startsWith("image/")) {
