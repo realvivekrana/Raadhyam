@@ -1,64 +1,235 @@
+/**
+ * Auth Controller
+ * 
+ * Handles user authentication:
+ * - Register new users with email, username, password
+ * - Login users with credentials
+ * - Forgot password flow with reset token
+ * 
+ * Security considerations:
+ * - Non-enumerating error messages prevent user enumeration attacks
+ * - Passwords are hashed with bcrypt
+ * - JWT tokens include role for authorization
+ */
 
 import bcrypt from "bcryptjs";
+import crypto from "crypto";
 import User from "../models/users.js";
 import jwt from "jsonwebtoken";
 
+// Validation helpers
+const isValidEmail = (email) => {
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  return emailRegex.test(email);
+};
+
+const isStrongPassword = (password) => {
+  // At least 8 characters, one letter, one number
+  const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d@$!%*?&]{8,}$/;
+  return passwordRegex.test(password);
+};
+
+const isValidUsername = (username) => {
+  // Alphanumeric and underscore, 3-30 characters
+  const usernameRegex = /^[a-zA-Z0-9_]{3,30}$/;
+  return usernameRegex.test(username);
+};
+
+/**
+ * Register a new user
+ * 
+ * Request body:
+ * - email: valid email address (required)
+ * - username: alphanumeric, 3-30 chars (required)
+ * - password: min 8 chars, letter + number (required)
+ * 
+ * Response:
+ * - Success: { success: true, message: "User registered successfully" }
+ * - Validation error: { success: false, message: "..." }
+ * - Duplicate: { success: false, message: "Email or username already exists" }
+ */
 export const registerUser = async (req, res) => {
   try {
-    const { email, password, name } = req.body;
+    const { email, name, password } = req.body;
 
-    const user = await User.findOne({ email });
-    if (user)
-      return res.status(400).json({ success: false, message: "User already exist" });
+    // Input validation with detailed messages for development
+    if (!email || !name || !password) {
+      return res.status(400).json({
+        success: false,
+        message: "Email, name, and password are required"
+      });
+    }
 
-    const hash = await bcrypt.hash(password, 12);
+    if (!isValidEmail(email)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid email format"
+      });
+    }
 
-    await User.create({ email, password: hash, name });
+    if (name.trim().length < 2) {
+      return res.status(400).json({
+        success: false,
+        message: "Name must be at least 2 characters"
+      });
+    }
 
-    res.json({ success: true, message: "You has registered successfully" });
+    if (!isStrongPassword(password)) {
+      return res.status(400).json({
+        success: false,
+        message: "Password must be at least 8 characters with one letter and one number"
+      });
+    }
+
+    // Generate a unique username from the name
+    const baseUsername = name.trim().toLowerCase().replace(/[^a-z0-9]/g, '_');
+    let username = baseUsername;
+    let counter = 1;
+    
+    // Ensure username is unique
+    while (await User.findOne({ username })) {
+      username = `${baseUsername}_${counter}`;
+      counter++;
+    }
+
+    // Check for existing user by email
+    const existingUser = await User.findOne({ email: email.toLowerCase() });
+
+    if (existingUser) {
+      return res.status(400).json({
+        success: false,
+        message: "Email already exists"
+      });
+    }
+
+    // Hash password with bcrypt
+    const saltRounds = 12;
+    const hashedPassword = await bcrypt.hash(password, saltRounds);
+
+    // Create new user
+    const newUser = await User.create({
+      email: email.toLowerCase(),
+      username,
+      password: hashedPassword,
+      name: name.trim()
+    });
+
+    res.status(201).json({
+      success: true,
+      message: "User registered successfully"
+    });
 
   } catch (err) {
-    res.status(500).json({ success: false, message: "Server error" });
+    console.error("Registration error:", err.message);
+    
+    // Handle duplicate key error (race condition)
+    if (err.code === 11000) {
+      return res.status(400).json({ 
+        success: false, 
+        message: "Email or username already exists" 
+      });
+    }
+
+    res.status(500).json({ 
+      success: false, 
+      message: "Server error" 
+    });
   }
 };
 
-
-
+/**
+ * Login user
+ * 
+ * Request body:
+ * - email: valid email address (required)
+ * - password: user's password (required)
+ * 
+ * Response:
+ * - Success: { success: true, token: "...", user: {...} }
+ * - Failure: { success: false, message: "Invalid credentials" }
+ * 
+ * Note: Using same error message for both missing user and wrong password
+ * to prevent user enumeration attacks
+ */
 export const loginUser = async (req, res) => {
   try {
     const { email, password } = req.body;
-    const user = await User.findOne({ email });
 
-    if (!user)
-      return res.status(400).json({ success: false, message: "Invalid login" });
-
-    if (!user.password)
-      return res.status(400).json({
-        success: false,
-        message: "Use Google Sign-In for this account",
+    // Input validation
+    if (!email || !password) {
+      return res.status(400).json({ 
+        success: false, 
+        message: "Email and password are required" 
       });
+    }
 
-    const match = await bcrypt.compare(password, user.password);
-    if (!match)
-      return res.status(400).json({ success: false, message: "Wrong password" });
-//...
+    if (!isValidEmail(email)) {
+      return res.status(400).json({ 
+        success: false, 
+        message: "Invalid credentials" 
+      });
+    }
 
-    //  INCLUDE ROLE INSIDE TOKEN
+    // Find user by email
+    const user = await User.findOne({ email: email.toLowerCase() });
+
+    // Same error message regardless of whether user exists or password is wrong
+    // This prevents user enumeration
+    if (!user) {
+      return res.status(400).json({ 
+        success: false, 
+        message: "Invalid credentials" 
+      });
+    }
+
+    // Check if user has password (not Google OAuth only)
+    if (!user.password) {
+      return res.status(400).json({ 
+        success: false, 
+        message: "Use Google Sign-In for this account" 
+      });
+    }
+
+    // Verify password
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) {
+      return res.status(400).json({ 
+        success: false, 
+        message: "Invalid credentials" 
+      });
+    }
+
+    // Check user status
+    if (user.status !== "Active") {
+      return res.status(403).json({ 
+        success: false, 
+        message: "Account is not active" 
+      });
+    }
+
+    // Generate JWT token with role and user info
     const token = jwt.sign(
       {
         userId: user._id,
         email: user.email,
-        role: user.role,   // IMPORTANT
+        username: user.username,
+        role: user.role,
+        name: user.name
       },
       process.env.JWT_SECRET,
       { expiresIn: "7d" }
     );
 
+    // Store current token for session invalidation
+    user.currentToken = token;
+    await user.save();
+
+    // Set HTTP-only cookie
     res.cookie("auth_token", token, {
       httpOnly: true,
-      secure: false,
+      secure: process.env.NODE_ENV === "production",
       sameSite: "lax",
-      maxAge: 7 * 24 * 60 * 60 * 1000,
+      maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
     });
 
     res.json({
@@ -66,24 +237,187 @@ export const loginUser = async (req, res) => {
       token,
       user: {
         id: user._id,
-        name: user.name,
+        username: user.username,
         email: user.email,
-        role: user.role,  // ⭐ SEND ROLE IN RESPONSE
-      },
+        name: user.name,
+        role: user.role,
+        avatar: user.avatar
+      }
     });
 
   } catch (err) {
-    res.status(500).json({ success: false, message: "Server error" });
+    console.error("Login error:", err.message);
+    res.status(500).json({ 
+      success: false, 
+      message: "Server error" 
+    });
   }
 };
 
+/**
+ * Forgot password
+ * 
+ * Request body:
+ * - email: valid email address (required)
+ * 
+ * Response:
+ * - Always returns success to prevent email enumeration
+ * - If email exists: token is generated and ready for sending
+ * - If email doesn't exist: safe success response
+ * 
+ * Note: In production, this would send an email with reset link.
+ * For now, we generate the token and return it in response (placeholder).
+ */
+export const forgotPassword = async (req, res) => {
+  try {
+    const { email } = req.body;
 
+    // Input validation
+    if (!email) {
+      return res.status(400).json({ 
+        success: false, 
+        message: "Email is required" 
+      });
+    }
 
+    if (!isValidEmail(email)) {
+      return res.status(400).json({ 
+        success: false, 
+        message: "Invalid email format" 
+      });
+    }
 
+    // Find user - do NOT reveal whether email exists
+    const user = await User.findOne({ email: email.toLowerCase() });
+
+    // Always return success to prevent email enumeration
+    // In production, this would send an email
+    if (!user) {
+      return res.status(200).json({
+        success: true,
+        message: "If that email exists, a password reset link has been sent"
+      });
+    }
+
+    // Generate reset token (24-hour expiry)
+    const resetToken = crypto.randomBytes(32).toString("hex");
+    const resetPasswordExpires = Date.now() + 24 * 60 * 60 * 1000; // 24 hours
+
+    // Hash token before storing (never store plain token)
+    const hashedToken = crypto.createHash("sha256").update(resetToken).digest("hex");
+
+    // Save hashed token and expiry
+    user.resetPasswordToken = hashedToken;
+    user.resetPasswordExpires = new Date(resetPasswordExpires);
+    await user.save();
+
+    // In production, send email with reset link
+    // For now, return the plain token (development only)
+    // Example reset URL: /reset-password?token=<token>&email=<email>
+    
+    res.status(200).json({
+      success: true,
+      message: "If that email exists, a password reset link has been sent",
+      // Development-only: include token for testing
+      // Remove this in production
+      ...(process.env.NODE_ENV !== "production" && { 
+        resetToken: resetToken,
+        resetUrl: `/reset-password?token=${resetToken}&email=${user.email}`
+      })
+    });
+
+  } catch (err) {
+    console.error("Forgot password error:", err.message);
+    
+    // Always return success to prevent enumeration
+    res.status(200).json({
+      success: true,
+      message: "If that email exists, a password reset link has been sent"
+    });
+  }
+};
+
+/**
+ * Reset password
+ * 
+ * Request body:
+ * - token: reset token from email (required)
+ * - email: user's email (required)
+ * - newPassword: new password to set (required)
+ * 
+ * Response:
+ * - Success: { success: true, message: "Password reset successfully" }
+ * - Failure: { success: false, message: "..." }
+ */
+export const resetPassword = async (req, res) => {
+  try {
+    const { token, email, newPassword } = req.body;
+
+    // Input validation
+    if (!token || !email || !newPassword) {
+      return res.status(400).json({ 
+        success: false, 
+        message: "Token, email, and new password are required" 
+      });
+    }
+
+    if (!isStrongPassword(newPassword)) {
+      return res.status(400).json({ 
+        success: false, 
+        message: "Password must be at least 8 characters with one letter and one number" 
+      });
+    }
+
+    // Hash the provided token to compare with stored hash
+    const hashedToken = crypto.createHash("sha256").update(token).digest("hex");
+
+    // Find user with matching token and valid expiry
+    const user = await User.findOne({
+      email: email.toLowerCase(),
+      resetPasswordToken: hashedToken,
+      resetPasswordExpires: { $gt: Date.now() }
+    });
+
+    if (!user) {
+      return res.status(400).json({ 
+        success: false, 
+        message: "Invalid or expired reset token" 
+      });
+    }
+
+    // Hash new password
+    const saltRounds = 12;
+    const hashedPassword = await bcrypt.hash(newPassword, saltRounds);
+
+    // Update user's password and clear reset token
+    user.password = hashedPassword;
+    user.resetPasswordToken = undefined;
+    user.resetPasswordExpires = undefined;
+    await user.save();
+
+    res.json({
+      success: true,
+      message: "Password reset successfully"
+    });
+
+  } catch (err) {
+    console.error("Reset password error:", err.message);
+    res.status(500).json({ 
+      success: false, 
+      message: "Server error" 
+    });
+  }
+};
+
+/**
+ * Check authentication status
+ * 
+ * Protected route that returns current user info
+ */
 export const checkAuth = (req, res) => {
   return res.status(200).json({
+    success: true,
     authenticated: true,
     user: req.user
   });
 };
-

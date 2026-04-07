@@ -1,7 +1,9 @@
 import { Course, Enrollment, Progress } from "../models/CourseSchema.js";
 import MusicNote from "../models/NotesSchema.js";
+import User from "../models/users.js";
 import slugify from "slugify";
 import mongoose from "mongoose";
+import bcrypt from "bcryptjs";
 
 export const getAllMusicNotes = async (req, res) => {
   try {
@@ -194,7 +196,6 @@ export const validateCourse = async (req, res) => {
     if (!title?.trim()) {
       errors.push("Course title is required");
     }
-//...
 
     if (!category?.trim()) {
       errors.push("Course category is required");
@@ -557,12 +558,32 @@ export const updateCourse = async (req, res) => {
 
 export const getAllCoursesAdmin = async (req, res) => {
   try {
-    const courses = await Course.find()
-      .sort({ createdAt: -1 });
+    const { page = 1, limit = 10, search, category, status } = req.query;
+    const skip = (page - 1) * limit;
+
+    const query = {};
+
+    if (search) {
+      query.$or = [
+        { title: { $regex: search, $options: 'i' } },
+        { subtitle: { $regex: search, $options: 'i' } }
+      ];
+    }
+
+    if (category) query.category = category;
+    if (status) query["publish.status"] = status;
+
+    const [courses, total] = await Promise.all([
+      Course.find(query)
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(Number(limit)),
+      Course.countDocuments(query)
+    ]);
 
     res.status(200).json({
       success: true,
-      count: courses.length,
+      count: total,
       courses,
     });
 
@@ -624,6 +645,318 @@ export const deleteCourseAdmin = async (req, res) => {
     res.status(500).json({
       success: false,
       message: 'Failed to delete course',
+    });
+  }
+};
+
+export const getDashboardStats = async (req, res) => {
+  try {
+    const [
+      totalCourses,
+      totalNotes,
+      totalUsers,
+      totalEnrollments,
+      publishedCourses
+    ] = await Promise.all([
+      Course.countDocuments(),
+      MusicNote.countDocuments(),
+      User.countDocuments({ status: { $ne: "Deleted" } }),
+      Enrollment.countDocuments(),
+      Course.countDocuments({ "publish.status": "published" })
+    ]);
+
+    const activeSubscriptions = await User.countDocuments({
+      plan: { $in: ["Monthly Premium", "Annual Premium"] },
+      status: "Active"
+    });
+
+    const startOfMonth = new Date();
+    startOfMonth.setDate(1);
+    startOfMonth.setHours(0, 0, 0, 0);
+
+    const monthlyRevenueResult = await Enrollment.aggregate([
+      {
+        $match: {
+          enrolledAt: { $gte: startOfMonth }
+        }
+      },
+      {
+        $group: {
+          _id: null,
+          total: { $sum: "$purchasedPrice" }
+        }
+      }
+    ]);
+    const monthlyRevenue = monthlyRevenueResult[0]?.total || 0;
+
+    const recentEnrollments = await Enrollment.find()
+      .populate('user', 'name email avatar')
+      .populate('course', 'title')
+      .sort({ enrolledAt: -1 })
+      .limit(5);
+
+    const popularCourses = await Course.find({ "publish.status": "published" })
+      .sort({ "stats.enrolledStudents": -1 })
+      .limit(5)
+      .select('title stats.enrolledStudents stats.rating');
+
+    res.status(200).json({
+      success: true,
+      stats: {
+        totalCourses,
+        totalNotes,
+        totalUsers,
+        totalEnrollments,
+        activeSubscriptions,
+        monthlyRevenue,
+        publishedCourses
+      },
+      recentEnrollments,
+      popularCourses
+    });
+
+  } catch (error) {
+    console.error('Dashboard Stats Error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to fetch dashboard stats'
+    });
+  }
+};
+
+export const getAllUsersAdmin = async (req, res) => {
+  try {
+    const { page = 1, limit = 10, search, role, status, plan } = req.query;
+    const skip = (page - 1) * limit;
+
+    const query = { status: { $ne: "Deleted" } };
+
+    if (search) {
+      query.$or = [
+        { name: { $regex: search, $options: 'i' } },
+        { email: { $regex: search, $options: 'i' } }
+      ];
+    }
+
+    if (role) query.role = role;
+    if (status) query.status = status;
+    if (plan) query.plan = plan;
+
+    const [users, total] = await Promise.all([
+      User.find(query)
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(Number(limit)),
+      User.countDocuments(query)
+    ]);
+
+    res.status(200).json({
+      success: true,
+      count: total,
+      users
+    });
+
+  } catch (error) {
+    console.error('Get Users Error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to fetch users'
+    });
+  }
+};
+
+export const createUser = async (req, res) => {
+  try {
+    const { name, email, password, phone, country, plan, status, role } = req.body;
+
+    if (!name || !email || !password) {
+      return res.status(400).json({
+        success: false,
+        message: 'Name, email and password are required'
+      });
+    }
+
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+      return res.status(400).json({
+        success: false,
+        message: 'User with this email already exists'
+      });
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    const user = await User.create({
+      name,
+      email,
+      password: hashedPassword,
+      phone,
+      country,
+      plan: plan || "Free",
+      status: status || "Active",
+      role: role || "user"
+    });
+
+    user.password = undefined;
+
+    res.status(201).json({
+      success: true,
+      message: 'User created successfully',
+      user
+    });
+
+  } catch (error) {
+    console.error('Create User Error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to create user'
+    });
+  }
+};
+
+export const getUserByIdAdmin = async (req, res) => {
+  try {
+    const user = await User.findById(req.params.id);
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: 'User not found'
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      user
+    });
+
+  } catch (error) {
+    console.error('Get User Error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to fetch user'
+    });
+  }
+};
+
+export const updateUser = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { name, email, phone, country, plan, status, role } = req.body;
+
+    const user = await User.findById(id);
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: 'User not found'
+      });
+    }
+
+    if (email && email !== user.email) {
+      const existingUser = await User.findOne({ email });
+      if (existingUser) {
+        return res.status(400).json({
+          success: false,
+          message: 'Email already in use'
+        });
+      }
+    }
+
+    const updateData = {};
+    if (name) updateData.name = name;
+    if (email) updateData.email = email;
+    if (phone) updateData.phone = phone;
+    if (country) updateData.country = country;
+    if (plan) updateData.plan = plan;
+    if (status) updateData.status = status;
+    if (role) updateData.role = role;
+
+    const updatedUser = await User.findByIdAndUpdate(
+      id,
+      updateData,
+      { new: true, runValidators: true }
+    );
+
+    updatedUser.password = undefined;
+
+    res.status(200).json({
+      success: true,
+      message: 'User updated successfully',
+      user: updatedUser
+    });
+
+  } catch (error) {
+    console.error('Update User Error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to update user'
+    });
+  }
+};
+
+export const deleteUser = async (req, res) => {
+  try {
+    const user = await User.findById(req.params.id);
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: 'User not found'
+      });
+    }
+
+    await User.findByIdAndUpdate(req.params.id, { status: "Deleted" });
+
+    res.status(200).json({
+      success: true,
+      message: 'User deleted successfully'
+    });
+
+  } catch (error) {
+    console.error('Delete User Error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to delete user'
+    });
+  }
+};
+
+export const updateUserStatus = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { status } = req.body;
+
+    if (!status || !["Active", "Inactive", "Suspended"].includes(status)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Valid status is required (Active, Inactive, or Suspended)'
+      });
+    }
+
+    const user = await User.findByIdAndUpdate(
+      id,
+      { status },
+      { new: true }
+    );
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: 'User not found'
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: 'User status updated',
+      user
+    });
+
+  } catch (error) {
+    console.error('Update User Status Error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to update user status'
     });
   }
 };
