@@ -1,5 +1,5 @@
 import express from 'express';
-import upload from '../middlewares/Upload.js';
+import { upload } from '../middlewares/Upload.js';
 import verifyToken from '../middlewares/AuthmiddleWare.js';
 import isAdmin from '../middlewares/isAdmin.js';
 import {
@@ -43,8 +43,8 @@ router.delete('/courses/:id', verifyToken, isAdmin, deleteCourseAdmin);
 router.post('/courses/generate-slug', verifyToken, isAdmin, generateCourseSlug);
 router.post('/courses/validate', verifyToken, isAdmin, validateCourse);
 
-router.post('/upload', verifyToken, isAdmin, upload.single('file'), uploadFile);
-router.post('/upload/thumbnail', verifyToken, isAdmin, upload.single('thumbnail'), uploadThumbnail);
+router.post('/upload', verifyToken, isAdmin, upload, uploadFile);
+router.post('/upload/thumbnail', verifyToken, isAdmin, upload, uploadThumbnail);
 router.get('/music-notes', verifyToken, isAdmin, getAllMusicNotes);
 router.post('/music-notes', verifyToken, isAdmin, createMusicNote);
 router.get('/music-notes/:id', verifyToken, isAdmin, getMusicNoteById);

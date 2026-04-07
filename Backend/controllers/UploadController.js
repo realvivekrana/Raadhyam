@@ -1,16 +1,18 @@
 /**
  * Upload Controller
  * Handles file uploads to Cloudinary with proper validation and error handling
+ * Uses formidable for parsing multipart form data
  */
 
 import cloudinary from "../config/Cloudinary.js";
+import fs from "fs";
 
 /**
  * POST /api/upload
  * Upload a single file to Cloudinary
  * 
- * @middleware - Auth required, Multer upload middleware applied before this handler
- * @param {Object} req - Express request object with req.file from multer
+ * @middleware - Auth required, formidable upload middleware applied before this handler
+ * @param {Object} req - Express request object with req.file from formidable
  * @param {Object} res - Express response object
  */
 export const uploadFile = async (req, res) => {
@@ -27,28 +29,55 @@ export const uploadFile = async (req, res) => {
     const file = req.file;
     const config = file.allowedConfig || {};
 
+    // Generate safe public_id
+    const safeFilename = (file.originalname || file.name)
+      .replace(/\s+/g, "-")
+      .replace(/[^a-zA-Z0-9.-]/g, "")
+      .toLowerCase();
+
+    const publicId = `${Date.now()}-${safeFilename}`;
+
+    // Upload to Cloudinary using the file's filepath
+    const cloudinaryResult = await cloudinary.uploader.upload(file.filepath, {
+      folder: config.folder || "uploads/others",
+      public_id: publicId,
+      resource_type: config.resource_type || "auto",
+      use_filename: false,
+      unique_filename: false,
+      overwrite: false,
+    });
+
+    // Clean up temp file after upload
+    try {
+      fs.unlinkSync(file.filepath);
+    } catch (cleanupError) {
+      console.warn("Failed to cleanup temp file:", cleanupError.message);
+    }
+
     // Build response with Cloudinary URL and metadata
     const response = {
       success: true,
       message: "File uploaded successfully",
       data: {
         // Primary URL for frontend use
-        url: file.path,
+        url: cloudinaryResult.secure_url,
         
         // Cloudinary-specific details
         cloudinary: {
-          public_id: file.filename || file.public_id,
-          url: file.path,
-          secure_url: file.secure_url || file.path,
-          resource_type: file.resource_type || config.resource_type || "auto",
-          format: file.format || (config.ext ? config.ext.split("|")[0] : null),
-          folder: config.folder || "uploads/others",
+          public_id: cloudinaryResult.public_id,
+          url: cloudinaryResult.secure_url,
+          secure_url: cloudinaryResult.secure_url,
+          resource_type: cloudinaryResult.resource_type,
+          format: cloudinaryResult.format,
+          folder: cloudinaryResult.folder,
+          width: cloudinaryResult.width,
+          height: cloudinaryResult.height,
+          duration: cloudinaryResult.duration,
         },
         
         // File metadata (safe for frontend and other services)
         metadata: {
-          originalName: file.originalname,
-          filename: file.filename,
+          originalName: file.originalname || file.name,
           mimetype: file.mimetype,
           size: file.size,
           // Size in human-readable format
@@ -63,17 +92,17 @@ export const uploadFile = async (req, res) => {
     };
 
     // Add dimensions for images
-    if (file.mimetype.startsWith("image/")) {
+    if (cloudinaryResult.width && cloudinaryResult.height) {
       response.data.metadata.dimensions = {
-        width: file.width,
-        height: file.height,
+        width: cloudinaryResult.width,
+        height: cloudinaryResult.height,
       };
     }
 
     // Add duration for audio/video
-    if (file.duration) {
-      response.data.metadata.duration = file.duration;
-      response.data.metadata.durationFormatted = formatDuration(file.duration);
+    if (cloudinaryResult.duration) {
+      response.data.metadata.duration = cloudinaryResult.duration;
+      response.data.metadata.durationFormatted = formatDuration(cloudinaryResult.duration);
     }
 
     return res.status(200).json(response);

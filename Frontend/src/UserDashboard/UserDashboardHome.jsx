@@ -29,7 +29,8 @@ const UserDashboardHome = ({ setActiveTab }) => {
         setCourses(coursesRes.data.courses || []);
         
         const notesRes = await axios.get('/api/music-notes');
-        setNotes(notesRes.data.notes || notesRes.data || []);
+        const notesData = notesRes.data?.notes ?? notesRes.data ?? [];
+        setNotes(Array.isArray(notesData) ? notesData : []);
       } catch (err) {
         console.error('Error fetching data:', err);
       }

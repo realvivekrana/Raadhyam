@@ -1,6 +1,6 @@
 /**
  * Upload Routes
- * Handles file uploads to Cloudinary
+ * Handles file uploads to Cloudinary using formidable
  * 
  * Endpoints:
  * - POST /api/upload - Upload file (requires auth)
@@ -13,58 +13,16 @@
 
 import express from 'express';
 import { protect } from '../middlewares/AuthmiddleWare.js';
-import upload from '../middlewares/Upload.js';
+import { upload, ALLOWED_MIME_TYPES } from '../middlewares/Upload.js';
 import { uploadFile, validateFile } from '../controllers/UploadController.js';
 
 const router = express.Router();
-
-// Error handling wrapper for multer errors
-const handleMulterError = (err, req, res, next) => {
-  if (err instanceof Error) {
-    console.error('Multer error:', err.message);
-    
-    // Handle specific error codes
-    if (err.code === 'LIMIT_FILE_SIZE') {
-      return res.status(400).json({
-        success: false,
-        message: 'File too large. Maximum size is 100MB',
-        code: 'FILE_TOO_LARGE',
-      });
-    }
-    
-    if (err.code === 'LIMIT_FILE_COUNT') {
-      return res.status(400).json({
-        success: false,
-        message: 'Too many files. Only one file per request is allowed',
-        code: 'TOO_MANY_FILES',
-      });
-    }
-    
-    if (err.code === 'INVALID_FILE_TYPE') {
-      return res.status(400).json({
-        success: false,
-        message: err.message,
-        code: 'INVALID_FILE_TYPE',
-      });
-    }
-    
-    // Generic multer error
-    return res.status(400).json({
-      success: false,
-      message: err.message || 'File upload error',
-      code: 'UPLOAD_ERROR',
-    });
-  }
-  
-  next(err);
-};
 
 // POST /api/upload - Upload file (requires auth)
 router.post(
   '/',
   protect, // Authentication required
-  upload.single('file'), // Single file upload, field name: 'file'
-  handleMulterError, // Handle multer errors
+  upload, // Formidable upload middleware
   uploadFile // Controller handler
 );
 
@@ -73,9 +31,30 @@ router.post(
 router.post(
   '/validate',
   protect, // Authentication required
-  upload.single('file'), // Single file upload, field name: 'file'
-  handleMulterError, // Handle multer errors
+  upload, // Formidable upload middleware
   validateFile // Controller handler
 );
+
+// GET /api/upload/types - Get allowed file types
+router.get('/types', (req, res) => {
+  res.status(200).json({
+    success: true,
+    data: {
+      allowedTypes: Object.keys(ALLOWED_MIME_TYPES),
+      categories: {
+        images: ["image/jpeg", "image/png", "image/gif", "image/webp"],
+        videos: ["video/mp4", "video/quicktime", "video/webm"],
+        audio: ["audio/mpeg", "audio/wav", "audio/ogg", "audio/flac"],
+        documents: ["application/pdf"],
+      },
+      limits: {
+        images: "10MB",
+        videos: "100MB",
+        audio: "50MB",
+        documents: "20MB",
+      },
+    },
+  });
+});
 
 export default router;

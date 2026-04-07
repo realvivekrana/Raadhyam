@@ -1,3 +1,6 @@
+/* ── React hooks for UploadBox ─────────────────────────────────────────── */
+import { useState, useRef, useEffect } from 'react';
+
 /* ── Design tokens ─────────────────────────────────────────────────────── */
 export const Y      = '#FFC107';
 export const YL     = '#FFF8E1';
@@ -136,21 +139,365 @@ export const Select = ({ label, options, required }) => (
   </div>
 );
 
-export const UploadBox = ({ label, accept, required }) => (
-  <div style={{ marginBottom:'1rem' }}>
-    {label && <label style={{ display:'block', fontSize:'0.82rem', fontWeight:600,
-      color:TEXT, marginBottom:5, fontFamily:SANS }}>
-      {label}{required&&<span style={{color:'#EF4444'}}> *</span>}
-    </label>}
-    <div style={{ border:`2px dashed ${BORDER}`, borderRadius:10, padding:'1.25rem',
-      textAlign:'center', cursor:'pointer', background:'#FAFAFA' }}
-      onMouseEnter={e=>{e.currentTarget.style.borderColor=Y;e.currentTarget.style.background=YL;}}
-      onMouseLeave={e=>{e.currentTarget.style.borderColor=BORDER;e.currentTarget.style.background='#FAFAFA';}}>
-      <p style={{ fontSize:'0.82rem', color:MUTED, margin:0, fontFamily:SANS }}>Click to upload or drag & drop</p>
-      <p style={{ fontSize:'0.72rem', color:'#9CA3AF', margin:'3px 0 0', fontFamily:SANS }}>{accept}</p>
+/**
+ * UploadBox Component
+ * Enhanced file upload component with loading, success, and error states
+ * 
+ * @param {Object} props
+ * @param {string} props.label - Label text
+ * @param {string} props.accept - Accepted file types (e.g., "audio/mp3,image/png")
+ * @param {boolean} props.required - Whether field is required
+ * @param {string} props.preset - Upload preset (image, audio, video, document)
+ * @param {Function} props.onUpload - Callback with upload result { url, metadata }
+ * @param {Function} props.onRemove - Callback when file is removed
+ * @param {Object} props.value - Current uploaded value { url, metadata }
+ * @param {Function} props.uploadService - Custom upload function (optional)
+ */
+export const UploadBox = ({ 
+  label, 
+  accept, 
+  required, 
+  preset = 'default',
+  onUpload,
+  onRemove,
+  value,
+  uploadService,
+}) => {
+  const [isUploading, setIsUploading] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
+  const [uploadError, setUploadError] = useState(null);
+  const [uploadedFile, setUploadedFile] = useState(value || null);
+  const [isDragging, setIsDragging] = useState(false);
+  const fileInputRef = useRef(null);
+
+  // Reset state when value prop changes
+  useEffect(() => {
+    if (value !== undefined) {
+      setUploadedFile(value);
+    }
+  }, [value]);
+
+  // Default upload function using the service
+  const handleUpload = async (file) => {
+    if (!file) return;
+
+    setIsUploading(true);
+    setUploadError(null);
+    setUploadProgress(0);
+
+    try {
+      let result;
+      
+      if (uploadService) {
+        // Use custom upload service if provided
+        result = await uploadService(file, {
+          preset,
+          onProgress: setUploadProgress,
+        });
+      } else {
+        // Use default upload service
+        const { uploadFile } = await import('../../services/uploadService');
+        result = await uploadFile(file, {
+          preset,
+          onProgress: setUploadProgress,
+        });
+      }
+
+      const uploadResult = {
+        url: result.url,
+        metadata: result.metadata,
+        publicId: result.publicId,
+      };
+
+      setUploadedFile(uploadResult);
+      onUpload?.(uploadResult);
+    } catch (error) {
+      const errorMessage = error.message || 'Upload failed';
+      setUploadError(errorMessage);
+      onUpload?.({ error: errorMessage });
+    } finally {
+      setIsUploading(false);
+      setUploadProgress(0);
+    }
+  };
+
+  const handleFileSelect = (e) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      handleUpload(file);
+    }
+    // Reset input so same file can be selected again
+    e.target.value = '';
+  };
+
+  const handleDrop = (e) => {
+    e.preventDefault();
+    setIsDragging(false);
+    const file = e.dataTransfer.files?.[0];
+    if (file) {
+      handleUpload(file);
+    }
+  };
+
+  const handleDragOver = (e) => {
+    e.preventDefault();
+    setIsDragging(true);
+  };
+
+  const handleDragLeave = (e) => {
+    e.preventDefault();
+    setIsDragging(false);
+  };
+
+  const handleClick = () => {
+    fileInputRef.current?.click();
+  };
+
+  const handleRemove = (e) => {
+    e.stopPropagation();
+    setUploadedFile(null);
+    setUploadError(null);
+    onRemove?.();
+  };
+
+  // Success state - show uploaded file
+  if (uploadedFile && !isUploading) {
+    const isImage = uploadedFile.metadata?.category === 'image';
+    
+    return (
+      <div style={{ marginBottom: '1rem' }}>
+        {label && (
+          <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: 600,
+            color: TEXT, marginBottom: 5, fontFamily: SANS }}>
+            {label}{required && <span style={{ color: '#EF4444' }}> *</span>}
+          </label>
+        )}
+        <div style={{ 
+          border: `2px solid ${isImage ? '#10B981' : BORDER}`, 
+          borderRadius: 10, 
+          padding: '0.75rem',
+          background: '#FAFAFA',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '0.75rem'
+        }}>
+          {isImage ? (
+            <img 
+              src={uploadedFile.url} 
+              alt="Uploaded" 
+              style={{ 
+                width: 48, 
+                height: 48, 
+                borderRadius: 6, 
+                objectFit: 'cover',
+                flexShrink: 0
+              }} 
+            />
+          ) : (
+            <div style={{ 
+              width: 48, 
+              height: 48, 
+              borderRadius: 6, 
+              background: YL,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              fontSize: '1.2rem',
+              flexShrink: 0
+            }}>
+              {uploadedFile.metadata?.category === 'audio' ? '🎵' : '📄'}
+            </div>
+          )}
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <p style={{ 
+              fontSize: '0.82rem', 
+              color: TEXT, 
+              margin: 0, 
+              fontFamily: SANS,
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+              whiteSpace: 'nowrap'
+            }}>
+              {uploadedFile.metadata?.originalName || 'Uploaded file'}
+            </p>
+            {uploadedFile.metadata?.sizeFormatted && (
+              <p style={{ 
+                fontSize: '0.72rem', 
+                color: MUTED, 
+                margin: '2px 0 0',
+                fontFamily: SANS 
+              }}>
+                {uploadedFile.metadata.sizeFormatted}
+              </p>
+            )}
+          </div>
+          <div style={{ display: 'flex', gap: '0.5rem', flexShrink: 0 }}>
+            <span style={{ 
+              fontSize: '0.72rem', 
+              color: '#10B981',
+              fontWeight: 600
+            }}>
+              ✓ Uploaded
+            </span>
+            <button
+              onClick={handleRemove}
+              style={{
+                background: 'none',
+                border: 'none',
+                cursor: 'pointer',
+                color: '#EF4444',
+                fontSize: '1rem',
+                padding: '0.25rem',
+                display: 'flex',
+                alignItems: 'center'
+              }}
+              title="Remove file"
+            >
+              ×
+            </button>
+          </div>
+        </div>
+        {/* Hidden file input for re-upload */}
+        <input
+          type="file"
+          ref={fileInputRef}
+          accept={accept}
+          onChange={handleFileSelect}
+          style={{ display: 'none' }}
+        />
+      </div>
+    );
+  }
+
+  // Loading state
+  if (isUploading) {
+    return (
+      <div style={{ marginBottom: '1rem' }}>
+        {label && (
+          <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: 600,
+            color: TEXT, marginBottom: 5, fontFamily: SANS }}>
+            {label}{required && <span style={{ color: '#EF4444' }}> *</span>}
+          </label>
+        )}
+        <div style={{ 
+          border: `2px dashed ${Y}`, 
+          borderRadius: 10, 
+          padding: '1.5rem',
+          background: YL,
+          textAlign: 'center'
+        }}>
+          <div style={{ 
+            width: 40, 
+            height: 40, 
+            border: '3px solid #E5E7EB',
+            borderTop: `3px solid ${Y}`,
+            borderRadius: '50%',
+            animation: 'spin 1s linear infinite',
+            margin: '0 auto 0.75rem'
+          }} />
+          <p style={{ fontSize: '0.88rem', color: TEXT, margin: '0 0 0.5rem', fontFamily: SANS }}>
+            Uploading...
+          </p>
+          <div style={{ 
+            width: '100%', 
+            height: 6, 
+            background: '#E5E7EB', 
+            borderRadius: 3,
+            overflow: 'hidden'
+          }}>
+            <div style={{ 
+              width: `${uploadProgress}%`, 
+              height: '100%', 
+              background: Y,
+              transition: 'width 0.3s ease'
+            }} />
+          </div>
+          <p style={{ fontSize: '0.72rem', color: MUTED, margin: '0.5rem 0 0', fontFamily: SANS }}>
+            {Math.round(uploadProgress)}% complete
+          </p>
+        </div>
+        <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
+      </div>
+    );
+  }
+
+  // Error state
+  if (uploadError) {
+    return (
+      <div style={{ marginBottom: '1rem' }}>
+        {label && (
+          <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: 600,
+            color: TEXT, marginBottom: 5, fontFamily: SANS }}>
+            {label}{required && <span style={{ color: '#EF4444' }}> *</span>}
+          </label>
+        )}
+        <div style={{ 
+          border: '2px dashed #FCA5A5', 
+          borderRadius: 10, 
+          padding: '1.25rem',
+          background: '#FEF2F2',
+          textAlign: 'center',
+          cursor: 'pointer'
+        }}
+          onClick={handleClick}>
+          <p style={{ fontSize: '0.82rem', color: '#EF4444', margin: '0 0 0.25rem', fontFamily: SANS }}>
+            Upload failed: {uploadError}
+          </p>
+          <p style={{ fontSize: '0.72rem', color: MUTED, margin: 0, fontFamily: SANS }}>
+            Click to try again
+          </p>
+        </div>
+        <input
+          type="file"
+          ref={fileInputRef}
+          accept={accept}
+          onChange={handleFileSelect}
+          style={{ display: 'none' }}
+        />
+      </div>
+    );
+  }
+
+  // Default / Drag state
+  return (
+    <div style={{ marginBottom: '1rem' }}>
+      {label && (
+        <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: 600,
+          color: TEXT, marginBottom: 5, fontFamily: SANS }}>
+          {label}{required && <span style={{ color: '#EF4444' }}> *</span>}
+        </label>
+      )}
+      <div 
+        style={{ 
+          border: `2px dashed ${isDragging ? Y : BORDER}`, 
+          borderRadius: 10, 
+          padding: '1.25rem',
+          textAlign: 'center', 
+          cursor: 'pointer', 
+          background: isDragging ? YL : '#FAFAFA',
+          transition: 'all 0.2s ease'
+        }}
+        onClick={handleClick}
+        onDrop={handleDrop}
+        onDragOver={handleDragOver}
+        onDragLeave={handleDragLeave}>
+        <p style={{ fontSize: '0.82rem', color: isDragging ? Y : MUTED, margin: 0, fontFamily: SANS }}>
+          {isDragging ? 'Drop file here' : 'Click to upload or drag & drop'}
+        </p>
+        <p style={{ fontSize: '0.72rem', color: '#9CA3AF', margin: '3px 0 0', fontFamily: SANS }}>
+          {accept}
+        </p>
+      </div>
+      <input
+        type="file"
+        ref={fileInputRef}
+        accept={accept}
+        onChange={handleFileSelect}
+        style={{ display: 'none' }}
+      />
     </div>
-  </div>
-);
+  );
+};
 
 /* ── Search + filter toolbar ───────────────────────────────────────────── */
 export const Toolbar = ({ searchPlaceholder, filters, sortOptions }) => (

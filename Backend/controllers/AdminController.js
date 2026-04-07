@@ -4,6 +4,8 @@ import User from "../models/users.js";
 import slugify from "slugify";
 import mongoose from "mongoose";
 import bcrypt from "bcryptjs";
+import cloudinary from "../config/Cloudinary.js";
+import fs from "fs";
 
 export const getAllMusicNotes = async (req, res) => {
   try {
@@ -110,9 +112,23 @@ export const uploadThumbnail = async (req, res) => {
       return res.status(400).json({ message: "No file uploaded" });
     }
 
+    // Upload to Cloudinary
+    const result = await cloudinary.uploader.upload(req.file.filepath, {
+      folder: "uploads/images",
+      resource_type: "image",
+      public_id: `${Date.now()}-${req.file.originalFilename || req.file.name}`.replace(/\s+/g, "-"),
+    });
+
+    // Clean up temp file
+    try {
+      fs.unlinkSync(req.file.filepath);
+    } catch (cleanupError) {
+      console.warn("Failed to cleanup temp file:", cleanupError.message);
+    }
+
     res.status(200).json({
       success: true,
-      url: req.file.path,
+      url: result.secure_url,
     });
 
   } catch (error) {
@@ -146,11 +162,29 @@ export const uploadFile = async (req, res) => {
       return res.status(400).json({ message: "No file uploaded" });
     }
 
-    const fileUrl = req.file.path || `/uploads/${req.file.filename}`;
+    // Determine resource type based on mimetype
+    let resource_type = "auto";
+    if (req.file.mimetype.startsWith("image/")) resource_type = "image";
+    else if (req.file.mimetype.startsWith("video/")) resource_type = "video";
+    else if (req.file.mimetype.startsWith("audio/")) resource_type = "video";
+
+    // Upload to Cloudinary
+    const result = await cloudinary.uploader.upload(req.file.filepath, {
+      folder: "uploads/files",
+      resource_type: resource_type,
+      public_id: `${Date.now()}-${req.file.originalFilename || req.file.name}`.replace(/\s+/g, "-"),
+    });
+
+    // Clean up temp file
+    try {
+      fs.unlinkSync(req.file.filepath);
+    } catch (cleanupError) {
+      console.warn("Failed to cleanup temp file:", cleanupError.message);
+    }
 
     res.json({
       success: true,
-      url: fileUrl
+      url: result.secure_url
     });
   } catch (error) {
     console.error(error);
