@@ -18,7 +18,7 @@ import ModuleFormModal from './ModuleFormModal';
 import LessonFormModal from './LessonFormModal';
 
 const MainDashboardAdmin = () => {
-  const [activeTab, setActiveTab] = useState('courses');
+  const [activeTab, setActiveTab] = useState('dashboard');
   const [currentCourseView, setCurrentCourseView] = useState('list'); // 'list', 'detail'
   const [selectedCourse, setSelectedCourse] = useState(null);
   const [loading, setLoading] = useState(false);
