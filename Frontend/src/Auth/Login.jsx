@@ -194,7 +194,7 @@ const LoginPage = () => {
         @keyframes imgReveal { from{opacity:0;transform:scale(1.08)} to{opacity:1;transform:scale(1)} }
         @keyframes pulseBtn  { 0%,100%{box-shadow:0 4px 18px rgba(239,180,0,0.4)} 50%{box-shadow:0 4px 32px rgba(239,180,0,0.75)} }
 
-        .auth-wrap { min-height:100vh; padding:22px 18px; display:flex; align-items:center; justify-content:center; }
+        .auth-wrap { min-height:100vh; padding:70px 18px 22px; display:flex; align-items:center; justify-content:center; }
 
         .auth-card {
           width: min(1060px, 100%);
@@ -237,13 +237,13 @@ const LoginPage = () => {
         .note-float { position:absolute; pointer-events:none; user-select:none; color:rgba(255,255,255,0.22); font-size:1.8rem; animation:floatNote 7s ease-in-out infinite; }
 
         @media(max-width:768px){
-          .auth-wrap{ padding:16px; align-items:flex-start; padding-top:60px; }
+          .auth-wrap{ padding:80px 16px 22px; align-items:flex-start; }
           .auth-card{ grid-template-columns:1fr; height:auto; min-height:unset; max-width:440px; border-radius:16px; }
           .auth-right{ display:none !important; }
           .auth-left-inner{ padding:28px 22px 24px !important; }
         }
         @media(max-width:420px){
-          .auth-wrap{ padding:12px; padding-top:52px; }
+          .auth-wrap{ padding:72px 12px 16px; }
           .auth-left-inner{ padding:22px 16px 20px !important; }
           .auth-card{ border-radius:14px; }
         }
@@ -397,27 +397,6 @@ const LoginPage = () => {
               >
                 {isLoading ? 'Signing in...' : 'Continue'}
               </button>
-
-              <div style={{ display: 'flex', gap: 9 }}>
-                <button
-                  type="button"
-                  onClick={() => {
-                    window.location.href = '/dashboard/admin';
-                  }}
-                  style={{ flex: 1, padding: '9px 10px', borderRadius: 8, border: '1px solid #d8dde6', background: '#fff', color: '#48505f', fontSize: '0.78rem', fontWeight: 700, cursor: 'pointer' }}
-                >
-                  Demo Admin
-                </button>
-                <button
-                  type="button"
-                  onClick={() => {
-                    window.location.href = '/dashboard/home';
-                  }}
-                  style={{ flex: 1, padding: '9px 10px', borderRadius: 8, border: '1px solid #d8dde6', background: '#fff', color: '#48505f', fontSize: '0.78rem', fontWeight: 700, cursor: 'pointer' }}
-                >
-                  Demo User
-                </button>
-              </div>
             </form>
 
             <div style={{ display: 'flex', alignItems: 'center', gap: 10, margin: '0.6rem 0 0.6rem' }}>
