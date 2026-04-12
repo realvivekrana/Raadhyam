@@ -30,12 +30,23 @@ export const getAllMusicNotes = async (req, res) => {
 
 export const createMusicNote = async (req, res) => {
   try {
+    const userId = req.user?._id || req.user?.id;
+
+    if (!userId) {
+      return res.status(401).json({ 
+        success: false,
+        message: "Unauthorized",
+        code: "UNAUTHORIZED"
+      });
+    }
+
     const {
       title,
       category,
       thumbnail,
       explanation,
-      sections
+      sections,
+      course
     } = req.body;
 
     if (!title || !category) {
@@ -59,7 +70,9 @@ export const createMusicNote = async (req, res) => {
       category,
       thumbnail,
       sections,
-      explanation
+      explanation,
+      course,
+      createdBy: userId
     });
 
     res.status(201).json({
@@ -801,6 +814,7 @@ export const getAllUsersAdmin = async (req, res) => {
       User.countDocuments(query)
     ]);
 
+<<<<<<< HEAD
     // Attach enrollment counts to each user
     const usersWithStats = await Promise.all(users.map(async (u) => {
       const enrollments = await Enrollment.find({ user: u._id });
@@ -817,6 +831,104 @@ export const getAllUsersAdmin = async (req, res) => {
     }));
 
     res.status(200).json({ success: true, count: total, users: usersWithStats });
+=======
+    // Get enrollment stats for each user
+    const userIds = users.map(u => u._id);
+    
+    // Get all enrollments for these users with course module info
+    const enrollments = await Enrollment.find({ user: { $in: userIds } })
+      .populate("course", "modules")
+      .lean();
+    
+    // Get all progress records for these enrollments
+    const enrollmentIds = enrollments.map(e => e._id);
+    const progressRecords = await Progress.find({ 
+      enrollment: { $in: enrollmentIds },
+      completed: true 
+    }).lean();
+    
+    // Map progress records by enrollment
+    const progressByEnrollment = new Map();
+    progressRecords.forEach(p => {
+      const current = progressByEnrollment.get(p.enrollment.toString()) || 0;
+      progressByEnrollment.set(p.enrollment.toString(), current + 1);
+    });
+    
+    // Calculate stats per user
+    const userStatsMap = new Map();
+    
+    enrollments.forEach(enrollment => {
+      const userId = enrollment.user.toString();
+      const course = enrollment.course;
+      
+      // Get total lessons in this course
+      let totalLessonsInCourse = 0;
+      if (course && course.modules) {
+        totalLessonsInCourse = course.modules.reduce(
+          (sum, module) => sum + (module.lessons?.length || 0), 0
+        );
+      }
+      
+      const completedLessonsInCourse = progressByEnrollment.get(enrollment._id.toString()) || 0;
+      
+      const existing = userStatsMap.get(userId) || {
+        enrolledCourses: 0,
+        completedCourses: 0,
+        completedLessons: 0,
+        totalLessons: 0,
+        totalProgress: 0
+      };
+      
+      existing.enrolledCourses += 1;
+      existing.completedLessons += completedLessonsInCourse;
+      existing.totalLessons += totalLessonsInCourse;
+      existing.totalProgress += enrollment.progress || 0;
+      
+      // Consider course completed if progress is 100%
+      if (enrollment.progress === 100) {
+        existing.completedCourses += 1;
+      }
+      
+      userStatsMap.set(userId, existing);
+    });
+    
+    // Add stats to users
+    const usersWithStats = users.map(user => {
+      const userId = user._id.toString();
+      const stats = userStatsMap.get(userId) || {
+        enrolledCourses: 0,
+        completedCourses: 0,
+        completedLessons: 0,
+        totalLessons: 0,
+        totalProgress: 0
+      };
+      
+      // Calculate average progress
+      let progress = 0;
+      if (stats.enrolledCourses > 0) {
+        progress = Math.round(stats.totalProgress / stats.enrolledCourses);
+      }
+      // Fallback: calculate from lessons
+      if (progress === 0 && stats.totalLessons > 0) {
+        progress = Math.round((stats.completedLessons / stats.totalLessons) * 100);
+      }
+      
+      return {
+        ...user.toObject(),
+        enrolledCourses: stats.enrolledCourses,
+        completedCourses: stats.completedCourses,
+        completedLessons: stats.completedLessons,
+        totalLessons: stats.totalLessons,
+        progress
+      };
+    });
+
+    res.status(200).json({
+      success: true,
+      count: total,
+      users: usersWithStats
+    });
+>>>>>>> ca894c5b70fed9aad1a0f323502d901336a17e42
 
   } catch (error) {
     console.error('Get Users Error:', error);
