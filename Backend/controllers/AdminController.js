@@ -1,4 +1,4 @@
-import { Course, Enrollment, Progress } from "../models/CourseSchema.js";
+﻿import { Course, Enrollment, Progress } from "../models/CourseSchema.js";
 import MusicNote from "../models/NotesSchema.js";
 import User from "../models/users.js";
 import slugify from "slugify";
@@ -319,7 +319,7 @@ export const createCourse = async (req, res) => {
       return res.status(401).json({ message: "Unauthorized" });
     }
 
-    console.log('📥 Received course data:', {
+    console.log('ðŸ“¥ Received course data:', {
       title: req.body.title,
       modules: req.body.modules?.length,
       lessons: req.body.modules?.reduce((total, mod) => total + (mod.lessons?.length || 0), 0)
@@ -419,7 +419,7 @@ export const createCourse = async (req, res) => {
       totalReviews: 0
     };
 
-    console.log('💾 Creating course with processed data:', {
+    console.log('ðŸ’¾ Creating course with processed data:', {
       title: courseData.title,
       modules: courseData.modules.length,
       lessons: totalLessons,
@@ -435,7 +435,7 @@ export const createCourse = async (req, res) => {
     });
 
   } catch (error) {
-    console.error("❌ COURSE CREATE ERROR:", error);
+    console.error("âŒ COURSE CREATE ERROR:", error);
     
     if (error.name === 'ValidationError') {
       const errors = Object.values(error.errors).map(err => err.message);
@@ -467,7 +467,7 @@ export const updateCourse = async (req, res) => {
       return res.status(404).json({ message: "Course not found" });
     }
 
-    console.log('📥 Updating course:', id, {
+    console.log('ðŸ“¥ Updating course:', id, {
       title: req.body.title,
       modules: req.body.modules?.length
     });
@@ -580,7 +580,7 @@ export const updateCourse = async (req, res) => {
       totalDurationSeconds
     };
 
-    console.log('💾 Updating course with:', {
+    console.log('ðŸ’¾ Updating course with:', {
       modules: updateData.modules.length,
       lessons: totalLessons
     });
@@ -601,7 +601,7 @@ export const updateCourse = async (req, res) => {
     });
 
   } catch (error) {
-    console.error("❌ COURSE UPDATE ERROR:", error);
+    console.error("âŒ COURSE UPDATE ERROR:", error);
     
     if (error.name === 'ValidationError') {
       const errors = Object.values(error.errors).map(err => err.message);
@@ -814,24 +814,6 @@ export const getAllUsersAdmin = async (req, res) => {
       User.countDocuments(query)
     ]);
 
-<<<<<<< HEAD
-    // Attach enrollment counts to each user
-    const usersWithStats = await Promise.all(users.map(async (u) => {
-      const enrollments = await Enrollment.find({ user: u._id });
-      const completedCount = enrollments.filter(e => e.progress === 100).length;
-      const avgProgress = enrollments.length > 0
-        ? Math.round(enrollments.reduce((s, e) => s + (e.progress || 0), 0) / enrollments.length)
-        : 0;
-      return {
-        ...u.toObject(),
-        enrolledCourses:  enrollments.length,
-        completedCourses: completedCount,
-        progress:         avgProgress,
-      };
-    }));
-
-    res.status(200).json({ success: true, count: total, users: usersWithStats });
-=======
     // Get enrollment stats for each user
     const userIds = users.map(u => u._id);
     
@@ -928,7 +910,6 @@ export const getAllUsersAdmin = async (req, res) => {
       count: total,
       users: usersWithStats
     });
->>>>>>> ca894c5b70fed9aad1a0f323502d901336a17e42
 
   } catch (error) {
     console.error('Get Users Error:', error);
