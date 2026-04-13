@@ -31,7 +31,6 @@ const LessonFormModal = ({ lesson, onSave, onClose, uploadFile }) => {
         duration: lesson.duration || '',
         isFreePreview: lesson.isFreePreview || false
       });
-
       // Set file selected if editing and file already exists
       if ((lesson.type === 'video' && lesson.videoUrl) ||
           (lesson.type === 'pdf' && lesson.pdfUrl)) {
@@ -91,9 +90,8 @@ const LessonFormModal = ({ lesson, onSave, onClose, uploadFile }) => {
       alert('Lesson title is required');
       return;
     }
-    
-    // ✅ VALIDATE THAT FILE IS UPLOADED BASED ON TYPE
-    // For editing, if lesson already has a file, allow updating without re-uploading
+  // Validate that file/content exists based on selected type.
+  // For editing, existing saved values are also accepted.
     const hasExistingVideo = lesson && lesson.type === 'video' && lesson.videoUrl;
     const hasExistingPdf = lesson && lesson.type === 'pdf' && lesson.pdfUrl;
     const hasExistingContent = lesson && lesson.type === 'text' && lesson.content;
@@ -112,22 +110,20 @@ const LessonFormModal = ({ lesson, onSave, onClose, uploadFile }) => {
       alert('Please add text content before saving the lesson');
       return;
     }
-
-    // ✅ Create clean lesson data structure
     const cleanLessonData = {
       title: formData.title.trim(),
       description: formData.description.trim(),
       type: formData.type,
-      duration: formData.duration || '00:00',
+      duration: formData.duration || '',
       isFreePreview: formData.isFreePreview || false,
     };
 
-    // ✅ Preserve lesson _id when editing so backend knows to update instead of create new
+    // Preserve lesson _id when editing so backend updates existing lesson.
     if (lesson && lesson._id) {
       cleanLessonData._id = lesson._id;
     }
 
-    // ✅ Only include relevant fields based on type, preserving existing values if editing
+    // Only include relevant fields based on lesson type.
     if (formData.type === 'video') {
       cleanLessonData.videoUrl = formData.videoUrl || (lesson && lesson.videoUrl) || '';
       cleanLessonData.pdfUrl = undefined;
@@ -142,7 +138,7 @@ const LessonFormModal = ({ lesson, onSave, onClose, uploadFile }) => {
       cleanLessonData.pdfUrl = undefined;
     }
 
-    // ✅ Remove undefined fields
+    // Remove undefined fields from payload.
     Object.keys(cleanLessonData).forEach(key => {
       if (cleanLessonData[key] === undefined) {
         delete cleanLessonData[key];
@@ -195,54 +191,32 @@ const LessonFormModal = ({ lesson, onSave, onClose, uploadFile }) => {
     switch (formData.type) {
       case 'video':
         return (
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Video File *
-            </label>
-            <div className="space-y-3">
+          <div className="space-y-4">
+            <div>
+              <label className="block text-sm font-bold text-gray-700 mb-2">Video URL (YouTube, direct link)</label>
               <input
-                type="file"
-                accept="video/*"
-                onChange={(e) => handleFileChange(e, 'video')}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                disabled={uploading}
+                type="url"
+                className="w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:ring-2 focus:ring-amber-500 focus:border-amber-400 transition-all duration-300"
+                value={formData.videoUrl}
+                onChange={e => setFormData({ ...formData, videoUrl: e.target.value })}
+                placeholder="https://youtube.com/watch?v=... or direct video URL"
               />
-              
-              <p className="text-xs text-gray-500">
-                {getFileRequirements('video')}
-              </p>
-              
-              {/* Upload Progress */}
+              {formData.videoUrl && <p className="text-xs text-green-600 mt-1">✓ Video URL set</p>}
+            </div>
+            <div className="text-center text-gray-400 text-sm font-medium">— OR upload a file —</div>
+            <div>
+              <input type="file" accept="video/*"
+                onChange={e => handleFileChange(e, 'video')}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+                disabled={uploading} />
+              <p className="text-xs text-gray-500 mt-1">MP4, MOV etc. (max 5MB via Cloudinary)</p>
               {uploading && (
                 <div className="mt-2">
-                  <div className="flex items-center justify-between text-sm text-gray-600 mb-1">
-                    <span>Uploading video...</span>
-                    <span>{uploadProgress}%</span>
-                  </div>
-                  <div className="w-full bg-gray-200 rounded-full h-2">
-                    <div 
-                      className="bg-blue-600 h-2 rounded-full transition-all duration-300"
-                      style={{ width: `${uploadProgress}%` }}
-                    ></div>
-                  </div>
+                  <div className="flex justify-between text-sm text-gray-600 mb-1"><span>Uploading...</span><span>{uploadProgress}%</span></div>
+                  <div className="w-full bg-gray-200 rounded-full h-2"><div className="bg-amber-500 h-2 rounded-full" style={{ width:`${uploadProgress}%` }} /></div>
                 </div>
               )}
-              
-              {/* Upload Error */}
-              {uploadError && (
-                <div className="flex items-center text-sm text-amber-600 bg-amber-50 p-2 rounded">
-                  <AlertCircle size={16} className="mr-2" />
-                  {uploadError}
-                </div>
-              )}
-              
-              {/* Success Message */}
-              {formData.videoUrl && !uploading && (
-                <p className="text-sm text-green-600 flex items-center">
-                  <CheckCircle size={16} className="mr-1" />
-                  Video uploaded successfully
-                </p>
-              )}
+              {uploadError && <p className="text-xs text-red-500 mt-1">{uploadError}</p>}
             </div>
           </div>
         );
@@ -329,18 +303,9 @@ const LessonFormModal = ({ lesson, onSave, onClose, uploadFile }) => {
   };
 
   const canSubmit = () => {
-    if (!formData.title.trim()) return false;
-    
-    switch (formData.type) {
-      case 'video':
-        return !!formData.videoUrl && !uploading;
-      case 'pdf':
-        return !!formData.pdfUrl && !uploading;
-      case 'text':
-        return !!formData.content.trim() && !uploading;
-      default:
-        return false;
-    }
+    if (!formData.title.trim() || uploading) return false;
+    if (formData.type === 'text') return !!formData.content.trim();
+    return true; // video URL is optional — title alone is enough
   };
 
   return (
@@ -523,7 +488,7 @@ const LessonFormModal = ({ lesson, onSave, onClose, uploadFile }) => {
         </form>
       </div>
 
-      <style jsx>{`
+      <style>{`
         @keyframes fadeIn {
           from { opacity: 0; }
           to { opacity: 1; }

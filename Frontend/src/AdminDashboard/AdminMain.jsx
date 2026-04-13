@@ -279,9 +279,21 @@ const MainDashboardAdmin = () => {
     setShowCourseForm(true);
   };
 
-  const viewCourseDetail = (course) => {
-    setSelectedCourse(course);
-    setCurrentCourseView('detail');
+  const viewCourseDetail = async (course) => {
+    if (!course?._id) return;
+
+    try {
+      const response = await axios.get(`/api/admin/courses/${course._id}`, getAxiosConfig());
+      const fullCourse = response.data?.course || response.data?.data || course;
+      setSelectedCourse(fullCourse);
+    } catch (error) {
+      console.error('Error fetching course detail:', error);
+      // Fallback to list item payload so user can still navigate.
+      setSelectedCourse(course);
+    } finally {
+      setCurrentCourseView('detail');
+      setActiveTab('courses');
+    }
   };
 
   const backToCoursesList = () => {
@@ -311,55 +323,31 @@ const MainDashboardAdmin = () => {
   };
 
   const saveCourseContent = async (updatedModules) => {
-    if (!selectedCourse) {
+    if (!selectedCourse?._id) {
       throw new Error('No course selected');
     }
 
-    if (!selectedCourse._id) {
-      throw new Error('Course ID is missing. Please refresh the page and try again.');
-    }
-
     try {
-      console.log('🌐 POSTing to:', `/api/admin/courses/${selectedCourse._id}/modules`);
-      console.log('📦 Sending modules:', JSON.stringify(updatedModules, null, 2));
-
-      const response = await axios.post(`/api/admin/courses/${selectedCourse._id}/modules`, {
-        modules: updatedModules
-      }, getAxiosConfig());
-
-      console.log('✅ API Response:', response.data);
-
-      // Refresh the selected course data directly from the backend API
-      const courseResponse = await axios.get(`/api/admin/courses/${selectedCourse._id}`, getAxiosConfig());
-      console.log('🔄 Updated course from API:', courseResponse.data.course);
-      setSelectedCourse(courseResponse.data.course);
-      
-      // Also refresh the courses list to keep it in sync
-      await fetchCourses();
-      
-      return courseResponse.data.course;
-    } catch (error) {
-      console.error('❌ Error saving course content:', error);
-      console.error('❌ Error response:', error.response?.data);
-      throw error;
+      // Prefer dedicated modules endpoint if available.
+      await axios.post(
+        `/api/admin/courses/${selectedCourse._id}/modules`,
+        { modules: updatedModules },
+        getAxiosConfig()
+      );
+    } catch (postError) {
+      // Fallback for older API shape.
+      await axios.put(
+        `/api/admin/courses/${selectedCourse._id}`,
+        { modules: updatedModules },
+        getAxiosConfig()
+      );
     }
-  };
 
-  const handleDeleteModule = async (moduleIndex) => {
-    if (!selectedCourse || !selectedCourse.modules[moduleIndex]) return;
-
-    try {
-      const moduleId = selectedCourse.modules[moduleIndex]._id;
-      await axios.delete(`/api/admin/courses/${selectedCourse._id}/modules/${moduleId}`, getAxiosConfig());
-
-      // Refresh the selected course data
-      const updatedCourses = await fetchCourses();
-      const updatedCourse = updatedCourses.find(c => c._id === selectedCourse._id);
-      setSelectedCourse(updatedCourse);
-    } catch (error) {
-      console.error('Error deleting module:', error);
-      throw error;
-    }
+    const getRes = await axios.get(`/api/admin/courses/${selectedCourse._id}`, getAxiosConfig());
+    const refreshed = getRes.data.course || getRes.data.data || { ...selectedCourse, modules: updatedModules };
+    setSelectedCourse(refreshed);
+    await fetchCourses();
+    return refreshed;
   };
 
   const handleSaveModule = async (moduleData) => {
@@ -396,156 +384,60 @@ const MainDashboardAdmin = () => {
   };
 
   const handleSaveLesson = async (lessonData) => {
-    if (!selectedCourse) {
-      console.error('❌ No selected course');
-      return;
-    }
-
+    if (!selectedCourse) return;
     try {
-      console.log('📝 Saving lesson with data:', lessonData);
-      console.log('📚 Editing lesson context:', editingLesson);
+      const updatedModules = (selectedCourse.modules || []).map((m) => ({
+        ...m,
+        lessons: m.lessons || []
+      }));
 
-      const updatedModules = selectedCourse.modules ? [...selectedCourse.modules] : [];
-
-      // Ensure all modules have lessons array initialized
-      updatedModules.forEach((module, idx) => {
-        if (!module.lessons) {
-          updatedModules[idx].lessons = [];
-        }
-      });
-
-      if (editingLesson) {
-        let moduleIndex = editingLesson.moduleIndex;
-
-        console.log('🔍 Looking for module:', {
-          moduleIndex: editingLesson.moduleIndex,
-          moduleId: editingLesson.moduleId,
-          totalModules: updatedModules.length,
-          modules: updatedModules.map(m => ({ _id: m._id, title: m.title }))
-        });
-
-        // If we have a module ID, try to find it by ID instead of index
-        if (editingLesson.moduleId) {
-          const foundIndex = updatedModules.findIndex(m => m._id === editingLesson.moduleId);
-          if (foundIndex !== -1) {
-            moduleIndex = foundIndex;
-            console.log('✅ Found module by ID at index:', moduleIndex);
-          } else {
-            console.log('⚠️ Module ID not found, falling back to index:', editingLesson.moduleIndex);
-          }
-        }
-
-        // Ensure the module exists
-        if (moduleIndex === undefined || moduleIndex === -1 || !updatedModules[moduleIndex]) {
-          console.error('❌ Module not found by index. Index:', moduleIndex, 'Module ID:', editingLesson.moduleId, 'Total modules:', updatedModules.length);
-          
-          // Fallback: try to find the module by matching lesson data if available
-          if (lessonData._id && editingLesson.lessonIndex !== undefined) {
-            for (let i = 0; i < updatedModules.length; i++) {
-              if (updatedModules[i].lessons && updatedModules[i].lessons[editingLesson.lessonIndex]?._id === lessonData._id) {
-                moduleIndex = i;
-                console.log('✅ Found module by lesson _id at index:', moduleIndex);
-                break;
-              }
-            }
-          }
-          
-          // If still not found, try to use the first available module as fallback
-          if (moduleIndex === undefined || moduleIndex === -1 || !updatedModules[moduleIndex]) {
-            if (updatedModules.length > 0) {
-              moduleIndex = 0;
-              console.log('⚠️ Using first module as fallback at index:', moduleIndex);
-            } else {
-              console.error('❌ No modules available');
-              throw new Error('No modules found. Please create a module first.');
-            }
-          }
-        }
-
-        console.log('📊 Current lessons count:', updatedModules[moduleIndex].lessons.length);
-        console.log('📝 Lesson index:', editingLesson.lessonIndex);
-        console.log('🆔 Lesson _id:', editingLesson._id);
-
-        let lessonIndex = editingLesson.lessonIndex;
-
-        // If lessonIndex is not available or invalid, try to find lesson by _id
-        if ((lessonIndex === undefined || lessonIndex === null || lessonIndex === -1) && lessonData._id) {
-          lessonIndex = updatedModules[moduleIndex].lessons.findIndex(l => l._id === lessonData._id);
-          if (lessonIndex !== -1) {
-            console.log('✅ Found lesson by _id at index:', lessonIndex);
-          } else {
-            console.log('⚠️ Lesson _id not found in module, will add as new lesson');
-          }
-        }
-
-        if (lessonIndex !== undefined && lessonIndex !== null && lessonIndex !== -1) {
-          // Update existing lesson
-          console.log('✏️ Updating existing lesson at index:', lessonIndex);
-          updatedModules[moduleIndex].lessons[lessonIndex] = {
-            ...updatedModules[moduleIndex].lessons[lessonIndex],
-            ...lessonData
-          };
-        } else {
-          // Add new lesson
-          console.log('➕ Adding new lesson to module at index:', moduleIndex);
-          const newLesson = {
-            ...lessonData,
-            position: updatedModules[moduleIndex].lessons.length,
-            createdAt: new Date().toISOString()
-          };
-          updatedModules[moduleIndex].lessons = [
-            ...(updatedModules[moduleIndex].lessons || []),
-            newLesson
-          ];
-          console.log('✅ New lesson added. Total lessons:', updatedModules[moduleIndex].lessons.length);
-        }
-
-        console.log('💾 Saving course content with', updatedModules.length, 'modules');
-        const updatedCourse = await saveCourseContent(updatedModules);
-        setSelectedCourse(updatedCourse);
-        setShowLessonForm(false);
-        setEditingLesson(null);
-        console.log('✅ Lesson saved successfully');
-      } else {
-        console.error('❌ No editingLesson context found');
+      if (!editingLesson || editingLesson.moduleIndex === undefined || editingLesson.moduleIndex === null) {
+        alert('Module context missing for lesson save');
+        return;
       }
+
+      const mi = editingLesson.moduleIndex;
+      if (!updatedModules[mi]) {
+        alert('Module not found');
+        return;
+      }
+
+      if (editingLesson.lessonIndex !== undefined && editingLesson.lessonIndex !== null) {
+        updatedModules[mi].lessons[editingLesson.lessonIndex] = {
+          ...updatedModules[mi].lessons[editingLesson.lessonIndex],
+          ...lessonData
+        };
+      } else {
+        updatedModules[mi].lessons = [
+          ...updatedModules[mi].lessons,
+          { ...lessonData, position: updatedModules[mi].lessons.length, createdAt: new Date().toISOString() }
+        ];
+      }
+
+      await saveCourseContent(updatedModules);
+      setShowLessonForm(false);
+      setEditingLesson(null);
     } catch (error) {
-      console.error('Error saving lesson:', error);
       alert(error.message);
     }
   };
 
-  const handleDeleteLesson = async (moduleIndex, lessonIndex) => {
-    console.log('🗑️ Delete lesson called with moduleIndex:', moduleIndex, 'lessonIndex:', lessonIndex);
-    if (window.confirm('Are you sure you want to delete this lesson?')) {
+  const handleDeleteModule = async (moduleIndex) => {
+    if (window.confirm('Delete this module and all its lessons?')) {
       try {
-        const updatedModules = [...selectedCourse.modules];
+        const updatedModules = (selectedCourse.modules || []).filter((_, i) => i !== moduleIndex);
+        await saveCourseContent(updatedModules);
+      } catch (error) { alert(error.message); }
+    }
+  };
 
-        console.log('📦 Total modules:', updatedModules.length);
-        console.log('📚 Module at index:', moduleIndex, updatedModules[moduleIndex]?.title);
-        console.log('📝 Lessons in module before delete:', updatedModules[moduleIndex]?.lessons?.length);
-
-        // Ensure the module exists
-        if (!updatedModules[moduleIndex]) {
-          console.error('❌ Module not found at index:', moduleIndex);
-          throw new Error('Module not found');
-        }
-
-        // Ensure the module has a lessons array
-        if (!updatedModules[moduleIndex].lessons) {
-          updatedModules[moduleIndex].lessons = [];
-        }
-
-        console.log('🗑️ Deleting lesson at index:', lessonIndex);
+  const handleDeleteLesson = async (moduleIndex, lessonIndex) => {
+    if (window.confirm('Delete this lesson?')) {
+      try {
+        const updatedModules = (selectedCourse.modules || []).map(m => ({ ...m, lessons: m.lessons || [] }));
         updatedModules[moduleIndex].lessons = updatedModules[moduleIndex].lessons.filter((_, i) => i !== lessonIndex);
-        console.log('✅ Lessons after delete:', updatedModules[moduleIndex].lessons.length);
-
-        const updatedCourse = await saveCourseContent(updatedModules);
-        setSelectedCourse(updatedCourse);
-      } catch (error) {
-        console.error('Error deleting lesson:', error);
-        alert(error.message);
-      }
+        await saveCourseContent(updatedModules);
+      } catch (error) { alert(error.message); }
     }
   };
 
@@ -560,7 +452,7 @@ const MainDashboardAdmin = () => {
           onOpenLessonForm={openLessonForm}
           onDeleteModule={handleDeleteModule}
           onDeleteLesson={handleDeleteLesson}
-          onSaveModules={saveCourseContent}
+          onSaveContent={saveCourseContent}
         />
       );
     }

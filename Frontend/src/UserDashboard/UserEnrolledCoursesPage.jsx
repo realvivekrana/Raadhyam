@@ -85,7 +85,7 @@ const UserEnrolledCoursesPage = ({ setActiveTab }) => {
                 <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center' }}>
                   <span style={{ fontSize:'0.78rem', color:MUTED, fontFamily:SANS }}>🕐 {c.duration || 'Self-paced'}</span>
                   <button
-                    onClick={() => setViewingCourse({ id: c._id || c.courseId, title: c.title })}
+                    onClick={() => setViewingCourse({ id: c.courseId || c._id, title: c.title })}
                     style={{ background:`linear-gradient(135deg,${AMBER},#B45309)`, color:'#fff', border:'none', borderRadius:8, padding:'7px 16px', fontSize:'0.78rem', fontWeight:700, cursor:'pointer', fontFamily:SANS }}>
                     Continue →
                   </button>

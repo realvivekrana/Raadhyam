@@ -13,12 +13,33 @@ const UserCourseViewer = ({ courseId, courseTitle, onBack }) => {
   const [error, setError] = useState('');
   const [activeModule, setActiveModule] = useState(0);
   const [activeLesson, setActiveLesson] = useState(0);
+  const [completedLessonIds, setCompletedLessonIds] = useState(new Set());
+  const [progressPercent, setProgressPercent] = useState(0);
+  const [savingLessonId, setSavingLessonId] = useState(null);
 
   useEffect(() => {
     axios.get(`/api/courses/${courseId}`)
       .then(r => { setCourse(r.data.data); })
       .catch(() => setError('Failed to load course content.'))
       .finally(() => setLoading(false));
+  }, [courseId]);
+
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (!token) return;
+
+    axios.get(`/api/user/courses/${courseId}/progress`, {
+      headers: { Authorization: `Bearer ${token}` }
+    })
+      .then((res) => {
+        const completedIds = res.data?.data?.completedLessonIds || [];
+        setCompletedLessonIds(new Set(completedIds.map((id) => String(id))));
+        setProgressPercent(Number(res.data?.data?.progress || 0));
+      })
+      .catch(() => {
+        setCompletedLessonIds(new Set());
+        setProgressPercent(0);
+      });
   }, [courseId]);
 
   if (loading) return (
@@ -35,8 +56,68 @@ const UserCourseViewer = ({ courseId, courseTitle, onBack }) => {
     </div>
   );
 
-  const modules = course?.modules || [];
+  const modules = (course?.modules || [])
+    .map((mod) => {
+      const lessons = (mod?.lessons || []).filter((les) => {
+        const hasTitle = Boolean(les?.title && String(les.title).trim());
+        const hasPlayableContent = Boolean(
+          les?.videoUrl ||
+          les?.pdfUrl ||
+          (les?.content && String(les.content).trim()) ||
+          (Array.isArray(les?.resources) && les.resources.length)
+        );
+        return hasTitle || hasPlayableContent;
+      });
+
+      return {
+        ...mod,
+        lessons,
+      };
+    })
+    .filter((mod) => {
+      const hasModuleTitle = Boolean(mod?.title && String(mod.title).trim());
+      const hasModuleDescription = Boolean(mod?.description && String(mod.description).trim());
+      const hasLessons = (mod?.lessons?.length || 0) > 0;
+      return hasModuleTitle || hasModuleDescription || hasLessons;
+    });
   const currentLesson = modules[activeModule]?.lessons?.[activeLesson];
+  const totalLessonCount = modules.reduce((total, mod) => total + (mod.lessons?.length || 0), 0);
+  const completedCount = Array.from(completedLessonIds).length;
+  const isCurrentLessonCompleted = Boolean(currentLesson?._id && completedLessonIds.has(String(currentLesson._id)));
+
+  const toggleLessonCompletion = async () => {
+    if (!currentLesson?._id) return;
+
+    const token = localStorage.getItem('token');
+    if (!token) {
+      alert('Please login again to save progress.');
+      return;
+    }
+
+    const nextCompleted = !isCurrentLessonCompleted;
+    setSavingLessonId(String(currentLesson._id));
+
+    try {
+      const res = await axios.put(
+        `/api/user/courses/${courseId}/progress`,
+        {
+          lessonId: String(currentLesson._id),
+          completed: nextCompleted
+        },
+        {
+          headers: { Authorization: `Bearer ${token}` }
+        }
+      );
+
+      const ids = res.data?.data?.completedLessonIds || [];
+      setCompletedLessonIds(new Set(ids.map((id) => String(id))));
+      setProgressPercent(Number(res.data?.data?.progress || 0));
+    } catch (err) {
+      alert(err.response?.data?.message || 'Failed to update lesson progress.');
+    } finally {
+      setSavingLessonId(null);
+    }
+  };
 
   return (
     <div style={{ fontFamily:SANS }}>
@@ -58,6 +139,17 @@ const UserCourseViewer = ({ courseId, courseTitle, onBack }) => {
           <div style={{ padding:'1rem 1.25rem', borderBottom:'1px solid #F1F5F9', background:'linear-gradient(135deg,rgba(217,119,6,0.06),transparent)' }}>
             <div style={{ fontWeight:700, color:SLATE, fontSize:'0.88rem' }}>Course Content</div>
             <div style={{ color:MUTED, fontSize:'0.75rem', marginTop:2 }}>{modules.length} modules · {modules.reduce((t,m)=>t+(m.lessons?.length||0),0)} lessons</div>
+            {totalLessonCount > 0 && (
+              <div style={{ marginTop:8 }}>
+                <div style={{ display:'flex', justifyContent:'space-between', fontSize:'0.72rem', color:MUTED, marginBottom:4 }}>
+                  <span>{completedCount}/{totalLessonCount} completed</span>
+                  <span>{progressPercent}%</span>
+                </div>
+                <div style={{ height:6, borderRadius:999, background:'#E2E8F0', overflow:'hidden' }}>
+                  <div style={{ width:`${Math.max(0, Math.min(100, progressPercent))}%`, height:'100%', background:`linear-gradient(135deg,${AMBER},#B45309)` }}></div>
+                </div>
+              </div>
+            )}
           </div>
 
           {modules.length === 0 ? (
@@ -79,7 +171,9 @@ const UserCourseViewer = ({ courseId, courseTitle, onBack }) => {
                   {activeModule === mi && (mod.lessons||[]).map((les, li) => (
                     <button key={li} onClick={() => setActiveLesson(li)}
                       style={{ width:'100%', textAlign:'left', padding:'0.65rem 1.25rem 0.65rem 2rem', background: activeLesson===li ? `rgba(217,119,6,0.1)` : 'transparent', border:'none', borderBottom:'1px solid #F8FAFC', cursor:'pointer', display:'flex', alignItems:'center', gap:8 }}>
-                      <span style={{ width:20, height:20, borderRadius:'50%', background: activeLesson===li ? AMBER : '#E2E8F0', display:'flex', alignItems:'center', justifyContent:'center', fontSize:'0.6rem', color: activeLesson===li ? '#fff' : MUTED, flexShrink:0, fontWeight:700 }}>{li+1}</span>
+                      <span style={{ width:20, height:20, borderRadius:'50%', background: activeLesson===li ? AMBER : '#E2E8F0', display:'flex', alignItems:'center', justifyContent:'center', fontSize:'0.6rem', color: activeLesson===li ? '#fff' : MUTED, flexShrink:0, fontWeight:700 }}>
+                        {completedLessonIds.has(String(les?._id)) ? '✓' : li+1}
+                      </span>
                       <span style={{ fontSize:'0.8rem', color: activeLesson===li ? AMBER : SLATE, fontWeight: activeLesson===li ? 700 : 500, lineHeight:1.3 }}>{les.title || `Lesson ${li+1}`}</span>
                     </button>
                   ))}
@@ -190,6 +284,33 @@ const UserCourseViewer = ({ courseId, courseTitle, onBack }) => {
                   Next →
                 </button>
               </div>
+
+              {currentLesson?._id && (
+                <div style={{ marginTop:12, display:'flex', justifyContent:'flex-end' }}>
+                  <button
+                    onClick={toggleLessonCompletion}
+                    disabled={savingLessonId === String(currentLesson._id)}
+                    style={{
+                      padding:'10px 16px',
+                      borderRadius:10,
+                      border:'none',
+                      background: isCurrentLessonCompleted ? '#10B981' : '#334155',
+                      color:'#fff',
+                      fontWeight:700,
+                      fontSize:'0.82rem',
+                      cursor:'pointer',
+                      fontFamily:SANS,
+                      opacity: savingLessonId === String(currentLesson._id) ? 0.7 : 1
+                    }}
+                  >
+                    {savingLessonId === String(currentLesson._id)
+                      ? 'Saving...'
+                      : isCurrentLessonCompleted
+                        ? 'Completed ✓ (Mark Incomplete)'
+                        : 'Mark as Complete'}
+                  </button>
+                </div>
+              )}
             </div>
           )}
         </div>

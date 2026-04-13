@@ -1,7 +1,15 @@
 import express from 'express';
 import { body, param, validationResult } from 'express-validator';
 import verifyToken from '../middlewares/AuthmiddleWare.js';
-import { getUserCourses, enrollInCourse, createNote, getNoteById } from '../controllers/UserDashboardController.js';
+import {
+  getUserCourses,
+  enrollInCourse,
+  createNote,
+  getNoteById,
+  getCourseProgress,
+  updateLessonProgress,
+  changeUserPassword
+} from '../controllers/UserDashboardController.js';
 
 const router = express.Router();
 
@@ -68,8 +76,44 @@ const validateEnroll = [
   validate
 ];
 
+const validateCourseProgress = [
+  param('courseId')
+    .trim()
+    .notEmpty()
+    .withMessage('Course ID is required')
+    .isMongoId()
+    .withMessage('Invalid course ID format'),
+
+  validate
+];
+
+const validateUpdateLessonProgress = [
+  param('courseId')
+    .trim()
+    .notEmpty()
+    .withMessage('Course ID is required')
+    .isMongoId()
+    .withMessage('Invalid course ID format'),
+
+  body('lessonId')
+    .trim()
+    .notEmpty()
+    .withMessage('Lesson ID is required')
+    .isMongoId()
+    .withMessage('Invalid lesson ID format'),
+
+  body('completed')
+    .isBoolean()
+    .withMessage('completed must be a boolean value'),
+
+  validate
+];
+
 router.get('/courses', verifyToken, getUserCourses);
 router.post('/enroll', verifyToken, validateEnroll, enrollInCourse);
+router.get('/courses/:courseId/progress', verifyToken, validateCourseProgress, getCourseProgress);
+router.put('/courses/:courseId/progress', verifyToken, validateUpdateLessonProgress, updateLessonProgress);
+router.put('/change-password', verifyToken, changeUserPassword);
 router.post('/notes', verifyToken, validateCreateNote, createNote);
 router.get('/notes/:id', verifyToken, validateNoteId, getNoteById);
 

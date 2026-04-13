@@ -30,7 +30,7 @@ const protect = async (req, res, next) => {
       });
     }
 
-    if (user.currentToken !== token) {
+    if (user.currentToken && user.currentToken !== token) {
       return res.status(401).json({
         success: false,
         message: "Another device logged in, session expired",

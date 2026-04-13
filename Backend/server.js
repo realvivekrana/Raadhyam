@@ -94,8 +94,12 @@ const startServer = async () => {
 
   await connectDB();
   
-  // Seed admin user if not exists
-  await seedAdmin();
+  // Seed admin user if not exists (non-fatal)
+  try {
+    await seedAdmin();
+  } catch (err) {
+    console.warn('seedAdmin skipped:', err.message);
+  }
   
   app.listen(PORT, () => {
     console.log(`Server is running on http://localhost:${PORT}`);

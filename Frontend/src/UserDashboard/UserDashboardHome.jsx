@@ -76,13 +76,21 @@ const UserDashboardHome = ({ setActiveTab }) => {
         ) : (
           <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill,minmax(240px,1fr))', gap:'1rem' }}>
             {courses.slice(0,4).map((c,i) => (
-              <div key={i} style={{ border:'1px solid #F1F5F9', borderRadius:12, overflow:'hidden', transition:'box-shadow 0.2s', cursor:'pointer' }}
-                onMouseEnter={e=>e.currentTarget.style.boxShadow='0 8px 24px rgba(217,119,6,0.12)'}
-                onMouseLeave={e=>e.currentTarget.style.boxShadow='none'}>
-                {c.thumbnailUrl && <img src={c.thumbnailUrl} alt={c.title} style={{ width:'100%', height:120, objectFit:'cover' }} />}
+              <div key={i}
+                onClick={() => setActiveTab('explore')}
+                style={{ border:'1px solid #F1F5F9', borderRadius:12, overflow:'hidden', transition:'box-shadow 0.2s, transform 0.2s', cursor:'pointer' }}
+                onMouseEnter={e=>{ e.currentTarget.style.boxShadow='0 8px 24px rgba(217,119,6,0.12)'; e.currentTarget.style.transform='translateY(-3px)'; }}
+                onMouseLeave={e=>{ e.currentTarget.style.boxShadow='none'; e.currentTarget.style.transform='none'; }}>
+                {c.thumbnailUrl
+                  ? <img src={c.thumbnailUrl} alt={c.title} style={{ width:'100%', height:120, objectFit:'cover' }} />
+                  : <div style={{ width:'100%', height:120, background:`linear-gradient(135deg,${AMBER},#B45309)`, display:'flex', alignItems:'center', justifyContent:'center', fontSize:'2rem' }}>🎵</div>
+                }
                 <div style={{ padding:'0.85rem' }}>
                   <div style={{ fontWeight:700, color:SLATE, fontSize:'0.9rem', fontFamily:SANS, marginBottom:4 }}>{c.title}</div>
-                  <div style={{ fontSize:'0.75rem', color:MUTED, fontFamily:SANS }}>{c.level || 'All Levels'}</div>
+                  <div style={{ fontSize:'0.75rem', color:MUTED, fontFamily:SANS, display:'flex', justifyContent:'space-between' }}>
+                    <span>{c.level || 'All Levels'}</span>
+                    <span style={{ color:AMBER, fontWeight:600 }}>{c.isFree ? 'Free' : `₹${c.price||0}`}</span>
+                  </div>
                 </div>
               </div>
             ))}

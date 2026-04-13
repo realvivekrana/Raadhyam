@@ -30,6 +30,8 @@ function App() {
 
         <Route path="/dashboard/admin" element={<MainDashboardAdmin />} />
         <Route path="/dashboard/home" element={<UserMain />} />
+        <Route path="/dashboard/user" element={<UserMain />} />
+        <Route path="/user-panel" element={<UserMain />} />
 
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />

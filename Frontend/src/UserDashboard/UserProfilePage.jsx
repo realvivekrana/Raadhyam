@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 const AMBER = '#D97706';
 const SLATE = '#1E293B';
@@ -10,11 +11,69 @@ const SERIF = "'Cormorant Garamond',Georgia,serif";
 const UserProfilePage = () => {
   const navigate = useNavigate();
   const userData = (() => { try { return JSON.parse(localStorage.getItem('userData') || '{}'); } catch { return {}; } })();
+  const [passwordForm, setPasswordForm] = useState({
+    currentPassword: '',
+    newPassword: '',
+    confirmPassword: ''
+  });
+  const [savingPassword, setSavingPassword] = useState(false);
+  const [passwordMessage, setPasswordMessage] = useState({ type: '', text: '' });
 
   const handleLogout = () => {
     localStorage.removeItem('token');
     localStorage.removeItem('userData');
     navigate('/login');
+  };
+
+  const handlePasswordInput = (field, value) => {
+    setPasswordForm(prev => ({ ...prev, [field]: value }));
+    if (passwordMessage.text) {
+      setPasswordMessage({ type: '', text: '' });
+    }
+  };
+
+  const handleChangePassword = async (e) => {
+    e.preventDefault();
+
+    const { currentPassword, newPassword, confirmPassword } = passwordForm;
+
+    if (!currentPassword || !newPassword || !confirmPassword) {
+      setPasswordMessage({ type: 'error', text: 'Please fill all password fields.' });
+      return;
+    }
+
+    if (newPassword !== confirmPassword) {
+      setPasswordMessage({ type: 'error', text: 'New password and confirm password must match.' });
+      return;
+    }
+
+    const strongPassword = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d@$!%*?&]{8,}$/;
+    if (!strongPassword.test(newPassword)) {
+      setPasswordMessage({ type: 'error', text: 'Password must be at least 8 characters with one letter and one number.' });
+      return;
+    }
+
+    try {
+      setSavingPassword(true);
+      const token = localStorage.getItem('token');
+      await axios.put('/api/user/change-password', {
+        currentPassword,
+        newPassword,
+        confirmPassword
+      }, {
+        headers: { Authorization: token ? `Bearer ${token}` : '' }
+      });
+
+      setPasswordMessage({ type: 'success', text: 'Password updated successfully.' });
+      setPasswordForm({ currentPassword: '', newPassword: '', confirmPassword: '' });
+    } catch (error) {
+      setPasswordMessage({
+        type: 'error',
+        text: error.response?.data?.message || 'Failed to update password.'
+      });
+    } finally {
+      setSavingPassword(false);
+    }
   };
 
   return (
@@ -52,6 +111,51 @@ const UserProfilePage = () => {
             <span style={{ fontSize:'0.9rem', fontWeight:600, color:SLATE, fontFamily:SANS }}>{row.value}</span>
           </div>
         ))}
+      </div>
+
+      {/* Change Password */}
+      <div style={{ background:'#fff', borderRadius:20, padding:'1.75rem', border:'1px solid #F1F5F9', boxShadow:'0 2px 12px rgba(30,41,59,0.05)', marginBottom:'1.25rem' }}>
+        <h3 style={{ fontFamily:SERIF, fontSize:'1.15rem', fontWeight:700, color:SLATE, marginBottom:'1.25rem' }}>Change Password</h3>
+
+        <form onSubmit={handleChangePassword}>
+          <div style={{ display:'grid', gap:'0.85rem' }}>
+            <input
+              type="password"
+              placeholder="Current password"
+              value={passwordForm.currentPassword}
+              onChange={(e) => handlePasswordInput('currentPassword', e.target.value)}
+              style={{ width:'100%', padding:'11px 12px', border:'1.5px solid #E2E8F0', borderRadius:10, fontFamily:SANS, fontSize:'0.86rem', outline:'none' }}
+            />
+            <input
+              type="password"
+              placeholder="New password"
+              value={passwordForm.newPassword}
+              onChange={(e) => handlePasswordInput('newPassword', e.target.value)}
+              style={{ width:'100%', padding:'11px 12px', border:'1.5px solid #E2E8F0', borderRadius:10, fontFamily:SANS, fontSize:'0.86rem', outline:'none' }}
+            />
+            <input
+              type="password"
+              placeholder="Confirm new password"
+              value={passwordForm.confirmPassword}
+              onChange={(e) => handlePasswordInput('confirmPassword', e.target.value)}
+              style={{ width:'100%', padding:'11px 12px', border:'1.5px solid #E2E8F0', borderRadius:10, fontFamily:SANS, fontSize:'0.86rem', outline:'none' }}
+            />
+          </div>
+
+          {passwordMessage.text && (
+            <p style={{ marginTop:'0.85rem', fontSize:'0.8rem', fontWeight:600, color: passwordMessage.type === 'success' ? '#059669' : '#DC2626', fontFamily:SANS }}>
+              {passwordMessage.text}
+            </p>
+          )}
+
+          <button
+            type="submit"
+            disabled={savingPassword}
+            style={{ marginTop:'1rem', width:'100%', padding:'12px', border:'none', borderRadius:10, cursor: savingPassword ? 'not-allowed' : 'pointer', background: savingPassword ? '#94A3B8' : `linear-gradient(135deg,${AMBER},#B45309)`, color:'#fff', fontWeight:700, fontSize:'0.85rem', fontFamily:SANS }}
+          >
+            {savingPassword ? 'Updating Password...' : 'Update Password'}
+          </button>
+        </form>
       </div>
 
       {/* Logout */}

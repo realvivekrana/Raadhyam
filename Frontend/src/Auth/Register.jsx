@@ -59,7 +59,8 @@ const RegisterPage = () => {
     if (!formData.email) e.email = 'Email is required';
     else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) e.email = 'Enter a valid email';
     if (!formData.password) e.password = 'Password is required';
-    else if (formData.password.length < 6) e.password = 'Minimum 6 characters';
+    else if (formData.password.length < 8) e.password = 'Minimum 8 characters with a letter and number';
+    else if (!/^(?=.*[A-Za-z])(?=.*\d)/.test(formData.password)) e.password = 'Must contain at least one letter and one number';
     if (!formData.confirmPassword) e.confirmPassword = 'Please confirm your password';
     else if (formData.password !== formData.confirmPassword) e.confirmPassword = 'Passwords do not match';
     if (!userCaptcha) e.captcha = 'CAPTCHA is required';
@@ -284,7 +285,7 @@ const RegisterPage = () => {
                       name="password"
                       value={formData.password}
                       onChange={handleChange}
-                      placeholder="Min 6 chars"
+                      placeholder="Min 8 chars + number"
                       style={{ ...inputStyle('password'), paddingRight: 32 }}
                       onFocus={() => setFocused('password')}
                       onBlur={() => setFocused('')}

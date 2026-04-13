@@ -1,6 +1,53 @@
 import mongoose from 'mongoose';
-import { Course, Enrollment } from '../models/CourseSchema.js';
+import bcrypt from 'bcryptjs';
+import { Course, Enrollment, Progress } from '../models/CourseSchema.js';
 import MusicNote from '../models/NotesSchema.js';
+
+const toId = (value) => value?.toString?.() || String(value || '');
+
+const getCourseLessonIdSet = (course) => {
+  const ids = new Set();
+  (course?.modules || []).forEach((module) => {
+    (module?.lessons || []).forEach((lesson) => {
+      if (lesson?._id) ids.add(toId(lesson._id));
+    });
+  });
+  return ids;
+};
+
+const computeProgressForEnrollment = async ({ enrollmentId, course }) => {
+  const lessonIds = getCourseLessonIdSet(course);
+  const totalLessons = lessonIds.size;
+
+  if (totalLessons === 0) {
+    return {
+      completedCount: 0,
+      totalLessons: 0,
+      progressPercentage: 0,
+      completedLessonIds: []
+    };
+  }
+
+  const completedProgress = await Progress.find({
+    enrollment: enrollmentId,
+    completed: true
+  }).select('lesson').lean();
+
+  const completedLessonIds = completedProgress
+    .map((item) => toId(item.lesson))
+    .filter((lessonId) => lessonIds.has(lessonId));
+
+  const uniqueCompletedLessonIds = [...new Set(completedLessonIds)];
+  const completedCount = uniqueCompletedLessonIds.length;
+  const progressPercentage = Math.round((completedCount / totalLessons) * 100);
+
+  return {
+    completedCount,
+    totalLessons,
+    progressPercentage,
+    completedLessonIds: uniqueCompletedLessonIds
+  };
+};
 
 export const getUserCourses = async (req, res) => {
   try {
@@ -18,28 +65,29 @@ export const getUserCourses = async (req, res) => {
       });
     }
 
-    const validEnrollments = enrollments.filter(enrollment => enrollment.course !== null);
-
-    const courses = validEnrollments.map(enrollment => ({
-      courseId: enrollment.course._id,
-      title: enrollment.course.title,
-      slug: enrollment.course.slug,
-      thumbnailUrl: enrollment.course.thumbnailUrl,
-      subtitle: enrollment.course.subtitle,
-      shortDescription: enrollment.course.shortDescription,
-      category: enrollment.course.category,
-      level: enrollment.course.level,
-      instructor: enrollment.course.instructor,
-      duration: enrollment.course.duration,
-      price: enrollment.course.price,
-      isFree: enrollment.course.isFree,
-      enrollment: {
-        enrolledAt: enrollment.enrolledAt,
-        progress: enrollment.progress,
-        isActive: enrollment.isActive,
-        lastAccessedLesson: enrollment.lastAccessedLesson
-      }
-    }));
+    const courses = enrollments
+      .filter(enrollment => enrollment.course) // skip if course was deleted
+      .map(enrollment => ({
+        courseId: enrollment.course._id.toString(),
+        _id: enrollment.course._id.toString(),
+        title: enrollment.course.title,
+        slug: enrollment.course.slug,
+        thumbnailUrl: enrollment.course.thumbnailUrl,
+        subtitle: enrollment.course.subtitle,
+        shortDescription: enrollment.course.shortDescription,
+        category: enrollment.course.category,
+        level: enrollment.course.level,
+        instructor: enrollment.course.instructor,
+        duration: enrollment.course.duration,
+        price: enrollment.course.price,
+        isFree: enrollment.course.isFree,
+        enrollment: {
+          enrolledAt: enrollment.enrolledAt,
+          progress: enrollment.progress,
+          isActive: enrollment.isActive,
+          lastAccessedLesson: enrollment.lastAccessedLesson
+        }
+      }));
 
     res.status(200).json({
       success: true,
@@ -282,6 +330,248 @@ export const getNoteById = async (req, res) => {
     res.status(500).json({
       success: false,
       message: 'Failed to fetch note',
+      error: error.message
+    });
+  }
+};
+
+export const getCourseProgress = async (req, res) => {
+  try {
+    const userId = req.user._id;
+    const { courseId } = req.params;
+
+    if (!mongoose.Types.ObjectId.isValid(courseId)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid course ID format'
+      });
+    }
+
+    const enrollment = await Enrollment.findOne({
+      user: userId,
+      course: courseId,
+      isActive: true
+    });
+
+    if (!enrollment) {
+      return res.status(404).json({
+        success: false,
+        message: 'Enrollment not found for this course'
+      });
+    }
+
+    const course = await Course.findById(courseId).select('modules.lessons._id').lean();
+    if (!course) {
+      return res.status(404).json({
+        success: false,
+        message: 'Course not found'
+      });
+    }
+
+    const progressData = await computeProgressForEnrollment({
+      enrollmentId: enrollment._id,
+      course
+    });
+
+    if (enrollment.progress !== progressData.progressPercentage) {
+      enrollment.progress = progressData.progressPercentage;
+      await enrollment.save();
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: 'Course progress retrieved successfully',
+      data: {
+        courseId,
+        enrollmentId: enrollment._id,
+        progress: progressData.progressPercentage,
+        completedCount: progressData.completedCount,
+        totalLessons: progressData.totalLessons,
+        completedLessonIds: progressData.completedLessonIds,
+        lastAccessedLesson: enrollment.lastAccessedLesson || null
+      }
+    });
+  } catch (error) {
+    console.error('Error fetching course progress:', error);
+    return res.status(500).json({
+      success: false,
+      message: 'Failed to fetch course progress',
+      error: error.message
+    });
+  }
+};
+
+export const updateLessonProgress = async (req, res) => {
+  try {
+    const userId = req.user._id;
+    const { courseId } = req.params;
+    const { lessonId, completed } = req.body;
+
+    if (!mongoose.Types.ObjectId.isValid(courseId)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid course ID format'
+      });
+    }
+
+    if (!mongoose.Types.ObjectId.isValid(lessonId)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid lesson ID format'
+      });
+    }
+
+    const enrollment = await Enrollment.findOne({
+      user: userId,
+      course: courseId,
+      isActive: true
+    });
+
+    if (!enrollment) {
+      return res.status(404).json({
+        success: false,
+        message: 'Enrollment not found for this course'
+      });
+    }
+
+    const course = await Course.findById(courseId).select('modules.lessons._id').lean();
+    if (!course) {
+      return res.status(404).json({
+        success: false,
+        message: 'Course not found'
+      });
+    }
+
+    const validLessonIds = getCourseLessonIdSet(course);
+    if (!validLessonIds.has(toId(lessonId))) {
+      return res.status(400).json({
+        success: false,
+        message: 'Lesson does not belong to this course'
+      });
+    }
+
+    await Progress.findOneAndUpdate(
+      {
+        enrollment: enrollment._id,
+        lesson: lessonId
+      },
+      {
+        $set: {
+          completed: Boolean(completed),
+          completedAt: completed ? new Date() : null
+        }
+      },
+      {
+        upsert: true,
+        new: true,
+        setDefaultsOnInsert: true
+      }
+    );
+
+    enrollment.lastAccessedLesson = lessonId;
+
+    const progressData = await computeProgressForEnrollment({
+      enrollmentId: enrollment._id,
+      course
+    });
+
+    enrollment.progress = progressData.progressPercentage;
+    await enrollment.save();
+
+    return res.status(200).json({
+      success: true,
+      message: 'Lesson progress updated successfully',
+      data: {
+        courseId,
+        lessonId,
+        completed: Boolean(completed),
+        progress: progressData.progressPercentage,
+        completedCount: progressData.completedCount,
+        totalLessons: progressData.totalLessons,
+        completedLessonIds: progressData.completedLessonIds,
+        lastAccessedLesson: enrollment.lastAccessedLesson
+      }
+    });
+  } catch (error) {
+    console.error('Error updating lesson progress:', error);
+    return res.status(500).json({
+      success: false,
+      message: 'Failed to update lesson progress',
+      error: error.message
+    });
+  }
+};
+
+export const changeUserPassword = async (req, res) => {
+  try {
+    const userId = req.user._id;
+    const { currentPassword, newPassword, confirmPassword } = req.body;
+
+    if (!currentPassword || !newPassword || !confirmPassword) {
+      return res.status(400).json({
+        success: false,
+        message: 'Current password, new password, and confirm password are required'
+      });
+    }
+
+    if (newPassword !== confirmPassword) {
+      return res.status(400).json({
+        success: false,
+        message: 'New password and confirm password do not match'
+      });
+    }
+
+    const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d@$!%*?&]{8,}$/;
+    if (!passwordRegex.test(newPassword)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Password must be at least 8 characters with one letter and one number'
+      });
+    }
+
+    const user = req.user;
+    if (!user?.password) {
+      return res.status(400).json({
+        success: false,
+        message: 'Password change is not available for this account'
+      });
+    }
+
+    const isCurrentPasswordValid = await bcrypt.compare(currentPassword, user.password);
+    if (!isCurrentPasswordValid) {
+      return res.status(400).json({
+        success: false,
+        message: 'Current password is incorrect'
+      });
+    }
+
+    const isSamePassword = await bcrypt.compare(newPassword, user.password);
+    if (isSamePassword) {
+      return res.status(400).json({
+        success: false,
+        message: 'New password must be different from current password'
+      });
+    }
+
+    const saltRounds = 12;
+    const hashedPassword = await bcrypt.hash(newPassword, saltRounds);
+
+    await user.constructor.findByIdAndUpdate(userId, {
+      $set: {
+        password: hashedPassword,
+        updatedAt: new Date()
+      }
+    });
+
+    return res.status(200).json({
+      success: true,
+      message: 'Password updated successfully'
+    });
+  } catch (error) {
+    console.error('Error changing password:', error);
+    return res.status(500).json({
+      success: false,
+      message: 'Failed to update password',
       error: error.message
     });
   }

@@ -102,7 +102,7 @@ const LoginPage = () => {
     });
   }, [captchaText]);
 
-  useEffect(() => { setErrors({}); setSuccessMessage(''); }, [formData, userCaptcha]);
+  useEffect(() => { setErrors(p => ({ ...p, email: '', password: '' })); }, [formData]);
 
   const handleChange = e => setFormData(p => ({ ...p, [e.target.name]: e.target.value }));
 
@@ -131,10 +131,7 @@ const LoginPage = () => {
       }
     } catch (err) {
       const msg = err.response?.data?.message || 'Login failed. Please try again.';
-      if (msg === 'Invalid login') setErrors({ general: 'No account found with this email.' });
-      else if (msg === 'Wrong password') setErrors({ general: 'Incorrect password. Please try again.' });
-      else if (msg === 'Use Google Sign-In for this account') setErrors({ general: 'This email uses Google Sign-In.' });
-      else setErrors({ general: msg });
+      setErrors({ general: msg });
       generateCaptcha(); setUserCaptcha('');
     } finally { setIsLoading(false); }
   };

@@ -144,7 +144,8 @@ const UserCoursesPage = () => {
     axios.get('/api/user/courses', { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } })
       .then(r => {
         if (r.data.success && r.data.data) {
-          setEnrolledCourses(new Set(r.data.data.map(c => c.courseId?.toString())));
+          const ids = new Set(r.data.data.map(c => c.courseId?.toString()));
+          setEnrolledCourses(ids);
         }
       })
       .catch(() => setEnrolledCourses(new Set()));
@@ -155,9 +156,10 @@ const UserCoursesPage = () => {
     try {
       const res = await axios.post('/api/user/enroll', { courseId }, { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } });
       if (res.data.success) {
-        setEnrolledCourses(prev => new Set([...prev, courseId]));
+        setEnrolledCourses(prev => new Set([...prev, courseId.toString()]));
         setNotification({ type:'success', message:`Enrolled in "${courseTitle}"! Check My Courses.` });
         setSelectedCourse(null);
+        fetchEnrolledCourses();
       }
     } catch (err) {
       if (err.response?.data?.alreadyEnrolled) {

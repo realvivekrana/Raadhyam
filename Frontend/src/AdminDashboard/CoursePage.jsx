@@ -157,7 +157,13 @@ const CoursesPage = ({
                       : <BookOpen size={18} className="text-amber-600" />}
                   </div>
                   <div className="flex-1 min-w-0">
-                    <div className="font-semibold text-gray-900 text-sm truncate">{course.title}</div>
+                    <button
+                      onClick={() => viewCourseDetail(course)}
+                      className="font-semibold text-gray-900 text-sm truncate text-left hover:text-amber-600 transition-colors"
+                      title="Open course modules"
+                    >
+                      {course.title}
+                    </button>
                     <div className="flex items-center gap-2 mt-1 flex-wrap">
                       <span className="text-xs text-gray-500">{course.category}</span>
                       {getStatusBadge(course.publish?.status)}
@@ -200,7 +206,13 @@ const CoursesPage = ({
                             : <BookOpen size={16} className="text-amber-600" />}
                         </div>
                         <div>
-                          <div className="text-sm font-semibold text-gray-900">{course.title}</div>
+                          <button
+                            onClick={() => viewCourseDetail(course)}
+                            className="text-sm font-semibold text-gray-900 hover:text-amber-600 transition-colors text-left"
+                            title="Open course modules"
+                          >
+                            {course.title}
+                          </button>
                           <div className="text-xs text-gray-400">{course.category} - {course.level}</div>
                         </div>
                       </div>

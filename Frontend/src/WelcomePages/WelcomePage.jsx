@@ -206,7 +206,8 @@ const GlobalStyles = () => (
       border: 1px solid rgba(239, 126, 26, 0.14);
       background: #ffffff;
       box-shadow:
-        0 16px 34px rgba(17, 24, 39, 0.08),
+        0 16px 34px rgb
+        a(17, 24, 39, 0.08),
         inset 0 1px 0 rgba(255, 255, 255, 0.95);
       transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.45s ease, border-color 0.35s ease;
     }

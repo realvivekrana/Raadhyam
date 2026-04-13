@@ -10,7 +10,7 @@ const ModuleFormModal = ({ module, onSave, onClose }) => {
 
   useEffect(() => {
     if (module) {
-      ({
+      setFormData({
         title: module.title || '',
         description: module.description || '',
         position: module.position || 0
@@ -29,9 +29,9 @@ const ModuleFormModal = ({ module, onSave, onClose }) => {
 
   return (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50 animate-fadeIn">
-      <div className="bg-white rounded-2xl max-w-md w-full shadow-2xl animate-slideUp">
-        <div className="border-b border-gray-200 px-6 py-4 flex justify-between items-center bg-gradient-to-r from-amber-50 to-yellow-50">
-          <h3 className="text-xl font-bold bg-gradient-to-r from-amber-500 to-amber-700 bg-clip-text text-transparent flex items-center">
+      <div className="bg-white rounded-2xl max-w-md w-full max-h-[90vh] overflow-hidden shadow-2xl animate-slideUp">
+        <div className="border-b border-gray-200 px-4 sm:px-6 py-4 flex justify-between items-center bg-gradient-to-r from-amber-50 to-yellow-50">
+          <h3 className="text-lg sm:text-xl font-bold bg-gradient-to-r from-amber-500 to-amber-700 bg-clip-text text-transparent flex items-center">
             <List size={24} className="mr-2 text-amber-600" />
             {module ? 'Edit Module' : 'Add New Module'}
           </h3>
@@ -39,7 +39,7 @@ const ModuleFormModal = ({ module, onSave, onClose }) => {
             <X size={24} />
           </button>
         </div>
-        <form onSubmit={handleSubmit} className="p-6 space-y-6">
+        <form onSubmit={handleSubmit} className="p-4 sm:p-6 space-y-6 overflow-y-auto max-h-[calc(90vh-76px)]">
           <div>
             <label className="block text-sm font-bold text-gray-700 mb-2 flex items-center">
               <Sparkles size={16} className="mr-2 text-amber-500" />
@@ -67,17 +67,17 @@ const ModuleFormModal = ({ module, onSave, onClose }) => {
               placeholder="Describe what students will learn in this module..."
             />
           </div>
-          <div className="flex justify-end space-x-4 pt-4 border-t-2 border-gray-200">
+          <div className="flex flex-col-reverse sm:flex-row justify-end gap-3 sm:space-x-4 pt-4 border-t-2 border-gray-200">
             <button
               type="button"
               onClick={onClose}
-              className="px-6 py-2.5 border-2 border-gray-300 text-gray-700 rounded-xl hover:bg-gray-50 hover:border-gray-400 transition-all duration-300 font-semibold hover:scale-105"
+              className="w-full sm:w-auto px-6 py-2.5 border-2 border-gray-300 text-gray-700 rounded-xl hover:bg-gray-50 hover:border-gray-400 transition-all duration-300 font-semibold hover:scale-105"
             >
               Cancel
             </button>
             <button
               type="submit"
-              className="relative px-6 py-2.5 bg-gradient-to-r from-amber-500 to-amber-600 text-white rounded-xl hover:from-amber-600 hover:to-amber-700 transition-all duration-300 font-bold shadow-lg shadow-amber-500/50 hover:shadow-xl hover:shadow-amber-500/60 hover:scale-105 overflow-hidden group"
+              className="relative w-full sm:w-auto px-6 py-2.5 bg-gradient-to-r from-amber-500 to-amber-600 text-white rounded-xl hover:from-amber-600 hover:to-amber-700 transition-all duration-300 font-bold shadow-lg shadow-amber-500/50 hover:shadow-xl hover:shadow-amber-500/60 hover:scale-105 overflow-hidden group"
             >
               <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
               <span className="relative z-10">{module ? 'Update Module' : 'Add Module'}</span>
@@ -86,7 +86,7 @@ const ModuleFormModal = ({ module, onSave, onClose }) => {
         </form>
       </div>
 
-      <style jsx>{`
+      <style>{`
         @keyframes fadeIn {
           from { opacity: 0; }
           to { opacity: 1; }

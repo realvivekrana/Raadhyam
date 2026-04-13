@@ -102,7 +102,7 @@ const CourseDetailPage = ({
   };
 
   const handleEditModule = (module, index) => {
-    onOpenModuleForm({ ...module, index });
+    onOpenModuleForm(module, index);
   };
 
   const handleDeleteModule = async (index) => {
@@ -160,35 +160,35 @@ const CourseDetailPage = ({
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 sm:space-y-6">
       {/* Enhanced Header with Animation */}
-      <div className={`flex items-center justify-between transition-all duration-700 ${
+      <div className={`flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-0 transition-all duration-700 ${
         isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-8'
       }`}>
-        <div className="flex items-center space-x-4">
+        <div className="flex items-start sm:items-center space-x-3 sm:space-x-4 min-w-0">
           <button
             onClick={onBack}
-            className="p-2.5 text-gray-600 hover:text-amber-600 hover:bg-amber-50 rounded-xl transition-all duration-300 hover:scale-110 hover:shadow-lg group"
+            className="p-2 text-gray-600 hover:text-amber-600 hover:bg-amber-50 rounded-xl transition-all duration-300 hover:scale-110 hover:shadow-lg group shrink-0"
           >
             <ArrowLeft size={20} className="group-hover:-translate-x-1 transition-transform duration-300" />
           </button>
-          <div>
-            <h1 className="text-3xl font-bold bg-gradient-to-r from-amber-500 to-amber-700 bg-clip-text text-transparent flex items-center">
-              <BookOpen className="mr-3 text-amber-600 animate-pulse" size={32} />
-              {courseData.title}
+          <div className="min-w-0">
+            <h1 className="text-xl sm:text-3xl font-bold bg-gradient-to-r from-amber-500 to-amber-700 bg-clip-text text-transparent flex items-center leading-tight">
+              <BookOpen className="mr-2 sm:mr-3 text-amber-600 animate-pulse shrink-0" size={24} />
+              <span className="truncate">{courseData.title}</span>
             </h1>
-            <p className="text-gray-600 mt-1 flex items-center">
+            <p className="text-gray-600 mt-1 flex items-center text-sm sm:text-base truncate">
               <Sparkles size={16} className="mr-2 text-amber-500" />
-              {courseData.subtitle}
+              <span className="truncate">{courseData.subtitle}</span>
             </p>
           </div>
         </div>
-        <div className="flex space-x-3">
-          <button className="px-5 py-2.5 border-2 border-gray-300 text-gray-700 rounded-xl hover:bg-gray-50 hover:border-gray-400 transition-all duration-300 flex items-center font-semibold hover:scale-105 hover:shadow-lg">
+        <div className="flex w-full sm:w-auto gap-2 sm:space-x-3">
+          <button className="flex-1 sm:flex-none px-3 sm:px-5 py-2.5 border-2 border-gray-300 text-gray-700 rounded-xl hover:bg-gray-50 hover:border-gray-400 transition-all duration-300 flex items-center justify-center font-semibold hover:scale-105 hover:shadow-lg text-sm sm:text-base">
             <Eye size={18} className="mr-2" />
             Preview
           </button>
-          <button className="relative px-5 py-2.5 bg-gradient-to-r from-amber-500 to-amber-600 text-white rounded-xl hover:from-amber-600 hover:to-amber-700 transition-all duration-300 flex items-center font-bold shadow-lg shadow-amber-500/50 hover:shadow-xl hover:shadow-amber-500/60 hover:scale-105 overflow-hidden group">
+          <button className="relative flex-1 sm:flex-none px-3 sm:px-5 py-2.5 bg-gradient-to-r from-amber-500 to-amber-600 text-white rounded-xl hover:from-amber-600 hover:to-amber-700 transition-all duration-300 flex items-center justify-center font-bold shadow-lg shadow-amber-500/50 hover:shadow-xl hover:shadow-amber-500/60 hover:scale-105 overflow-hidden group text-sm sm:text-base">
             <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
             <Edit3 size={18} className="mr-2 relative z-10" />
             <span className="relative z-10">Edit Course</span>
@@ -202,13 +202,13 @@ const CourseDetailPage = ({
           isVisible ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-8'
         }`} style={{ transitionDelay: '100ms' }}>
           {/* Enhanced Course Card */}
-          <div className="bg-white rounded-2xl shadow-lg border border-gray-200 p-6 hover:shadow-2xl transition-all duration-500 relative overflow-hidden group">
+          <div className="bg-white rounded-2xl shadow-lg border border-gray-200 p-4 sm:p-6 hover:shadow-2xl transition-all duration-500 relative overflow-hidden group">
             {/* Shine effect */}
             <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
               <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
             </div>
             
-            <div className="flex items-center space-x-4 mb-4 relative">
+            <div className="flex items-center space-x-3 sm:space-x-4 mb-4 relative min-w-0">
               <div className="h-16 w-16 bg-gradient-to-br from-amber-100 to-amber-600 rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
                 {courseData.thumbnailUrl ? (
                   <img 
@@ -220,8 +220,8 @@ const CourseDetailPage = ({
                   <BookOpen size={24} className="text-amber-600" />
                 )}
               </div>
-              <div>
-                <h3 className="font-bold text-gray-900">{courseData.title}</h3>
+              <div className="min-w-0">
+                <h3 className="font-bold text-gray-900 truncate">{courseData.title}</h3>
                 <p className="text-sm text-amber-600 font-semibold">{courseData.category}</p>
               </div>
             </div>
@@ -289,7 +289,7 @@ const CourseDetailPage = ({
           </div>
 
           {/* Enhanced Instructor Card */}
-          <div className="bg-white rounded-2xl shadow-lg border border-gray-200 p-6 hover:shadow-2xl transition-all duration-500 relative overflow-hidden group">
+          <div className="bg-white rounded-2xl shadow-lg border border-gray-200 p-4 sm:p-6 hover:shadow-2xl transition-all duration-500 relative overflow-hidden group">
             {/* Shine effect */}
             <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
               <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>

@@ -4,20 +4,18 @@ import bcrypt from "bcryptjs";
 const seedAdmin = async () => {
   try {
     // Check if admin already exists
-    const existingAdmin = await User.findOne({ email: "admin@athenura.com" });
+    const existingAdmin = await User.findOne({ email: "admin@raadhyam.com" });
     
     if (existingAdmin) {
       console.log("Admin user already exists");
       return;
     }
     
-    // Hash the password
-    const hashedPassword = await bcrypt.hash("admin@athenura2025", 10);
+    const hashedPassword = await bcrypt.hash("Admin@1234", 12);
     
-    // Create admin user
-    const admin = await User.create({
-      email: "admin@athenura.com",
-      username: "admin",
+    await User.create({
+      email: "admin@raadhyam.com",
+      username: "raadhyam_admin",
       password: hashedPassword,
       role: "admin",
       name: "Admin",
