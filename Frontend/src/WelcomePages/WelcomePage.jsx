@@ -133,7 +133,7 @@ const GlobalStyles = () => (
     }
 
     .rp-btn-primary:hover {
-      transform: translateY(-2px);
+      transform: scale(1.04);
       box-shadow: 0 16px 32px rgba(239, 126, 26, 0.4);
     }
 
@@ -148,6 +148,7 @@ const GlobalStyles = () => (
     .rp-btn-ghost:hover {
       background: rgba(255, 255, 255, 1);
       border-color: rgba(0, 0, 0, 0.2);
+      transform: scale(1.04);
     }
 
     .rp-card-hover {
@@ -308,14 +309,15 @@ function StatBlock({ number, suffix, label, delay = 0, icon: Icon }) {
         <div
           className="w-14 h-14 mx-auto rounded-xl flex items-center justify-center mb-3 transition-all duration-500"
           style={{
-            background: hovered ? "linear-gradient(135deg, #FCD34D, #F59E0B)" : "rgba(251,191,36,.2)",
-            transform: hovered ? "scale(1.15) rotate(360deg)" : "scale(1) rotate(0deg)",
-            boxShadow: hovered ? "0 8px 24px rgba(251,191,36,.4)" : "none",
+            background: hovered ? "linear-gradient(135deg, #FDE68A, #F59E0B)" : "rgba(251,191,36,.2)",
+            transform: hovered ? "scale(1.15)" : "scale(1)",
+            boxShadow: hovered ? "0 8px 24px rgba(245,158,11,.45)" : "none",
+            border: hovered ? "1px solid rgba(255,255,255,.25)" : "1px solid transparent",
           }}
         >
           <Icon
             className="w-7 h-7 transition-colors duration-300"
-            style={{ color: hovered ? "#78350F" : "#FCD34D" }}
+            style={{ color: hovered ? "#7C2D12" : "#FCD34D" }}
           />
         </div>
       )}
@@ -324,13 +326,13 @@ function StatBlock({ number, suffix, label, delay = 0, icon: Icon }) {
         <div
           className="text-4xl md:text-5xl font-extrabold tracking-tight transition-all duration-300"
           style={{
-            color: hovered ? "#FCD34D" : "#FDE68A",
+            color: hovered ? "#F59E0B" : "#FDE68A",
             transform: hovered ? "scale(1.1)" : "scale(1)",
           }}
         >
           <Counter end={number} suffix={suffix} start={inView} />
         </div>
-        <p className="text-[0.75rem] font-bold uppercase tracking-[0.15em] text-slate-200/85 mt-3 transition-colors">{label}</p>
+        <p className="text-[0.75rem] font-bold uppercase tracking-[0.15em] text-slate-200/85 mt-3 transition-colors" style={{ color: hovered ? '#FDE68A' : undefined }}>{label}</p>
       </div>
     </div>
   );
@@ -492,10 +494,10 @@ const RaadhyamWelcomeHome = () => {
               </p>
 
               <div className="flex flex-col sm:flex-row gap-4 mt-10 rp-anim">
-                <Link to="/login" className="rp-btn-primary px-10 py-4 text-center shadow-lg text-sm uppercase tracking-wide">
+                <Link to="/login" className="rp-btn-primary px-10 py-4 text-center shadow-lg text-sm uppercase tracking-wide hover:scale-105 transition-transform">
                   Start Learning
                 </Link>
-                <Link to="/Contact-Us" className="rp-btn-ghost px-10 py-4 text-center font-bold text-sm uppercase tracking-wide !text-white !bg-white/10 !border-white/20 hover:!bg-white/20 border">
+                <Link to="/Contact-Us" className="rp-btn-ghost px-10 py-4 text-center font-bold text-sm uppercase tracking-wide !text-white !bg-white/10 !border-white/20 hover:!bg-white/20 border hover:scale-105 transition-transform">
                   Get Free Enquiry
                 </Link>
               </div>
@@ -550,7 +552,7 @@ const RaadhyamWelcomeHome = () => {
                 <div className="inline-flex items-center rounded-full border border-[#ef7e1a]/20 bg-[#ef7e1a]/10 px-3 py-1 text-[10px] font-extrabold uppercase tracking-[0.14em] text-[#c25700] mb-5 relative z-10">
                   Signature Learning
                 </div>
-                <div className="rp-feature-icon w-16 h-16 rounded-2xl bg-gradient-to-br from-orange-50 to-orange-100/70 border border-orange-200/60 flex items-center justify-center mb-6 shadow-md group-hover:scale-110 group-hover:-rotate-6 transition-all duration-500 relative z-10">
+                <div className="rp-feature-icon w-16 h-16 rounded-2xl bg-gradient-to-br from-orange-50 to-orange-100/70 border border-orange-200/60 flex items-center justify-center mb-6 shadow-md group-hover:scale-110 transition-all duration-500 relative z-10">
                   <Icon className="w-8 h-8 text-[#ef7e1a]" />
                 </div>
                 <h3 className="text-xl font-extrabold text-gray-900 mb-3 relative z-10 group-hover:text-[#b64f00] transition-colors">{title}</h3>
@@ -585,7 +587,7 @@ const RaadhyamWelcomeHome = () => {
                 <div className="inline-flex w-fit items-center rounded-full border border-[#ef7e1a]/20 bg-white/70 px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.12em] text-[#c25700] mb-4 relative z-10">
                   Program
                 </div>
-                <div className="rp-program-icon w-12 h-12 rounded-xl bg-gradient-to-br from-orange-50 to-orange-100/80 border border-orange-100 shadow-sm flex items-center justify-center mb-5 group-hover:scale-110 group-hover:rotate-6 transition-all duration-500 relative z-10">
+                <div className="rp-program-icon w-12 h-12 rounded-xl bg-gradient-to-br from-orange-50 to-orange-100/80 border border-orange-100 shadow-sm flex items-center justify-center mb-5 group-hover:scale-110 transition-all duration-500 relative z-10">
                   <Icon className="w-6 h-6 text-[#ef7e1a]" />
                 </div>
                 <h3 className="font-extrabold text-gray-900 text-lg mb-2 relative z-10 group-hover:text-[#b64f00] transition-colors">{title}</h3>
@@ -679,10 +681,10 @@ const RaadhyamWelcomeHome = () => {
                 First trial class is on us.
               </p>
               <div className="flex flex-col sm:flex-row justify-center gap-4 mt-10">
-                <Link to="/login" className="bg-white text-[#c25700] hover:bg-gray-50 hover:text-[#ef7e1a] px-10 py-4 text-center font-extrabold rounded-xl shadow-xl transition-all hover:scale-105">
+                <Link to="/login" className="bg-white text-[#c25700] hover:bg-gray-50 hover:text-[#ef7e1a] px-10 py-4 text-center font-extrabold rounded-xl shadow-xl transition-all hover:scale-105 hover:translate-y-0">
                   Enroll Now
                 </Link>
-                <a href="mailto:raadhyammusicals@gmail.com" className="border-2 border-white/40 bg-white/10 text-white backdrop-blur-md px-10 py-4 text-center font-bold rounded-xl inline-flex items-center justify-center gap-3 transition-all hover:bg-white/20">
+                <a href="mailto:raadhyammusicals@gmail.com" className="border-2 border-white/40 bg-white/10 text-white backdrop-blur-md px-10 py-4 text-center font-bold rounded-xl inline-flex items-center justify-center gap-3 transition-all hover:bg-white/20 hover:scale-105 hover:translate-y-0">
                   <Mail className="w-5 h-5" /> Email Us
                 </a>
               </div>

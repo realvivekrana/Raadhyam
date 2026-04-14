@@ -232,15 +232,13 @@ const CourseCard = ({ course, delay, onOpen }) => {
           animation: hovered ? 'slideInLeft 0.4s ease' : 'none',
         }}>
           <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold uppercase tracking-wide cp-gradient-text bg-white/70 backdrop-blur-sm border border-white/50 group-hover:shadow-lg group-hover:bg-white/90 transition-all duration-300">
-            <Sparkles className="w-3.5 h-3.5 group-hover:animate-spin" style={{
-              animationDuration: '2s',
-            }} />
+            <Sparkles className="w-3.5 h-3.5 group-hover:scale-110 transition-transform duration-300" />
             {courseData.tag}
           </span>
         </div>
 
         {/* Icon Circle */}
-        <div className="absolute right-4 bottom-4 w-14 h-14 rounded-full bg-white/90 backdrop-blur-sm border border-white/50 flex items-center justify-center text-2xl shadow-lg group-hover:scale-110 group-hover:rotate-6 transition-all duration-300">
+        <div className="absolute right-4 bottom-4 w-14 h-14 rounded-full bg-white/90 backdrop-blur-sm border border-white/50 flex items-center justify-center text-2xl shadow-lg group-hover:scale-110 transition-all duration-300">
           {courseData.icon}
         </div>
       </div>

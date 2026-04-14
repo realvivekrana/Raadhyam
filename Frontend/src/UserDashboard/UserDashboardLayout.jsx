@@ -81,7 +81,7 @@ const UserDashboardLayout = ({ children, activeTab, setActiveTab }) => {
           <div className="relative flex-1 flex flex-col max-w-xs w-full bg-white shadow-2xl animate-slide-in-left">
             <div className="absolute top-0 right-0 -mr-12 pt-2">
               <button
-                className="ml-1 flex items-center justify-center h-10 w-10 rounded-full bg-white/10 backdrop-blur-sm transition-all hover:bg-white/20 hover:rotate-90 duration-300"
+                className="ml-1 flex items-center justify-center h-10 w-10 rounded-full bg-white/10 backdrop-blur-sm transition-all hover:bg-white/20 hover:scale-105 duration-300"
                 onClick={() => setSidebarOpen(false)}
               >
                 <X className="h-6 w-6 text-white" />
@@ -112,7 +112,7 @@ const UserDashboardLayout = ({ children, activeTab, setActiveTab }) => {
                   onClick={handleGoHome}
                   className="w-full flex items-center px-4 py-2.5 text-sm font-medium text-gray-700 hover:text-amber-600 bg-gradient-to-r from-gray-50 to-amber-50/30 hover:from-amber-50 hover:to-amber-100 rounded-xl transition-all duration-300 group shadow-sm hover:shadow-md"
                 >
-                  <Home size={18} className="mr-3 group-hover:scale-110 group-hover:rotate-12 transition-transform duration-300" />
+                  <Home size={18} className="mr-3 group-hover:scale-105 transition-transform duration-300" />
                   Back to Home
                 </button>
               </div>
@@ -161,7 +161,7 @@ const UserDashboardLayout = ({ children, activeTab, setActiveTab }) => {
                 </div>
                 <button 
                   onClick={handleLogout}
-                  className="text-gray-400 hover:text-amber-600 ml-2 p-2 hover:bg-amber-50 rounded-lg transition-all duration-300 hover:rotate-12 hover:scale-110"
+                  className="text-gray-400 hover:text-amber-600 ml-2 p-2 hover:bg-amber-50 rounded-lg transition-all duration-300 hover:scale-105"
                   title="Logout"
                 >
                   <LogOut size={18} />
@@ -199,7 +199,7 @@ const UserDashboardLayout = ({ children, activeTab, setActiveTab }) => {
                 onClick={handleGoHome}
                 className="w-full flex items-center px-4 py-2.5 text-sm font-medium text-gray-700 hover:text-amber-600 bg-gradient-to-r from-gray-50 to-amber-50/30 hover:from-amber-50 hover:to-amber-100 rounded-xl transition-all duration-300 group shadow-sm hover:shadow-md"
               >
-                <Home size={18} className="mr-3 group-hover:scale-110 group-hover:rotate-12 transition-transform duration-300" />
+                <Home size={18} className="mr-3 group-hover:scale-105 transition-transform duration-300" />
                 Back to Home
               </button>
             </div>
@@ -243,7 +243,7 @@ const UserDashboardLayout = ({ children, activeTab, setActiveTab }) => {
               </div>
               <button 
                 onClick={handleLogout}
-                className="ml-2 text-gray-400 hover:text-amber-600 p-2 hover:bg-amber-50 rounded-lg transition-all duration-300 hover:rotate-12 hover:scale-110"
+                className="ml-2 text-gray-400 hover:text-amber-600 p-2 hover:bg-amber-50 rounded-lg transition-all duration-300 hover:scale-105"
                 title="Logout"
               >
                 <LogOut size={18} />

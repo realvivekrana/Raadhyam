@@ -177,7 +177,7 @@ const StatCard = ({ stat, delay }) => {
         className="w-14 h-14 mx-auto rounded-xl flex items-center justify-center mb-3 transition-all duration-500"
         style={{
           background: hovered ? 'linear-gradient(135deg, #FCD34D, #F59E0B)' : 'rgba(251,191,36,.2)',
-          transform: hovered ? 'scale(1.15) rotate(360deg)' : 'scale(1) rotate(0deg)',
+          transform: hovered ? 'scale(1.15)' : 'scale(1)',
           boxShadow: hovered ? '0 8px 24px rgba(251,191,36,.4)' : 'none',
         }}
       >
@@ -220,7 +220,7 @@ const ValueCard = ({ value, delay }) => {
         className="w-14 h-14 rounded-xl flex items-center justify-center mb-4 relative transition-all duration-500"
         style={{
           background: hovered ? 'linear-gradient(135deg, #F59E0B, #D97706)' : '#FEF3C7',
-          transform: hovered ? 'scale(1.1) rotate(5deg)' : 'scale(1) rotate(0deg)',
+          transform: hovered ? 'scale(1.1)' : 'scale(1)',
           boxShadow: hovered ? '0 8px 20px rgba(245,158,11,.3)' : 'none',
         }}
       >
@@ -333,7 +333,7 @@ const InstrumentCard = ({ inst, index }) => {
           alt={inst.name} 
           className="w-full h-full object-cover"
           style={{ 
-            transform: hovered ? 'scale(1.2) rotate(3deg)' : 'scale(1)', 
+            transform: hovered ? 'scale(1.2)' : 'scale(1)', 
             transition: 'transform .6s cubic-bezier(0.34, 1.56, 0.64, 1)',
             filter: hovered ? 'brightness(1.15) saturate(1.2)' : 'brightness(1)'
           }}
@@ -381,7 +381,7 @@ const FacilityCard = ({ facility, delay }) => {
           alt={facility.title} 
           className="w-full h-full object-cover"
           style={{ 
-            transform: hovered ? 'scale(1.15) rotate(2deg)' : 'scale(1)', 
+            transform: hovered ? 'scale(1.15)' : 'scale(1)', 
             transition: 'transform .6s cubic-bezier(0.34, 1.56, 0.64, 1)',
             filter: hovered ? 'brightness(1.1)' : 'brightness(1)'
           }}
@@ -424,7 +424,7 @@ const MissionCard = ({ Icon, title, texts, delay }) => {
         className="w-14 h-14 rounded-xl flex items-center justify-center mb-4 transition-all duration-500"
         style={{
           background: hovered ? 'linear-gradient(135deg, #F59E0B, #D97706)' : '#FEF3C7',
-          transform: hovered ? 'rotate(360deg) scale(1.1)' : 'rotate(0deg) scale(1)',
+          transform: hovered ? 'scale(1.1)' : 'scale(1)',
         }}
       >
         <Icon 
@@ -614,11 +614,11 @@ const AboutUs = () => {
                   filter: 'brightness(1)',
                 }}
                 onMouseEnter={(e) => {
-                  e.currentTarget.style.transform = 'scale(1.08) rotate(1deg)';
+                  e.currentTarget.style.transform = 'scale(1.08)';
                   e.currentTarget.style.filter = 'brightness(1.1) contrast(1.05)';
                 }}
                 onMouseLeave={(e) => {
-                  e.currentTarget.style.transform = 'scale(1) rotate(0deg)';
+                  e.currentTarget.style.transform = 'scale(1)';
                   e.currentTarget.style.filter = 'brightness(1)';
                 }}
               />
