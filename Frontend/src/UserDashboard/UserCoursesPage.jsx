@@ -29,6 +29,26 @@ const CourseModal = ({ course, enrolled, enrolling, onEnroll, onClose }) => {
           : <div style={{ width:'100%', height:220, background:`linear-gradient(135deg,${AMBER},#B45309)`, borderRadius:'20px 20px 0 0', display:'flex', alignItems:'center', justifyContent:'center', fontSize:'4rem' }}>🎵</div>
         }
 
+        {/* Promo Video */}
+        {course.promoVideoUrl && (() => {
+          const videoId = course.promoVideoUrl.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([a-zA-Z0-9_-]{11})/)?.[1];
+          if (!videoId) return null;
+          return (
+            <div style={{ padding:'1rem 1.5rem', background:'#F8FAFC', borderBottom:'1px solid #F1F5F9' }}>
+              <div style={{ fontWeight:700, color:SLATE, fontSize:'0.85rem', fontFamily:SANS, marginBottom:8 }}>🎬 Promo Video</div>
+              <div style={{ position:'relative', paddingBottom:'56.25%', height:0, overflow:'hidden', borderRadius:12 }}>
+                <iframe
+                  src={`https://www.youtube.com/embed/${videoId}`}
+                  style={{ position:'absolute', top:0, left:0, width:'100%', height:'100%', border:'none' }}
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                  title="Course Promo Video"
+                />
+              </div>
+            </div>
+          );
+        })()}
+
         <div style={{ padding:'1.5rem' }}>
           {/* Badges */}
           <div style={{ display:'flex', gap:8, flexWrap:'wrap', marginBottom:12 }}>
@@ -47,7 +67,12 @@ const CourseModal = ({ course, enrolled, enrolling, onEnroll, onClose }) => {
             {course.stats?.enrolledStudents > 0 && <span style={{ display:'flex', alignItems:'center', gap:5, fontSize:'0.82rem', color:MUTED, fontFamily:SANS }}><Users size={14} color={AMBER} />{course.stats.enrolledStudents} students</span>}
             {course.stats?.rating > 0 && <span style={{ display:'flex', alignItems:'center', gap:5, fontSize:'0.82rem', color:MUTED, fontFamily:SANS }}><Star size={14} color={AMBER} />{course.stats.rating.toFixed(1)}</span>}
             <span style={{ display:'flex', alignItems:'center', gap:5, fontSize:'0.82rem', fontWeight:700, color: course.isFree ? '#10B981' : SLATE, fontFamily:SANS }}>
-              {course.isFree ? '🎁 Free' : `₹${course.price || 0}`}
+              {course.isFree ? '🎁 Free' : course.offerPrice ? (
+                <span>
+                  <span style={{ textDecoration:'line-through', color:'#94A3B8', marginRight:6, fontSize:'0.75rem' }}>₹{course.price || 0}</span>
+                  <span>₹{course.offerPrice}</span>
+                </span>
+              ) : `₹${course.price || 0}`}
             </span>
           </div>
 
@@ -242,7 +267,12 @@ const UserCoursesPage = () => {
                   <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center' }}>
                     <span style={{ fontSize:'0.78rem', color:MUTED, fontFamily:SANS }}>🕐 {c.duration || 'Self-paced'}</span>
                     <span style={{ fontSize:'0.78rem', fontWeight:700, color: c.isFree ? '#10B981' : SLATE, fontFamily:SANS }}>
-                      {c.isFree ? 'Free' : `₹${c.price || 0}`}
+                      {c.isFree ? 'Free' : c.offerPrice ? (
+                        <span>
+                          <span style={{ textDecoration:'line-through', color:'#94A3B8', marginRight:4, fontSize:'0.7rem' }}>₹{c.price || 0}</span>
+                          <span>₹{c.offerPrice}</span>
+                        </span>
+                      ) : `₹${c.price || 0}`}
                     </span>
                   </div>
                 </div>

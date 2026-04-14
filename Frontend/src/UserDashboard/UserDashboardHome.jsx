@@ -89,7 +89,14 @@ const UserDashboardHome = ({ setActiveTab }) => {
                   <div style={{ fontWeight:700, color:SLATE, fontSize:'0.9rem', fontFamily:SANS, marginBottom:4 }}>{c.title}</div>
                   <div style={{ fontSize:'0.75rem', color:MUTED, fontFamily:SANS, display:'flex', justifyContent:'space-between' }}>
                     <span>{c.level || 'All Levels'}</span>
-                    <span style={{ color:AMBER, fontWeight:600 }}>{c.isFree ? 'Free' : `₹${c.price||0}`}</span>
+                    <span style={{ color:AMBER, fontWeight:600 }}>
+                      {c.isFree ? 'Free' : c.offerPrice ? (
+                        <span>
+                          <span style={{ textDecoration:'line-through', color:'#94A3B8', marginRight:4, fontSize:'0.68rem' }}>₹{c.price||0}</span>
+                          <span>₹{c.offerPrice}</span>
+                        </span>
+                      ) : `₹${c.price||0}`}
+                    </span>
                   </div>
                 </div>
               </div>
