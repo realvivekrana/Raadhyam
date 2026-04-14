@@ -795,12 +795,9 @@ export const getAllCoursesAdmin = async (req, res) => {
 
     if (category) query.category = category;
     
-    // Filter by publish status - default to 'published' to hide draft/archived courses
+    // Filter by publish status - show all courses to admins by default
     if (status) {
       query["publish.status"] = status;
-    } else {
-      // Default to published courses only (hide draft and archived)
-      query["publish.status"] = 'published';
     }
 
     const [courses, total] = await Promise.all([
