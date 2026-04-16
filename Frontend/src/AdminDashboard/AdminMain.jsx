@@ -54,15 +54,31 @@ const MainDashboardAdmin = () => {
   const [showNoteForm, setShowNoteForm] = useState(false);
   const [editingNote, setEditingNote] = useState(null); // ADDED THIS
 
+  const redirectToLogin = () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('userData');
+    window.location.href = '/login';
+  };
+
+  const handleAuthFailure = (error) => {
+    const status = error?.response?.status;
+    if (status === 401) {
+      redirectToLogin();
+      return true;
+    }
+    if (status === 403) {
+      window.location.href = '/dashboard/home';
+      return true;
+    }
+    return false;
+  };
+
   // Get axios config with auth headers
   const getAxiosConfig = () => {
     const token = localStorage.getItem('token');
-    return {
-      headers: {
-        'Authorization': token ? `Bearer ${token}` : '',
-        'Content-Type': 'application/json'
-      }
-    };
+    const headers = { 'Content-Type': 'application/json' };
+    if (token) headers['Authorization'] = `Bearer ${token}`;
+    return { headers };
   };
 
   // File upload function
@@ -90,6 +106,11 @@ const MainDashboardAdmin = () => {
 
   // Load data when component mounts
   useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      redirectToLogin();
+      return;
+    }
     fetchDashboardStats();
     fetchCourses();
     fetchMusicNotes();
@@ -112,6 +133,7 @@ const MainDashboardAdmin = () => {
         popularCourses:    d.popularCourses         || [],
       });
     } catch (error) {
+      if (handleAuthFailure(error)) return;
       console.error('Error fetching dashboard stats:', error);
     } finally {
       setLoading(false);
@@ -125,6 +147,7 @@ const MainDashboardAdmin = () => {
       setCourses(response.data.courses || []);
       return response.data.courses || [];
     } catch (error) {
+      if (handleAuthFailure(error)) return [];
       console.error('Error fetching courses:', error);
       setCourses([]);
       return [];
@@ -198,6 +221,7 @@ const MainDashboardAdmin = () => {
         : (response.data.notes || response.data.data || []);
       setMusicNotes(notesData);
     } catch (error) {
+      if (handleAuthFailure(error)) return;
       console.error('Error fetching music notes:', error);
       setMusicNotes([]);
     }
@@ -500,6 +524,8 @@ const MainDashboardAdmin = () => {
             openNoteForm={openNoteForm}
             editMusicNote={editMusicNote}
             deleteMusicNote={deleteMusicNote}
+            refreshMusicNotes={fetchMusicNotes}
+            loading={loading}
           />
         );
       case 'students':

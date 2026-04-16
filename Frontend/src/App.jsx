@@ -10,6 +10,8 @@ import RaadhyamHomepage from './WelcomePages/WelcomePage'
 import AboutUs from './WelcomePages/AboutUsPage'
 import LoginPage from './Auth/Login'
 import RegisterPage from './Auth/Register'
+import ForgotPasswordPage from './Auth/ForgotPassword'
+import ResetPasswordPage from './Auth/ResetPassword'
 import ContactPage from './WelcomePages/Contect'
 import CoursesPage from './WelcomePages/CoursesPage'
 import MusicNotesPage from './WelcomePages/NotesPage'
@@ -35,6 +37,8 @@ function App() {
 
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
+        <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+        <Route path="/reset-password" element={<ResetPasswordPage />} />
         <Route path="/Courses" element={<CoursesPage />} />
         <Route path="/courses" element={<CoursesPage />} />
         <Route path="/Notes" element={<MusicNotesPage />} />
