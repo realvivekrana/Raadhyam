@@ -1,7 +1,7 @@
 # ── Dependencies ──────────────────────────────────────────────────────────────
 node_modules/
 **/node_modules/
-
+.kilo
 # ── Environment variables (NEVER commit secrets) ──────────────────────────────
 .env
 .env.local
