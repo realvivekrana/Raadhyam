@@ -2,9 +2,8 @@ import bcrypt from "bcryptjs";
 import crypto from "crypto";
 import User from "../models/users.js";
 import jwt from "jsonwebtoken";
-import { sendPasswordResetOTP } from "../config/emailService.js";
+import sendEmail from "../utils/sendEmail.js";
 
-// Validate JWT_SECRET at startup
 if (!process.env.JWT_SECRET) {
   throw new Error('FATAL: JWT_SECRET environment variable is not set');
 }
@@ -714,4 +713,112 @@ export const googleAuthCallback = async (req, res, next) => {
       res.redirect(`${redirect}?error=${encodeURIComponent('Authentication failed')}`);
     }
   })(req, res, next);
+};
+
+/* ── OTP-based password reset ─────────────────────────────────────── */
+
+export const sendOtp = async (req, res) => {
+  try {
+    const { email } = req.body;
+    if (!email) return res.status(400).json({ success: false, message: 'Email is required' });
+
+    const user = await User.findOne({ email: email.toLowerCase() });
+    if (!user || !user.password) {
+      return res.status(404).json({ success: false, message: 'No account found with this email address.' });
+    }
+
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+    user.otpCode    = otp;
+    user.otpExpires = new Date(Date.now() + 10 * 60 * 1000); // 10 min
+    await user.save();
+
+    try {
+      await sendEmail({
+        to: user.email,
+        subject: 'Raadhyam — Password Reset OTP',
+        html: `
+          <div style="font-family:Arial,sans-serif;max-width:480px;margin:0 auto;padding:32px;background:#fff;border-radius:12px;border:1px solid #e2e8f0">
+            <h2 style="color:#1E293B;margin-bottom:8px">Password Reset OTP</h2>
+            <p style="color:#64748B;margin-bottom:24px">Hi ${user.name || 'there'},<br>Use the OTP below to reset your password. It expires in <strong>10 minutes</strong>.</p>
+            <div style="background:#FFF8EE;border:2px solid #D97706;border-radius:10px;padding:20px;text-align:center;margin-bottom:24px">
+              <span style="font-size:2.5rem;font-weight:800;letter-spacing:0.3em;color:#D97706">${otp}</span>
+            </div>
+            <p style="color:#94A3B8;font-size:0.85rem">If you didn't request this, ignore this email.</p>
+          </div>
+        `,
+      });
+    } catch (emailErr) {
+      console.error('OTP email failed:', emailErr.message);
+      // Dev fallback — return OTP in response
+      if (process.env.NODE_ENV !== 'production') {
+        return res.status(200).json({ success: true, message: 'OTP sent (dev mode)', devOtp: otp });
+      }
+    }
+
+    res.status(200).json({ success: true, message: 'OTP sent to your email.' });
+  } catch (err) {
+    console.error('sendOtp error:', err.message);
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+};
+
+export const verifyOtp = async (req, res) => {
+  try {
+    const { email, otp } = req.body;
+    if (!email || !otp) return res.status(400).json({ success: false, message: 'Email and OTP are required' });
+
+    const user = await User.findOne({ email: email.toLowerCase() });
+    if (!user || !user.otpCode || !user.otpExpires) {
+      return res.status(400).json({ success: false, message: 'Invalid or expired OTP' });
+    }
+    if (user.otpExpires < new Date()) {
+      return res.status(400).json({ success: false, message: 'OTP has expired. Please request a new one.' });
+    }
+    if (user.otpCode !== otp.trim()) {
+      return res.status(400).json({ success: false, message: 'Incorrect OTP' });
+    }
+
+    // OTP valid — issue a short-lived reset token
+    const resetToken = crypto.randomBytes(32).toString('hex');
+    user.resetPasswordToken   = crypto.createHash('sha256').update(resetToken).digest('hex');
+    user.resetPasswordExpires = new Date(Date.now() + 15 * 60 * 1000); // 15 min
+    user.otpCode    = undefined;
+    user.otpExpires = undefined;
+    await user.save();
+
+    res.status(200).json({ success: true, message: 'OTP verified', resetToken });
+  } catch (err) {
+    console.error('verifyOtp error:', err.message);
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+};
+
+export const resetPasswordWithToken = async (req, res) => {
+  try {
+    const { resetToken, newPassword } = req.body;
+    if (!resetToken || !newPassword) {
+      return res.status(400).json({ success: false, message: 'Token and new password are required' });
+    }
+    if (!/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d@$!%*?&]{8,}$/.test(newPassword)) {
+      return res.status(400).json({ success: false, message: 'Password must be at least 8 characters with a letter and number' });
+    }
+
+    const hashed = crypto.createHash('sha256').update(resetToken).digest('hex');
+    const user = await User.findOne({
+      resetPasswordToken:   hashed,
+      resetPasswordExpires: { $gt: new Date() },
+    });
+    if (!user) return res.status(400).json({ success: false, message: 'Invalid or expired reset token' });
+
+    user.password             = await bcrypt.hash(newPassword, 12);
+    user.resetPasswordToken   = undefined;
+    user.resetPasswordExpires = undefined;
+    user.currentToken         = null;
+    await user.save();
+
+    res.status(200).json({ success: true, message: 'Password reset successfully. You can now log in.' });
+  } catch (err) {
+    console.error('resetPasswordWithToken error:', err.message);
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
 };
