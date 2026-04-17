@@ -2,7 +2,7 @@ import bcrypt from "bcryptjs";
 import crypto from "crypto";
 import User from "../models/users.js";
 import jwt from "jsonwebtoken";
-import sendEmail from "../utils/sendEmail.js";
+import { sendPasswordResetOTP } from "../config/emailService.js";
 
 if (!process.env.JWT_SECRET) {
   throw new Error('FATAL: JWT_SECRET environment variable is not set');
@@ -733,20 +733,7 @@ export const sendOtp = async (req, res) => {
     await user.save();
 
     try {
-      await sendEmail({
-        to: user.email,
-        subject: 'Raadhyam — Password Reset OTP',
-        html: `
-          <div style="font-family:Arial,sans-serif;max-width:480px;margin:0 auto;padding:32px;background:#fff;border-radius:12px;border:1px solid #e2e8f0">
-            <h2 style="color:#1E293B;margin-bottom:8px">Password Reset OTP</h2>
-            <p style="color:#64748B;margin-bottom:24px">Hi ${user.name || 'there'},<br>Use the OTP below to reset your password. It expires in <strong>10 minutes</strong>.</p>
-            <div style="background:#FFF8EE;border:2px solid #D97706;border-radius:10px;padding:20px;text-align:center;margin-bottom:24px">
-              <span style="font-size:2.5rem;font-weight:800;letter-spacing:0.3em;color:#D97706">${otp}</span>
-            </div>
-            <p style="color:#94A3B8;font-size:0.85rem">If you didn't request this, ignore this email.</p>
-          </div>
-        `,
-      });
+      await sendPasswordResetOTP(user.email, otp, user.name || "User");
     } catch (emailErr) {
       console.error('OTP email failed:', emailErr.message);
       // Dev fallback — return OTP in response
